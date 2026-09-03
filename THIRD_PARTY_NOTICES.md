@@ -27,6 +27,11 @@ The isolated Core runtime installs pinned Python packages from the configured pa
 
 ## Project Factory Core
 
-The bundled Project Factory Core wheel is the unchanged 0.14.1 wheel from the previously verified baseline:
+Project Factory Core is distributed as Python source under `core/` (package
+`project-factory-blueprint-kernel`, version 0.14.30). Build and install it from
+the repository root with:
 
-`12b347e3ea85392bd0181974aa1167208d2c04e90bb33cb4623d88219440c34b`
+    pip install ./core      # install the built package
+    pip install -e ./core   # editable install for development
+
+This source repository does not vendor a prebuilt Core wheel.

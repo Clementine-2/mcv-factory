@@ -1546,7 +1546,7 @@ class P3GenerationIntegrationTests(unittest.TestCase):
             self.assertEqual(restored["profile"], expected_profile)
 
     def test_secret_is_not_persisted_in_generated_project(self) -> None:
-        secret = "sk-1234567890abcdefghijklmnop"
+        secret = "sk-REDACTED_TEST_FIXTURE"
         requirement = f"做一个 Python 命令行工具。API_KEY={secret}，不要覆盖原始文件。"
         with tempfile.TemporaryDirectory() as temp_dir:
             result = generate_project(requirement, "redacted-cli", Path(temp_dir))

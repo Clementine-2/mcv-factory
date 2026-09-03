@@ -188,7 +188,7 @@ class RequirementNormalizerTests(unittest.TestCase):
         self.assertEqual(len(payload["questions"]), 1)
 
     def test_secret_like_material_is_redacted_from_persisted_purpose(self):
-        secret = "sk-abcdefghijklmnopqrstuvwxyz123456"
+        secret = "sk-REDACTED_TEST_FIXTURE"
         result = normalize_requirement(f"做一个 Python CLI，API_KEY={secret}。")
         self.assertNotIn(secret, result.blueprint["project"]["purpose"])
         self.assertIn("[REDACTED_SECRET]", result.blueprint["project"]["purpose"])

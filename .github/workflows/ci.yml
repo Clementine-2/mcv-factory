@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  core:
+    name: Core (Python)
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Core
+        run: pip install ./core
+      - name: Install test runner
+        run: pip install pytest
+      - name: Run Core tests
+        run: pytest core/tests -q
+
+  shell:
+    name: Shell (WPF / .NET)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.400"
+      - name: Restore & Build
+        run: dotnet build shell/ProjectFactory.Workbench.csproj -c Release

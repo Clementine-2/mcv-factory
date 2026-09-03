@@ -148,7 +148,7 @@ class SemanticIntakeTests(unittest.TestCase):
 
 
     def test_external_adapter_never_receives_raw_secret_material(self) -> None:
-        secret = "sk-1234567890abcdefghijklmnop"
+        secret = "sk-REDACTED_TEST_FIXTURE"
         seen: list[str] = []
 
         class CapturingAdapter:
@@ -213,7 +213,7 @@ class SemanticIntakeTests(unittest.TestCase):
         self.assertEqual(payload["validation"]["readiness_status"], "USABLE")
 
     def test_secret_material_is_redacted_even_if_external_adapter_echoes_it(self) -> None:
-        secret = "sk-1234567890abcdefghijklmnop"
+        secret = "sk-REDACTED_TEST_FIXTURE"
         text = f"Build a Python CLI. API_KEY={secret}"
         proposal = SemanticProposal(
             blueprint={

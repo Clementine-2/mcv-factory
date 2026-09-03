@@ -58,3 +58,8 @@ evidence_summary/
 .DS_Store
 Thumbs.db
 *.swp
+
+# ---- Secrets / credentials (never commit) ----
+.env
+.env.*
+*.env
