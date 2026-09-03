@@ -17,4 +17,6 @@ class OwnedToolsTests(unittest.TestCase):
         self.assertIn("npm1092", found.replace("\\", "/").casefold())
         text = open(found, encoding="utf-8", errors="replace").read()
         self.assertIn("%~dp0", text)
-        self.assertNotIn("D:\\10_Work", text)
+        # The resolved wrapper must stay relocatable: it must not bake in any
+        # absolute build-machine path. Use a neutral sentinel for the check.
+        self.assertNotIn("C:\\BuildMachine", text)
