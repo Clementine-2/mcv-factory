@@ -1,0 +1,18 @@
+schema_version: "0.1"
+project:
+  purpose: "A TypeScript browser extension built with WXT."
+work_products:
+  - kind: "browser-extension"
+technology:
+  required:
+    - "typescript"
+targets:
+  - kind: "browser"
+    value: "chrome"
+  - kind: "browser"
+    value: "firefox"
+lifecycle:
+  stage: "prototype"
+  horizon: "long-lived"
+scope:
+  scale_hint: "small"

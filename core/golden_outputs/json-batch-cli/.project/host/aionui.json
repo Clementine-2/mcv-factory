@@ -1,0 +1,42 @@
+{
+  "boundaries": {
+    "owns_extensions": false,
+    "owns_harness_runtime": false,
+    "owns_project_lock": false,
+    "owns_runner": false,
+    "owns_verification": false
+  },
+  "context_files": {
+    "claude": "CLAUDE.md",
+    "codex": "AGENTS.md"
+  },
+  "host": {
+    "adapter_version": "0.1",
+    "id": "aionui",
+    "kind": "interactive-gui",
+    "protocol": "acp"
+  },
+  "instructions": [
+    "Open the generated project directory as the Host workspace.",
+    "Use a Host-detected compatible harness; do not install or replace harnesses from Project Factory.",
+    "Treat project.lock.json and .project/evidence as the source of Factory provenance and verification claims."
+  ],
+  "mode": "plan-only",
+  "runtime": {
+    "host_process_started": false,
+    "live_task_executed": false,
+    "status": "UNVERIFIED"
+  },
+  "schema_version": "0.1",
+  "target_harnesses": [
+    "codex",
+    "claude"
+  ],
+  "upstream_contract": {
+    "checked_at": "2026-08-30",
+    "contract_snapshot": "2026-08-06",
+    "reference": "https://github.com/iOfficeAI/AionUi/wiki/ACP-Setup",
+    "source": "AionUI ACP Setup / Multi-Agent Mode contract snapshot"
+  },
+  "workspace_root": "."
+}

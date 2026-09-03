@@ -1,0 +1,42 @@
+# 测什么类型是能力。pytest 是供应商。现有 05_verification.yaml 是工具账。
+schema: project-factory-warehouse/2
+slot: quality_gate_kind
+stage: A.1
+
+items:
+  - id: unit
+    status: owned
+    note: "当前 Python unittest / node:test"
+  - id: integration
+    status: observed
+  - id: e2e
+    status: observed
+    example_providers: [playwright]
+  - id: contract
+    status: observed
+    note: "OpenAPI/pact/buf breaking"
+  - id: property
+    status: observed
+  - id: fuzz
+    status: deferred
+  - id: snapshot
+    status: observed
+  - id: typecheck
+    status: observed
+    example_providers: [mypy, tsc]
+  - id: lint-format
+    status: observed
+    example_providers: [ruff, biome]
+  - id: build-artifact
+    status: owned
+    note: "uv build / npm pack 已在门上"
+  - id: runtime-browser
+    status: observed
+    note: "扩展真机；当前 UNVERIFIED"
+  - id: notebook-execute
+    status: observed
+    note: "笔记本可复现门"
+  - id: load
+    status: deferred
+  - id: accessibility
+    status: deferred

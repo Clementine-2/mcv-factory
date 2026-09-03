@@ -1,0 +1,28 @@
+# Copier-shaped Factory overlay. Copier is the drawing, not a kernel dependency.
+# Factory refresh always reads the packaged template from the current Factory
+# version. It does not call `copier update` (that requires a git-tracked
+# destination and a stored absolute _src_path).
+_min_copier_version: "9.0.0"
+_answers_file: .copier-answers.factory-overlay.yml
+_exclude:
+  - copier.yml
+  - src
+  - tests
+  - pyproject.toml
+  - package.json
+  - package-lock.json
+  - uv.lock
+  - node_modules
+  - .venv
+
+factory_version:
+  type: str
+  help: Project Factory version that owns this overlay
+
+project_name:
+  type: str
+  help: Generated project name
+
+profile_id:
+  type: str
+  help: Factory profile id

@@ -1,0 +1,180 @@
+schema: project-factory-coverage-fixtures/1
+stage: A.1
+core_untouched: true
+count: 120
+rule: >
+  Each demand maps onto PROJECT_SPEC. new_kind=false means do not invent
+  a work_product. Combinations are extra axes, not extra kinds.
+
+fixtures:
+  # ---- 单成品（现有产线能对上的）----
+  - {id: fx-001, demand: "做一个 Python 命令行工具", spec: {work_products: [cli], language: python, execution: interactive-cli, body: argparse}, new_kind: false}
+  - {id: fx-002, demand: "做一个带 Typer 的 Python CLI", spec: {work_products: [cli], language: python, execution: interactive-cli, body: typer}, new_kind: false, note: "换车身不是新 kind"}
+  - {id: fx-003, demand: "做一个 Python 库", spec: {work_products: [library], language: python, execution: in-process-library}, new_kind: false}
+  - {id: fx-004, demand: "做一个 Node 库", spec: {work_products: [library], language: javascript, execution: in-process-library}, new_kind: false}
+  - {id: fx-005, demand: "做一个 TypeScript 库", spec: {work_products: [library], language: typescript, execution: in-process-library}, new_kind: false}
+  - {id: fx-006, demand: "做一个手写 Manifest V3 浏览器扩展", spec: {work_products: [browser-extension], language: javascript, execution: browser-runtime}, new_kind: false, note: "运行时 claim 仍 UNVERIFIED"}
+
+  # ---- 单成品（仓库有 kind，无产线）----
+  - {id: fx-007, demand: "做一个 MCP server", spec: {work_products: [mcp-server], language: python, execution: stdio-server, body: mcp-python-sdk-v2, integration: [mcp-stdio]}, new_kind: false}
+  - {id: fx-008, demand: "做一个 Python FastAPI 服务", spec: {work_products: [http-service], language: python, execution: long-running-server, body: fastapi}, new_kind: false}
+  - {id: fx-009, demand: "做一个 React 单页应用", spec: {work_products: [web-spa], language: typescript, execution: browser-runtime, body: react}, new_kind: false}
+  - {id: fx-010, demand: "做一个 Next.js 网站", spec: {work_products: [web-ssr], language: typescript, execution: long-running-server, body: nextjs}, new_kind: false}
+  - {id: fx-011, demand: "做一个 Rust crate", spec: {work_products: [library], language: rust, execution: in-process-library, delivery: [crate, crates-io]}, new_kind: false}
+  - {id: fx-012, demand: "做一个 VS Code 插件", spec: {work_products: [vscode-extension], language: typescript, execution: in-process-library, delivery: [vsix, vscode-marketplace]}, new_kind: false}
+  - {id: fx-013, demand: "做一个 Flutter 应用", spec: {work_products: [mobile-app], language: dart, execution: mobile-app, body: flutter}, new_kind: false}
+  - {id: fx-014, demand: "做一个 CLI", spec: {work_products: [cli], language: python, execution: interactive-cli}, new_kind: false, note: "语言未说完时默认 python 仅作夹具；真实 intake 应再问"}
+
+  # ---- A.1 补洞种类 ----
+  - {id: fx-015, demand: "做一个 Windows 托盘后台程序", spec: {work_products: [desktop-app, os-service], language: csharp, execution: desktop-gui, extra_execution: [daemon-os-service], body: wpf, compatibility: [os-windows]}, new_kind: false}
+  - {id: fx-016, demand: "做一个 systemd 守护进程", spec: {work_products: [os-service], language: go, execution: daemon-os-service, compatibility: [os-linux]}, new_kind: false}
+  - {id: fx-017, demand: "做一个 Cloudflare Worker", spec: {work_products: [serverless-function], language: typescript, execution: edge-invoke}, new_kind: false}
+  - {id: fx-018, demand: "做一个 AWS Lambda", spec: {work_products: [serverless-function], language: python, execution: serverless-invoke}, new_kind: false}
+  - {id: fx-019, demand: "做一个 Kafka consumer", spec: {work_products: [event-driven-app], language: go, execution: queue-worker, integration: [event-bus-consume], state: [event-log]}, new_kind: false}
+  - {id: fx-020, demand: "做一个 Python SDK", spec: {work_products: [library], language: python, execution: in-process-library}, new_kind: false, note: "手写 SDK=library。从 OpenAPI 生成则用 generated-sdk"}
+  - {id: fx-021, demand: "从 OpenAPI 生成 TypeScript 客户端", spec: {work_products: [generated-sdk], language: typescript, execution: in-process-library, integration: [openapi-contract], repo: generated-and-handwritten}, new_kind: false}
+  - {id: fx-022, demand: "做一个 RAG service", spec: {work_products: [rag-application], language: python, execution: long-running-server, body: fastapi, state: [vector-db, blob-store]}, new_kind: false}
+  - {id: fx-023, demand: "做一个定时 ETL", spec: {work_products: [data-pipeline], language: python, execution: scheduled-batch}, new_kind: false}
+  - {id: fx-024, demand: "做一个 GitHub Action", spec: {work_products: [ci-action], language: typescript, execution: serverless-invoke, delivery: [npm-package]}, new_kind: false}
+  - {id: fx-025, demand: "做一个独立的数据库 migration 仓库", spec: {work_products: [schema-migration-repo], language: sql, execution: scheduled-batch, state: [schema-migrations, relational-db]}, new_kind: false}
+  - {id: fx-026, demand: "做一个模型推理服务", spec: {work_products: [model-serving], language: python, execution: long-running-server}, new_kind: false}
+  - {id: fx-027, demand: "做一个评测仓", spec: {work_products: [eval-harness], language: python, execution: scheduled-batch, quality: [unit, notebook-execute]}, new_kind: false}
+  - {id: fx-028, demand: "做一个 OpenTelemetry collector 配置/探针项目", spec: {work_products: [observability-agent], language: go, execution: daemon-os-service, ops: [metrics, tracing]}, new_kind: false}
+  - {id: fx-029, demand: "做一个只负责打 Winget 包的仓", spec: {work_products: [packaging-repo], language: powershell, execution: scheduled-batch, delivery: [installer, winget]}, new_kind: false}
+
+  # ---- 用户点名的组合：必须拆轴，不得新 kind ----
+  - id: fx-030
+    demand: "FastAPI + React + Postgres + Redis + Celery + Docker + GitHub Actions + OpenTelemetry + OAuth + MCP server"
+    spec:
+      work_products: [http-service, web-spa, mcp-server]
+      languages_by_package: {api: python, web: typescript, mcp: python}
+      execution: long-running-server
+      extra_execution: [queue-worker, stdio-server]
+      body_by_package: {api: fastapi, web: react, mcp: mcp-python-sdk-v2}
+      state: [relational-db, kv-cache, queue]
+      integration: [oauth-oidc, mcp-stdio]
+      delivery: [container-image]
+      ci: github-actions
+      ops: [logging, metrics, tracing]
+      repo: monorepo
+    new_kind: false
+    note: "禁止 python-fastapi-postgres-docker-... Profile"
+
+  - {id: fx-031, demand: "做一个 React + API 的 monorepo", spec: {work_products: [web-spa, http-service], repo: monorepo, execution: long-running-server}, new_kind: false}
+  - {id: fx-032, demand: "FastAPI + Postgres + Docker", spec: {work_products: [http-service], language: python, body: fastapi, state: [relational-db], delivery: [container-image]}, new_kind: false}
+  - {id: fx-033, demand: "FastAPI + Postgres + K8s + GitHub Actions", spec: {work_products: [http-service], language: python, body: fastapi, state: [relational-db], delivery: [container-image], ci: github-actions, note_ops: "K8s 是交付/运行环境 overlay，不是 kind"}, new_kind: false}
+  - {id: fx-034, demand: "FastAPI + Redis worker + Docker", spec: {work_products: [http-service], language: python, execution: long-running-server, extra_execution: [queue-worker], state: [kv-cache, queue], delivery: [container-image]}, new_kind: false, note: "不要开 celery-kind"}
+  - {id: fx-035, demand: "FastAPI + MCP + Postgres + Docker", spec: {work_products: [http-service, mcp-server], language: python, state: [relational-db], delivery: [container-image]}, new_kind: false}
+
+  # ---- Web / 服务多样性 ----
+  - {id: fx-036, demand: "做一个 Vue SPA", spec: {work_products: [web-spa], language: typescript, execution: browser-runtime, body: vue}, new_kind: false}
+  - {id: fx-037, demand: "做一个文档站", spec: {work_products: [docs-site], language: python, execution: scheduled-batch, body: mkdocs-material}, new_kind: false}
+  - {id: fx-038, demand: "做一个静态营销站", spec: {work_products: [static-site], language: typescript, execution: edge-invoke, body: astro}, new_kind: false}
+  - {id: fx-039, demand: "做一个 GraphQL API", spec: {work_products: [graphql-api], language: typescript, execution: long-running-server, integration: [graphql]}, new_kind: false}
+  - {id: fx-040, demand: "做一个 gRPC 服务", spec: {work_products: [grpc-service], language: go, execution: long-running-server, integration: [grpc, protobuf-contract]}, new_kind: false}
+  - {id: fx-041, demand: "做一个 WebSocket 实时服务", spec: {work_products: [realtime-service], language: python, execution: long-running-server, integration: [websocket]}, new_kind: false}
+  - {id: fx-042, demand: "做一个 NestJS 微服务", spec: {work_products: [http-service], language: typescript, execution: long-running-server, body: nestjs}, new_kind: false}
+  - {id: fx-043, demand: "做一个 Spring Boot 服务", spec: {work_products: [http-service], language: java, execution: long-running-server, body: spring-boot}, new_kind: false}
+  - {id: fx-044, demand: "做一个 ASP.NET Core Web API", spec: {work_products: [http-service], language: csharp, execution: long-running-server, body: aspnet-core}, new_kind: false}
+  - {id: fx-045, demand: "做一个 Axum 服务", spec: {work_products: [http-service], language: rust, execution: long-running-server, body: axum}, new_kind: false}
+
+  # ---- 桌面 / 移动 / 扩展 ----
+  - {id: fx-046, demand: "做一个 Tauri 桌面应用", spec: {work_products: [desktop-app], language: rust, execution: desktop-gui, body: tauri}, new_kind: false}
+  - {id: fx-047, demand: "做一个 WPF 桌面应用", spec: {work_products: [desktop-app], language: csharp, execution: desktop-gui, body: wpf, compatibility: [os-windows]}, new_kind: false, note: "用户项目 WPF ≠ 机床 WPF"}
+  - {id: fx-048, demand: "用 Electron 做桌面应用", spec: {work_products: [desktop-app], language: typescript, execution: desktop-gui, body: electron}, new_kind: false, note: "用户项目可观察；机床禁止"}
+  - {id: fx-049, demand: "做一个 Expo 应用", spec: {work_products: [mobile-app], language: typescript, execution: mobile-app, body: expo}, new_kind: false}
+  - {id: fx-050, demand: "做一个 KMP 应用", spec: {work_products: [mobile-app], language: kotlin, execution: mobile-app, body: kotlin-multiplatform}, new_kind: false}
+  - {id: fx-051, demand: "用 WXT 做浏览器扩展", spec: {work_products: [browser-extension], language: typescript, execution: browser-runtime, body: wxt}, new_kind: false, note: "继任车身，不是新 kind"}
+  - {id: fx-052, demand: "做一个用户脚本", spec: {work_products: [userscript], language: javascript, execution: browser-runtime}, new_kind: false, note: "deferred kind，映射得到即可，不扶正产线"}
+
+  # ---- 数据 / ML / IaC ----
+  - {id: fx-053, demand: "做一个 Jupyter 研究笔记本", spec: {work_products: [notebook], language: python, execution: notebook-kernel}, new_kind: false}
+  - {id: fx-054, demand: "做一个可复现实验仓", spec: {work_products: [experiment], language: python, execution: scheduled-batch, state: [local-files, blob-store]}, new_kind: false}
+  - {id: fx-055, demand: "做一个 PyTorch 训练仓", spec: {work_products: [ml-training], language: python, execution: scheduled-batch, body: pytorch}, new_kind: false}
+  - {id: fx-056, demand: "做一个 dbt 项目", spec: {work_products: [analytics-transform], language: sql, execution: scheduled-batch, body: dbt-core}, new_kind: false}
+  - {id: fx-057, demand: "做一个 Dagster 管道", spec: {work_products: [data-pipeline], language: python, execution: scheduled-batch, body: dagster}, new_kind: false}
+  - {id: fx-058, demand: "用 OpenTofu 管云资源", spec: {work_products: [iac], language: posix-shell, execution: scheduled-batch, body: opentofu}, new_kind: false}
+  - {id: fx-059, demand: "用 Pulumi TypeScript 管基础设施", spec: {work_products: [iac], language: typescript, execution: scheduled-batch, body: pulumi}, new_kind: false}
+  - {id: fx-060, demand: "做一个 Docker Compose 栈仓", spec: {work_products: [container-stack], language: posix-shell, execution: long-running-server, delivery: [compose-stack]}, new_kind: false}
+
+  # ---- 游戏 / 系统 / WASM ----
+  - {id: fx-061, demand: "做一个 Godot 游戏", spec: {work_products: [game], language: csharp, execution: game-loop, body: godot}, new_kind: false}
+  - {id: fx-062, demand: "做一个 Bevy 游戏", spec: {work_products: [game], language: rust, execution: game-loop, body: bevy}, new_kind: false}
+  - {id: fx-063, demand: "做一个固件项目", spec: {work_products: [embedded-firmware], language: c, execution: firmware-on-device, body: platformio}, new_kind: false}
+  - {id: fx-064, demand: "做一个 wasm 模块", spec: {work_products: [wasm-module], language: rust, execution: in-process-library, delivery: [crate]}, new_kind: false}
+  - {id: fx-065, demand: "用 maturin 给 Python 写 Rust 扩展", spec: {work_products: [native-extension], language: rust, execution: in-process-library, body: maturin, repo: polyglot-workspace}, new_kind: false}
+
+  # ---- Bot / 爬虫 / 合同 / 测试仓 ----
+  - {id: fx-066, demand: "做一个 Discord 机器人", spec: {work_products: [bot], language: python, execution: long-running-server, body: discord-py}, new_kind: false}
+  - {id: fx-067, demand: "做一个爬虫", spec: {work_products: [scraper], language: python, execution: scheduled-batch, body: scrapy}, new_kind: false}
+  - {id: fx-068, demand: "做一个 OpenAPI 合同仓", spec: {work_products: [schema-contract], language: typescript, execution: in-process-library, integration: [openapi-contract], repo: contract-plus-impl}, new_kind: false}
+  - {id: fx-069, demand: "做一个独立 Playwright 仓库", spec: {work_products: [test-suite], language: typescript, execution: scheduled-batch, quality: [e2e], body: playwright}, new_kind: false}
+  - {id: fx-070, demand: "做一个设计系统 / 组件库", spec: {work_products: [design-system, library], language: typescript, execution: in-process-library}, new_kind: false}
+
+  # ---- CLI 其它语言 / TUI ----
+  - {id: fx-071, demand: "用 Cobra 做 Go CLI", spec: {work_products: [cli], language: go, execution: interactive-cli, body: cobra}, new_kind: false}
+  - {id: fx-072, demand: "用 Clap 做 Rust CLI", spec: {work_products: [cli], language: rust, execution: interactive-cli, body: clap, delivery: [executable]}, new_kind: false}
+  - {id: fx-073, demand: "做一个 Python TUI", spec: {work_products: [tui], language: python, execution: tui-session, body: textual}, new_kind: false}
+  - {id: fx-074, demand: "做一个 PowerShell 工具模块", spec: {work_products: [library], language: powershell, execution: interactive-cli}, new_kind: false}
+
+  # ---- 交付 / 质量 / 安全 / 运维 作为轴，不是 kind ----
+  - {id: fx-075, demand: "把这个库发到 PyPI", spec: {work_products: [library], language: python, execution: in-process-library, delivery: [wheel, pypi], quality: [unit, build-artifact]}, new_kind: false}
+  - {id: fx-076, demand: "做 SBOM 和依赖审计", spec: {work_products: [library], language: python, execution: in-process-library, security: [sbom, dependency-audit]}, new_kind: false, note: "不要开 sbom-kind"}
+  - {id: fx-077, demand: "加上 GitHub Actions", spec: {work_products: [cli], language: python, execution: interactive-cli, ci: github-actions}, new_kind: false}
+  - {id: fx-078, demand: "要健康检查和 OpenTelemetry", spec: {work_products: [http-service], language: python, execution: long-running-server, ops: [health-check, tracing, metrics]}, new_kind: false}
+  - {id: fx-079, demand: "Windows 和 Linux 都能跑的 CLI", spec: {work_products: [cli], language: go, execution: interactive-cli, compatibility: [os-windows, os-linux, arch-x64, arch-arm64]}, new_kind: false}
+  - {id: fx-080, demand: "以后模板还能升级、别盖我的代码", spec: {work_products: [http-service], language: python, execution: long-running-server, lifecycle: [factory-lock, template-update]}, new_kind: false}
+
+  # ---- MCP / AI 组合 ----
+  - {id: fx-081, demand: "做一个 Node MCP server", spec: {work_products: [mcp-server], language: typescript, execution: stdio-server, body: mcp-typescript-sdk-v2}, new_kind: false}
+  - {id: fx-082, demand: "做一个带 OAuth 的远程 MCP", spec: {work_products: [mcp-server], language: python, execution: long-running-server, integration: [mcp-streamable-http, oauth-oidc]}, new_kind: false}
+  - {id: fx-083, demand: "做一个用户侧的 agent 工作流项目", spec: {work_products: [agent-workflow], language: python, execution: interactive-cli, body: pydantic-ai}, new_kind: false, note: "生成物库，不是工厂大脑"}
+  - {id: fx-084, demand: "MCP 工具车要读 Postgres", spec: {work_products: [mcp-server], language: python, execution: stdio-server, state: [relational-db]}, new_kind: false}
+
+  # ---- 仓拓扑 ----
+  - {id: fx-085, demand: "uv workspace 多个 Python 包", spec: {work_products: [library], language: python, execution: in-process-library, repo: multi-package-workspace}, new_kind: false}
+  - {id: fx-086, demand: "前端后端分开两个目录一个仓", spec: {work_products: [web-spa, http-service], repo: frontend-backend-split}, new_kind: false}
+  - {id: fx-087, demand: "Python 服务 + Rust 库的多语言仓", spec: {work_products: [http-service, rust-library], repo: polyglot-workspace}, new_kind: false}
+
+  # ---- 事件 / 队列陷阱 ----
+  - {id: fx-088, demand: "HTTP API 附带 Celery 后台任务", spec: {work_products: [http-service], extra_execution: [queue-worker], state: [queue]}, new_kind: false, note: "不是 event-driven-app"}
+  - {id: fx-089, demand: "纯消费者，没有 HTTP", spec: {work_products: [event-driven-app], execution: queue-worker, integration: [event-bus-consume]}, new_kind: false}
+  - {id: fx-090, demand: "既发 Kafka 又提供 REST", spec: {work_products: [http-service], extra_execution: [queue-worker], integration: [rest-http, event-bus-publish]}, new_kind: false}
+
+  # ---- 语言根补洞 ----
+  - {id: fx-091, demand: "一个 C 语言静态库", spec: {work_products: [library], language: c, execution: in-process-library}, new_kind: false}
+  - {id: fx-092, demand: "一组 SQL 迁移", spec: {work_products: [schema-migration-repo], language: sql, execution: scheduled-batch, state: [schema-migrations]}, new_kind: false}
+  - {id: fx-093, demand: "R 语言笔记本", spec: {work_products: [notebook], language: r, execution: notebook-kernel}, new_kind: false}
+  - {id: fx-094, demand: "Julia 科学计算包", spec: {work_products: [library], language: julia, execution: in-process-library}, new_kind: false}
+
+  # ---- 长尾：能映射，不扶正产线 ----
+  - {id: fx-095, demand: "做一个 WordPress 主题", spec: {work_products: [cms-site], language: php, execution: long-running-server}, new_kind: false, note: "deferred，不进近阶段产线"}
+  - {id: fx-096, demand: "做一个 Rails 应用", spec: {work_products: [web-ssr, http-service], language: ruby, execution: long-running-server, body: rails}, new_kind: false, note: "语言 deferred；映射到现有 kind 即可"}
+  - {id: fx-097, demand: "做一个智能合约", spec: {work_products: [blockchain-dapp], language: javascript, execution: scheduled-batch}, new_kind: false, note: "deferred"}
+
+  # ---- 机床 vs 用户项目陷阱 ----
+  - {id: fx-098, demand: "给工厂自己再写一个安装器", spec: {work_products: [], factory_self: true}, new_kind: false, note: "机床宇宙，不是用户产线"}
+  - {id: fx-099, demand: "工厂当 MCP Host", spec: {work_products: [], out_of_universe: true}, new_kind: false, note: "宪法拒绝"}
+  - {id: fx-100, demand: "把 LangChain 装进内核", spec: {work_products: [], out_of_universe: true}, new_kind: false}
+
+  # ---- 再铺一批常见口语，保证代表集密度 ----
+  - {id: fx-101, demand: "做一个内部 admin 后台", spec: {work_products: [web-ssr, http-service], language: python, execution: long-running-server, body: django}, new_kind: false}
+  - {id: fx-102, demand: "做一个 Hono 边缘 API", spec: {work_products: [http-service, serverless-function], language: typescript, execution: edge-invoke, body: hono}, new_kind: false}
+  - {id: fx-103, demand: "做一个定时备份脚本", spec: {work_products: [cli], language: posix-shell, execution: scheduled-batch}, new_kind: false}
+  - {id: fx-104, demand: "Windows 计划任务跑的批处理", spec: {work_products: [cli], language: powershell, execution: scheduled-batch, compatibility: [os-windows]}, new_kind: false}
+  - {id: fx-105, demand: "做一个 npm 上的 Commander CLI", spec: {work_products: [cli], language: typescript, execution: interactive-cli, body: commander, delivery: [npm-package]}, new_kind: false}
+  - {id: fx-106, demand: "做一个带 Playwright 的扩展", spec: {work_products: [browser-extension], language: typescript, execution: browser-runtime, quality: [e2e, runtime-browser]}, new_kind: false}
+  - {id: fx-107, demand: "发到 Chrome 商店", spec: {work_products: [browser-extension], execution: browser-runtime, delivery: [extension-bundle, chrome-web-store]}, new_kind: false}
+  - {id: fx-108, demand: "做一个 gRPC 的生成客户端仓", spec: {work_products: [generated-sdk], language: go, integration: [protobuf-contract, grpc]}, new_kind: false}
+  - {id: fx-109, demand: "SQLite 单机工具", spec: {work_products: [cli], language: python, execution: interactive-cli, state: [embedded-db]}, new_kind: false}
+  - {id: fx-110, demand: "文件同步小工具，状态在本地目录", spec: {work_products: [cli], language: go, execution: interactive-cli, state: [local-files]}, new_kind: false}
+  - {id: fx-111, demand: "S3 上传服务", spec: {work_products: [http-service], language: python, execution: long-running-server, state: [blob-store]}, new_kind: false}
+  - {id: fx-112, demand: "带全文搜索的 API", spec: {work_products: [http-service], language: typescript, execution: long-running-server, state: [search-index]}, new_kind: false}
+  - {id: fx-113, demand: "Webhook 接入器", spec: {work_products: [http-service], language: python, execution: long-running-server, integration: [webhook-inbound]}, new_kind: false}
+  - {id: fx-114, demand: "调用第三方 HTTP 的同步器", spec: {work_products: [cli], language: python, execution: scheduled-batch, integration: [third-party-http-client]}, new_kind: false}
+  - {id: fx-115, demand: "要签名发布", spec: {work_products: [library], language: rust, execution: in-process-library, security: [signed-release, provenance], delivery: [crate, crates-io]}, new_kind: false}
+  - {id: fx-116, demand: "许可证扫描过才能毕业", spec: {work_products: [library], language: python, execution: in-process-library, security: [license-policy], quality: [unit]}, new_kind: false}
+  - {id: fx-117, demand: "崩溃上报的桌面应用", spec: {work_products: [desktop-app], language: typescript, execution: desktop-gui, ops: [crash-reporting, logging]}, new_kind: false}
+  - {id: fx-118, demand: "优雅退出的后台服务", spec: {work_products: [os-service], language: go, execution: daemon-os-service, ops: [graceful-shutdown, health-check]}, new_kind: false}
+  - {id: fx-119, demand: "旧扩展产线弃用但还要能生成", spec: {work_products: [browser-extension], language: javascript, execution: browser-runtime, lifecycle: [profile-deprecate]}, new_kind: false}
+  - {id: fx-120, demand: "随机：主流需求「做个能登录的 FastAPI，前端 React，Postgres，容器交付」", spec: {work_products: [http-service, web-spa], language: python, execution: long-running-server, body: fastapi, state: [relational-db], integration: [oauth-oidc], delivery: [container-image], repo: frontend-backend-split}, new_kind: false, note: "代表集收口句：能自然描述，无需新 kind"}

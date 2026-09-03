@@ -1,0 +1,36 @@
+schema: project-factory-warehouse/2
+slot: security_capability
+stage: A.1
+
+items:
+  - id: secret-redaction
+    status: owned
+    note: "P1 起内核已有；生成物侧仍要政策"
+  - id: env-secrets
+    status: observed
+    note: "不把密钥写进仓"
+  - id: dependency-audit
+    status: observed
+    example_providers: [pip-audit, npm-audit, cargo-audit]
+  - id: sbom
+    status: observed
+    example_providers: [syft, cdxgen]
+  - id: signed-release
+    status: observed
+    note: "sigstore / 代码签名"
+  - id: provenance
+    status: observed
+    note: "SLSA / 构建出处；工厂自己的 evidence 是机床侧"
+  - id: license-policy
+    status: observed
+  - id: permission-manifest
+    status: observed
+    note: "扩展权限、移动权限、MCP tool 边界"
+  - id: sandbox
+    status: observed
+    note: "WASM / 扩展隔离 / 容器"
+  - id: threat-model-doc
+    status: deferred
+  - id: supply-chain-pin
+    status: owned
+    note: "lockfile + 工厂 version pin。observed_latest 不得当 pin"

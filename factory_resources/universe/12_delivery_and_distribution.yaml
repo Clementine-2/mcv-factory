@@ -1,0 +1,52 @@
+# 打成什么包、送到哪。CI 品牌是供应商，ci-pipeline 是能力。
+schema: project-factory-warehouse/2
+stage: A.1
+
+artifact_types:
+  slot: artifact_type
+  items:
+    - {id: source-tree, status: owned, note: "永远有；原生仓库"}
+    - {id: wheel, status: owned, note: "python-cli/library 已验证门"}
+    - {id: sdist, status: owned}
+    - {id: npm-package, status: owned}
+    - {id: executable, status: observed, note: "单文件二进制 / PyInstaller 一类"}
+    - {id: container-image, status: observed}
+    - {id: compose-stack, status: observed}
+    - {id: extension-bundle, status: owned, note: "浏览器扩展 zip；运行时 claim 仍 UNVERIFIED"}
+    - {id: vsix, status: observed}
+    - {id: installer, status: observed, note: "MSIX / MSI / NSIS / pkg。机床自己的 NSIS 不在此轴"}
+    - {id: app-bundle, status: observed, note: "APK/IPA/桌面 app"}
+    - {id: nuget-package, status: observed}
+    - {id: crate, status: observed}
+    - {id: maven-artifact, status: observed}
+    - {id: firmware-image, status: observed}
+    - {id: sbom, status: observed, note: "常与主产物成对"}
+    - {id: generated-client, status: observed}
+
+delivery_channels:
+  slot: delivery_channel
+  items:
+    - {id: git-repo, status: owned}
+    - {id: pypi, status: observed}
+    - {id: npm-registry, status: observed}
+    - {id: crates-io, status: observed}
+    - {id: nuget-gallery, status: observed}
+    - {id: maven-central, status: observed}
+    - {id: container-registry, status: observed}
+    - {id: github-releases, status: observed}
+    - {id: winget, status: observed}
+    - {id: homebrew, status: observed}
+    - {id: msix-store, status: observed}
+    - {id: apple-app-store, status: observed}
+    - {id: google-play, status: observed}
+    - {id: chrome-web-store, status: observed}
+    - {id: vscode-marketplace, status: observed}
+    - {id: mcp-registry, status: observed, note: "若出现官方登记处；观察"}
+
+ci_capability:
+  id: ci-pipeline
+  slot: delivery_channel
+  status: observed
+  note: "能力是「有流水线」。供应商不得变成 kind。"
+  example_providers: [github-actions, gitlab-ci, azure-pipelines, local-only]
+  local_gates_remain_authority: true

@@ -1,0 +1,193 @@
+{
+  "claim_summary": {
+    "FAILED": 0,
+    "PARTIALLY_VERIFIED": 0,
+    "UNVERIFIED": 0,
+    "VERIFIED": 3
+  },
+  "claims": [
+    {
+      "evidence_gates": [
+        "library-imports"
+      ],
+      "id": "library-importable",
+      "limitation": null,
+      "material": true,
+      "scope": "local generated scaffold",
+      "statement": "The generated Python library imports locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "unit-tests"
+      ],
+      "id": "tests-pass",
+      "limitation": null,
+      "material": true,
+      "scope": "local generated scaffold",
+      "statement": "The generated scaffold unit tests pass locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "package-build",
+        "package-artifacts"
+      ],
+      "id": "package-builds",
+      "limitation": null,
+      "material": true,
+      "scope": "local package build",
+      "statement": "The generated scaffold builds a wheel and source distribution locally.",
+      "status": "VERIFIED"
+    }
+  ],
+  "environment": {
+    "runtime": {
+      "id": "python",
+      "probe_returncode": 0,
+      "version_output": "Python 3.13.5"
+    },
+    "scaffolder": {
+      "id": "uv",
+      "version": "0.10.0"
+    }
+  },
+  "gates": [
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {
+          "scaffold ready": true
+        }
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [
+          "scaffold ready"
+        ],
+        "returncode": 0
+      },
+      "id": "library-imports",
+      "method": "command",
+      "observed": {
+        "command": [
+          "uv",
+          "--offline",
+          "run",
+          "python",
+          "-c",
+          "import text_normalizer_lib; print(text_normalizer_lib.scaffold_status())"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "Using CPython 3.13.5 interpreter at: /usr/bin/python3\nCreating virtual environment at: .venv\n   Building text-normalizer-lib @ file://<PROJECT_ROOT>\n      Built text-normalizer-lib @ file://<PROJECT_ROOT>\nInstalled 1 package in 0.41ms\n",
+        "stdout": "text_normalizer_lib scaffold ready\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "generated Python library import"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "unit-tests",
+      "method": "command",
+      "observed": {
+        "command": [
+          "uv",
+          "--offline",
+          "run",
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "test_import_and_status (test_smoke.LibrarySmokeTest.test_import_and_status) ... ok\ntest_version (test_smoke.LibrarySmokeTest.test_version) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n",
+        "stdout": ""
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local unit tests"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "package-build",
+      "method": "command",
+      "observed": {
+        "command": [
+          "uv",
+          "--offline",
+          "build"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "Building source distribution (uv build backend)...\nBuilding wheel from source distribution (uv build backend)...\nSuccessfully built dist/text_normalizer_lib-0.1.0.tar.gz\nSuccessfully built dist/text_normalizer_lib-0.1.0-py3-none-any.whl\n",
+        "stdout": ""
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local Python package build"
+    },
+    {
+      "evidence_level": "PASSED",
+      "expected": {
+        "min_matches": 2,
+        "patterns": [
+          "dist/*.whl",
+          "dist/*.tar.gz"
+        ]
+      },
+      "id": "package-artifacts",
+      "method": "artifact",
+      "observed": {
+        "artifacts": [
+          {
+            "path": "dist/text_normalizer_lib-0.1.0-py3-none-any.whl",
+            "sha256": "404491a5721cfd54384787cc6458ce94ebccd9ea11d13377e45d9b23efe34776"
+          },
+          {
+            "path": "dist/text_normalizer_lib-0.1.0.tar.gz",
+            "sha256": "c1b663f3772d90705ba56c382f138de45a1b7af13f6a16853a4e266b51957cc9"
+          }
+        ],
+        "match_count": 2
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "wheel and source distribution artifacts"
+    }
+  ],
+  "generated_at_utc": "2026-08-29T20:09:38.379404+00:00",
+  "limitations": [
+    "Public PyPI publication and installation are outside this verification scope."
+  ],
+  "required_gate_failures": [],
+  "required_gates_passed": true,
+  "schema_version": "0.1",
+  "scope": "generated Python library bootstrap scaffold",
+  "status": "VERIFIED",
+  "suite": {
+    "id": "python-library",
+    "version": "0.1"
+  }
+}

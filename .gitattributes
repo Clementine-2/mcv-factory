@@ -1,0 +1,16 @@
+# Normalize line endings on checkout/commit.
+* text=auto eol=lf
+
+# Windows scripts and sources: keep CRLF so they run/edit correctly on Windows.
+*.bat    text eol=crlf
+*.ps1    text eol=crlf
+*.cs     text eol=crlf
+*.xaml   text eol=crlf
+*.sln    text eol=crlf
+*.csproj text eol=crlf
+
+# Binary assets stay untouched.
+*.png    binary
+*.ico    binary
+*.zip    binary
+*.exe    binary

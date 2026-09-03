@@ -1,0 +1,8 @@
+schema_version: "0.1"
+formulas:
+  - id: baseline-engineering
+    version: "0.1"
+    priority: 100
+    applies_to: ["*"]
+    adapter: baseline-engineering-v1
+    description: Conservative baseline engineering decision formula. It decides but never executes project work.

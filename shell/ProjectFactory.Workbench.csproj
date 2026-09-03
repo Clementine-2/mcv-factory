@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.17763.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>ProjectFactory</AssemblyName>
+    <RootNamespace>ProjectFactory.Workbench</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64</Platforms>
+    <SatelliteResourceLanguages>zh-Hans;en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.png" />
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+    <PackageReference Include="WPF-UI.DependencyInjection" Version="4.3.0" />
+    <!--
+      WPF-UI.DependencyInjection 4.3.0 was compiled against
+      Microsoft.Extensions.DependencyInjection.Abstractions 3.1.0 and its assembly
+      carries a hard "Version=3.1.0.0" reference. Roslyn therefore requires that exact
+      version to be present when compiling against WPF-UI.DI's extension methods
+      (e.g. AddNavigationViewPageProvider), so the ENTIRE DI stack is pinned to a single
+      3.1.0 line. Microsoft.Extensions.Hosting (10.0.0) is intentionally removed: it is
+      unused in code and would otherwise pull Abstractions back to 10.0.0 and recreate the
+      version split. All DI APIs used by App.xaml.cs (ServiceCollection, AddSingleton,
+      BuildServiceProvider, GetRequiredService<T>, IServiceProvider.GetService(Type),
+      AddNavigationViewPageProvider) are available in 3.1.0.
+    -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      WORKAROUND for WPF GenerateTemporaryTargetAssembly (the *_wpftmp.csproj used to
+      compile XAML markup). When the DI packages above are consumed as <PackageReference>,
+      the temp-project generator emits a MALFORMED <Reference> for the netstandard2.0 build
+      of Abstractions whose Include is the full DLL path (with backslashes) instead of the
+      bare assembly name. ResolveAssemblyReferences then raises MSB3106 and DROPS that
+      reference, cascading into CS0012/CS1061 in the XAML compile. (The main project
+      compiles fine; only the temp project chokes.)
+      Fix: keep the DI packages as normal <PackageReference> so they still flow into the
+      temp project, AND add explicit file <Reference> items with a correct assembly name +
+      HintPath (resolved via $(NuGetPackageRoot), portable across machines). In the temp
+      project ResolveAssemblyReferences sees both the malformed package-derived entry (which
+      it drops) and this well-formed entry (which it resolves), so the DI types are
+      available to the XAML compile. <Private>true</Private> guarantees the DLLs are copied
+      into the self-contained publish output.
+    -->
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>$(NuGetPackageRoot)microsoft.extensions.dependencyinjection.abstractions/3.1.0/lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>$(NuGetPackageRoot)microsoft.extensions.dependencyinjection/3.1.0/lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

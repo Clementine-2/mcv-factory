@@ -1,0 +1,19 @@
+schema_version: "0.1"
+project:
+  purpose: "Batch-convert JSON files while preserving the original files."
+work_products:
+  - kind: "cli"
+technology:
+  required:
+    - "python"
+targets:
+  - kind: "runtime"
+    value: "local"
+lifecycle:
+  stage: "prototype"
+  horizon: "short-lived"
+scope:
+  scale_hint: "tiny"
+constraints:
+  hard:
+    - "Must not overwrite source files."

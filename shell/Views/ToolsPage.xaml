@@ -1,0 +1,60 @@
+<Page x:Class="ProjectFactory.Workbench.Views.ToolsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Background="Transparent">
+  <ScrollViewer x:Name="RootScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ClipToBounds="True">
+    <Grid Margin="40,32,40,48" HorizontalAlignment="Stretch">
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="28"/><RowDefinition Height="Auto"/><RowDefinition Height="24"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <StackPanel>
+        <TextBlock Text="工具" Style="{StaticResource PageEyebrow}" />
+        <TextBlock Text="平时不用管。需要检查时再来。" Style="{StaticResource PageTitle}" Margin="0,9,0,8" />
+        <TextBlock Text="检查、恢复验证、运行状态和诊断日志都放在这里，不再抢占主工作流。" Style="{StaticResource PageLead}" />
+      </StackPanel>
+
+      <Grid Grid.Row="2">
+        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="14"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <ui:Card Grid.Column="0" Padding="24">
+          <StackPanel>
+            <TextBlock Text="项目检查" FontSize="17" FontWeight="SemiBold" />
+            <TextBlock Text="选择一个已经生成的项目目录，重新运行结构与证据检查。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,18" />
+            <ui:Button Content="选择项目目录…" Appearance="Primary" HorizontalAlignment="Left" Click="CheckProject_Click" />
+          </StackPanel>
+        </ui:Card>
+        <ui:Card Grid.Column="2" Padding="24">
+          <StackPanel>
+            <TextBlock Text="ZIP 恢复验证" FontSize="17" FontWeight="SemiBold" />
+            <TextBlock Text="从交付 ZIP 做恢复验证，确认 Manifest 和恢复链没有损坏。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,18" />
+            <ui:Button Content="选择 ZIP…" Appearance="Primary" HorizontalAlignment="Left" Click="VerifyZip_Click" />
+          </StackPanel>
+        </ui:Card>
+      </Grid>
+
+      <Grid Grid.Row="4">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="1.45*"/><ColumnDefinition Width="14"/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <ui:Card Grid.Column="0" Padding="24">
+          <StackPanel>
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="运行状态" FontSize="17" FontWeight="SemiBold" />
+                <TextBlock Text="这里显示完整状态；首页只显示会影响工作的摘要。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Margin="0,5,0,0" />
+              </StackPanel>
+              <ui:Button Grid.Column="1" Content="刷新" Appearance="Secondary" Click="RefreshStatus_Click" />
+            </Grid>
+            <ui:ProgressRing x:Name="ToolProgress" Width="20" Height="20" IsIndeterminate="True" Visibility="Collapsed" HorizontalAlignment="Left" Margin="0,18,0,0" />
+            <TextBox x:Name="ToolOutput" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MinHeight="190" MaxHeight="330" Margin="0,18,0,0" Padding="12" FontFamily="Cascadia Mono, Consolas, Microsoft YaHei UI" FontSize="12" />
+          </StackPanel>
+        </ui:Card>
+        <ui:Card Grid.Column="2" Padding="24">
+          <StackPanel>
+            <TextBlock Text="诊断与恢复" FontSize="17" FontWeight="SemiBold" />
+            <TextBlock Text="日志属于证据，不属于首页。遇到异常时再打开。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,18" />
+            <ui:Button Content="打开日志目录" Appearance="Secondary" HorizontalAlignment="Left" Click="OpenLogs_Click" />
+            <TextBlock Text="兼容性实验室、Claude/Codex/Dagu 等高级集成需通过 Core 验证后才会启用；未经验证的版本不会自动出现。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,18,0,0" LineHeight="18" />
+          </StackPanel>
+        </ui:Card>
+      </Grid>
+    </Grid>
+  </ScrollViewer>
+</Page>

@@ -1,0 +1,77 @@
+# Overlay = 叠在语言根之上的说明书 / 锁 / 技能 / CI。不能替换 uv/npm。
+schema: project-factory-warehouse/2
+slot: overlay
+
+items:
+  - id: agents-md
+    status: owned-emitted
+    docs: https://agents.md/
+    steward: Agentic AI Foundation / Linux Foundation
+    note: "每个生成项目已写。create-next-app 2026 也可选生成，说明公约在扩散"
+
+  - id: claude-md
+    status: owned-emitted
+    slot_also: harness_compat
+
+  - id: skill-md
+    status: observed
+    docs: https://agentskills.io
+    drawing: "skills/{name}/SKILL.md frontmatter name+description"
+    note: "技能包 overlay，不覆盖 Canonical 生成物"
+
+  - id: spec-kit
+    slot: process
+    status: owned-contract
+    pin: v1.0.1
+    runtime_verified: false
+    note: "合同钉死。Factory 拥有 AGENTS.md/CLAUDE.md，不装 Spec Kit 的 agent-context 扩展"
+    skill_dirs: [.agents/skills, .claude/skills]
+
+  - id: project-lock
+    status: owned
+    note: "升级/恢复语义。用户源文件必须保留"
+
+  - id: copier-overlay
+    status: observed
+    why: "可 update/merge。阶段 E 只叠说明书/锁/验证脊/技能包"
+
+  - id: mkdocs-material
+    status: observed
+    maps_to: docs-site
+
+  - id: docusaurus
+    status: observed
+
+  - id: vitepress
+    status: observed
+
+  - id: sphinx
+    status: observed
+
+  - id: storybook
+    status: observed
+    maps_to: design-system
+
+  - id: docker-compose-overlay
+    status: observed
+    note: "服务类项目常见叠加，不是语言根"
+
+  - id: editorconfig-precommit
+    status: observed
+
+harness_host_runner:
+  - id: harness-codex
+    slot: harness_compat
+    status: owned-contract
+    emits: AGENTS.md
+  - id: harness-claude
+    slot: harness_compat
+    status: owned-contract
+    emits: CLAUDE.md
+  - id: host-aionui
+    slot: host
+    status: owned-plan-only
+  - id: runner-dagu
+    slot: runner
+    status: owned-boundary
+    note: "start 命令成功 ≠ 项目完成"

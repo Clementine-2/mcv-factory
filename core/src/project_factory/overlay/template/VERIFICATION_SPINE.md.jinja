@@ -1,0 +1,15 @@
+# Verification Spine
+
+Project `{{ project_name }}` (`{{ profile_id }}`). Overlay template: `{{ factory_version }}`.
+
+Factory does not treat a green command, an Agent "DONE", or a UI success as graduation.
+
+1. **Gate** — a named check with a recorded command and environment.
+2. **Evidence** — stdout/stderr, exit code, artifacts under `.project/evidence/`.
+3. **Claim** — `VERIFIED`, `PARTIAL`, `UNVERIFIED`, or `FAILED`, scoped to that gate.
+
+Required gates must pass to keep the project usable. Optional runtime claims
+(live MCP host, real browser, bound HTTP port) stay `UNVERIFIED` until evidence exists.
+
+Overlay refresh does not re-run runtime claims and does not rewrite `src/` or `tests/`.
+Inspect `.project/evidence/generation-verification.json` before treating behavior as verified.

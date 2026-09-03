@@ -1,0 +1,168 @@
+schema: project-factory-upstream-blueprint-observation/1
+observed_at: "2026-08-31"
+status: OBSERVED_NOT_AUTO_SUPPORTED
+rule: >
+  These are factory drawings, not runtime dependencies. A drawing becomes a
+  Profile/Provider/Recipe only after Compatibility Lab + exact generate/verify
+  evidence. Factory stays harness-neutral: do not absorb agent loops.
+current_shipped_profiles:
+  - python-cli
+  - python-library
+  - node-library
+  - browser-extension-js
+current_shipped_scaffold_providers:
+  - uv
+  - npm
+drawings:
+  - id: uv-app-src
+    kind: scaffold-provider
+    upstream: uv
+    license: Apache-2.0 / MIT (Astral uv)
+    docs: https://docs.astral.sh/uv/concepts/projects/init/
+    layout_docs: https://docs.astral.sh/uv/concepts/projects/layout/
+    maps_to_profile: python-cli
+    already_provider: true
+    drawing: |
+      {root}/
+        pyproject.toml          # [project], [project.scripts], [build-system]
+        .python-version
+        README.md
+        src/{pkg}/__init__.py
+        tests/test_smoke.py
+        uv.lock
+    notes: >
+      Official uv init --app uses src layout and a build backend (uv_build default;
+      hatchling/flit/setuptools selectable). Factory already prefers uv. Keep
+      provider pin in Compatibility Lab; do not hardcode a single uv minor.
+
+  - id: uv-lib-src
+    kind: scaffold-provider
+    upstream: uv
+    docs: https://docs.astral.sh/uv/concepts/projects/init/
+    maps_to_profile: python-library
+    already_provider: true
+    drawing: |
+      {root}/
+        pyproject.toml          # [project], [build-system], no console script required
+        src/{pkg}/__init__.py
+        tests/
+        README.md
+        uv.lock
+
+  - id: mcp-python-sdk-v2
+    kind: generated-project-profile-candidate
+    upstream: modelcontextprotocol/python-sdk
+    license: MIT
+    repo: https://github.com/modelcontextprotocol/python-sdk
+    docs: https://py.sdk.modelcontextprotocol.io/get-started/first-steps/
+    proposed_profile: python-mcp-server
+    proposed_capability: mcp_server
+    proposed_provider: uv
+    drawing: |
+      {root}/
+        pyproject.toml
+        src/{pkg}/server.py     # MCPServer + @tool/@resource/@prompt
+        tests/test_tools.py
+        README.md
+        AGENTS.md
+    production_spine:
+      - uv run pytest
+      - typed tool signatures are the schema
+      - no hand-written JSON Schema unless evidence requires it
+      - inspector: uv run mcp dev server.py (dev only, not VERIFIED)
+    notes: >
+      Official SDK v2 is the current stable line (2026-07-28 spec). This is a
+      generated native project, not Factory becoming an MCP host.
+
+  - id: wxt-extension
+    kind: generated-project-profile-candidate
+    upstream: wxt-dev/wxt
+    license: MIT
+    docs: https://wxt.dev/guide/essentials/project-structure
+    proposed_profile: browser-extension-wxt
+    proposed_provider: npm
+    replaces_or_extends: browser-extension-js
+    drawing: |
+      {root}/
+        wxt.config.ts
+        package.json
+        tsconfig.json
+        entrypoints/            # file-based background/content/popup
+        assets/
+        public/
+        modules/
+    production_spine:
+      - wxt build
+      - package manager test script
+      - zip artifact from .output/
+    notes: >
+      Mature Vite-based extension factory. Prefer WXT over hand-written MV3
+      boilerplate for new extension profiles. Keep npm/pnpm as replaceable providers.
+
+  - id: copier-overlay
+    kind: scaffold-lifecycle-provider-candidate
+    upstream: copier-org/copier
+    license: MIT
+    docs: https://copier.readthedocs.io/en/latest/comparisons/
+    proposed_capability: project_scaffolding
+    proposed_provider: copier
+    drawing: >
+      Copier template repo + copier.yml answers; generated project keeps
+      .copier-answers.yml so later `copier update` can merge template evolution.
+    notes: >
+      Copier is the upgrade path Cookiecutter lacks. Factory overlay templates
+      (AGENTS.md, verification spine, lock files) should prefer Copier if a
+      Provider is added. Native uv/npm init stays first for language-native roots.
+
+  - id: pydantic-ai-app
+    kind: generated-project-profile-candidate
+    upstream: pydantic/pydantic-ai
+    license: MIT
+    repo: https://github.com/pydantic/pydantic-ai
+    proposed_profile: python-agent-app
+    proposed_provider: uv
+    drawing: |
+      {root}/
+        pyproject.toml
+        src/{pkg}/agent.py      # Agent + deps_type + tools
+        src/{pkg}/__main__.py
+        tests/test_agent.py     # pydantic-ai TestModel
+        AGENTS.md
+        README.md
+    notes: >
+      Library for generated agent products. NOT a Factory harness. Factory must
+      not run the agent loop; verification is tests + packaging, not "agent said OK".
+
+  - id: agents-md
+    kind: generated-artifact-contract
+    upstream: AGENTS.md convention (Codex/Claude/others)
+    docs: https://agents.md/
+    maps_to: harness compatibility files already in Core
+    drawing: |
+      {root}/AGENTS.md
+      optional CLAUDE.md for Claude Code
+    notes: >
+      Already a harness compatibility artifact. Keep generating native instruction
+      files; do not invent a Factory-owned agent runtime.
+
+  - id: npm-library
+    kind: scaffold-provider
+    upstream: npm
+    already_provider: true
+    maps_to_profile: node-library
+    drawing: |
+      {root}/
+        package.json
+        src/index.js|ts
+        tests/
+        README.md
+    notes: pnpm/yarn remain future replaceable providers behind the same capability.
+
+non_goals:
+  - Do not vendor LangChain/CrewAI/AutoGPT as Factory Core.
+  - Do not make Factory an MCP host, IDE, or harness.
+  - Observed latest != supported. Pin + Compatibility Lab required.
+recommended_first_core_increment:
+  - python-mcp-server profile + uv recipe + pytest gate
+  - browser-extension-wxt as optional successor to raw JS extension
+  - keep 0.14.1 profiles working; additive only

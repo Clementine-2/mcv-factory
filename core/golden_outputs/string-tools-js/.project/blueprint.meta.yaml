@@ -1,0 +1,10 @@
+schema_version: '0.1'
+provenance:
+  /project/purpose:
+    source: EXPLICIT
+  /work_products/0/kind:
+    source: EXPLICIT
+  /technology/required/0:
+    source: EXPLICIT
+  /lifecycle/horizon:
+    source: EXPLICIT

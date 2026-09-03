@@ -1,0 +1,57 @@
+schema_version: "0.1"
+observed_at: "2026-08-30"
+observations:
+  - subject: uv
+    observed_latest: "0.12.7"
+    published_at: "2026-08-27T22:14:06Z"
+    source_kind: github-release
+    source: "https://github.com/astral-sh/uv/releases/tag/0.12.7"
+    candidate_versions:
+      - version: "0.12.7"
+        runtime_requirements: {}
+
+  - subject: npm
+    observed_latest: "12.0.2"
+    published_at: "2026-07-27"
+    source_kind: github-release
+    source: "https://github.com/npm/cli/releases/tag/v12.0.2"
+    candidate_versions:
+      - version: "12.0.2"
+        runtime_requirements:
+          node:
+            any_of:
+              - {min: "22.22.2", max_exclusive: "23.0.0"}
+              - {min: "24.15.0", max_exclusive: "25.0.0"}
+              - {min: "26.0.0"}
+      - version: "10.9.9"
+        note: "Latest release in npm 10 line observed for Node 22 maintenance compatibility."
+        runtime_requirements:
+          node:
+            any_of:
+              - {min: "18.17.0", max_exclusive: "19.0.0"}
+              - {min: "20.5.0"}
+
+  - subject: spec-kit
+    observed_latest: "1.0.1"
+    published_at: "2026-08-21T19:56:33Z"
+    source_kind: github-release
+    source: "https://github.com/github/spec-kit/releases/tag/v1.0.1"
+    candidate_versions:
+      - version: "1.0.1"
+        runtime_requirements: {}
+
+  - subject: codex
+    observed_latest: "contract-2026-08-30"
+    source_kind: upstream-contract
+    source: "https://openai.com/index/introducing-codex/"
+    candidate_versions:
+      - version: "contract-2026-08-30"
+        runtime_requirements: {}
+
+  - subject: claude
+    observed_latest: "contract-2026-08-30"
+    source_kind: upstream-contract
+    source: "https://github.com/github/spec-kit/blob/v1.0.1/src/specify_cli/integrations/claude/__init__.py"
+    candidate_versions:
+      - version: "contract-2026-08-30"
+        runtime_requirements: {}

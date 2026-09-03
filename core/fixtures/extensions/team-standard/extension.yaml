@@ -1,0 +1,36 @@
+schema_version: "0.1"
+extension:
+  id: team-standard
+  version: "1.0.0"
+  mode: declarative
+  description: Declarative profile and policy overlay using only trusted built-in execution adapters.
+requires:
+  factory_api: "1"
+contributes:
+  registry:
+    profiles:
+      - id: team-standard.python-cli
+        version: "1.0"
+        priority: 160
+        match:
+          work_products_any: [cli]
+          technology_required_all: [python]
+        capabilities: [project_scaffolding]
+        provider_preferences:
+          project_scaffolding: [uv]
+        scaffold_recipe: uv-app
+        verification_recipe: python-cli
+        materialization: minimal
+    policies:
+      - id: team-standard.evidence-policy
+        version: "1.0"
+        priority: 20
+        applies_to: ["*"]
+        rules:
+          require_evidence: true
+        description: Declarative evidence requirement.
+  project_artifacts:
+    - id: review-skill
+      kind: skill
+      source: assets/review-skill.md
+      target: skills/review.md

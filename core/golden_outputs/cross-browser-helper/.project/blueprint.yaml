@@ -1,0 +1,16 @@
+schema_version: '0.1'
+project:
+  purpose: 做一个 JavaScript 浏览器扩展，必须支持 Chrome 和 Firefox，先建立可靠项目基地。
+work_products:
+- kind: browser-extension
+targets:
+- kind: browser
+  value: chrome
+- kind: browser
+  value: firefox
+technology:
+  required:
+  - javascript
+constraints:
+  hard:
+  - 做一个 JavaScript 浏览器扩展，必须支持 Chrome 和 Firefox，先建立可靠项目基地

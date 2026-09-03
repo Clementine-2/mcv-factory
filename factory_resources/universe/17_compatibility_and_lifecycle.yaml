@@ -1,0 +1,53 @@
+schema: project-factory-warehouse/2
+stage: A.1
+
+compatibility_axes:
+  slot: compatibility_axis
+  items:
+    - id: os-windows
+      status: owned
+      note: "工厂自己跑在 Windows；用户项目另填"
+    - id: os-linux
+      status: observed
+    - id: os-macos
+      status: observed
+    - id: arch-x64
+      status: observed
+    - id: arch-arm64
+      status: observed
+    - id: runtime-cpython
+      status: owned
+    - id: runtime-node
+      status: owned
+    - id: runtime-browser
+      status: owned
+      limitation: "扩展真机 UNVERIFIED"
+    - id: runtime-dotnet
+      status: observed
+      warning: "机床 .NET 与用户 .NET 两套钉"
+    - id: glibc-or-musl
+      status: deferred
+
+lifecycle_capabilities:
+  slot: lifecycle_capability
+  items:
+    - id: factory-lock
+      status: owned
+      note: "project.lock.json；升级可恢复"
+    - id: template-update
+      status: observed
+      example_providers: [copier]
+      note: "阶段 E：overlay 可更新，用户源文件不被盖"
+    - id: provider-upgrade
+      status: owned
+      note: "P8 升级矩阵。不得把 observed_latest 自动升成 supported"
+    - id: breaking-change-policy
+      status: observed
+    - id: profile-deprecate
+      status: observed
+      note: "旧手写 MV3 在 WXT 继任后仍保留一段时间"
+    - id: rollback
+      status: owned
+    - id: recovery-checkpoint
+      status: owned
+      note: "工厂机床侧 checkpoint；用户项目侧 lock/rollback"

@@ -1,0 +1,5 @@
+schema_version: "0.1"
+project:
+  purpose: 42
+work_products:
+  - kind: "cli"

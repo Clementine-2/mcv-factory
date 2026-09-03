@@ -1,0 +1,30 @@
+# 进了就会把工厂做成不该做的东西。仓库可以点名拒绝，避免以后「顺手加一下」。
+schema: project-factory-warehouse/2
+slot: out_of_universe
+
+never_as_factory:
+  - Factory-owned model loop / session / permissions / 工具调用循环
+  - 把工厂自己做成 MCP Host 或 Agent Harness
+  - Electron / WebView 作为机床外壳
+  - IDE
+  - 插件市场
+  - LangChain / CrewAI / AutoGPT 作为 Core
+  - 自动把 observed_latest 当成 supported
+  - 把 Dagu / AionUI / Codex / Claude 源码吞进内核
+  - 为了统一感重写 uv / npm / cargo
+  - Registry 注入验证命令
+  - Formula 直接执行
+
+allowed_as_generated_body_with_warning:
+  - electron: "用户项目最后手段；机床禁止"
+  - pydantic-ai / openai-agents-python: "用户项目的库，不是工厂大脑"
+  - langchain: "用户点名才考虑；默认不推荐；进内核禁止"
+
+long_tail_not_fake_missing:
+  - wordpress-theme
+  - blockchain-dapp
+  - ar-vr
+  - ruby-on-rails
+  - haskell / zig / lua 语言根
+  - office-addin
+  - kubernetes-operator

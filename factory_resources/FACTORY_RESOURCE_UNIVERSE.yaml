@@ -1,0 +1,324 @@
+schema: project-factory-resource-universe/1
+stage: A-expanded
+status: CATALOG_ONLY_PENDING_USER_ACCEPTANCE
+date: "2026-08-31"
+ship_allowed: false
+core_untouched: true
+mission_filter: >
+  A resource is in-universe only if it can become a Profile, Provider, Recipe,
+  Verification gate, Skill overlay, Process integration, Harness-compat file,
+  Host adapter, Runner provider, Extension, Golden, Policy, Formula, Schema,
+  or Factory-self toolchain pin — without Factory becoming a Harness/IDE/marketplace.
+observed_latest_is_not_supported: true
+
+owned_work_product_kinds:
+  implemented_profiles: [cli, library, browser-extension]
+  already_in_golden_intents_but_no_profile:
+    - {kind: web-ui, fixture: 03_web_api.yaml, needs: typescript frontend scaffold}
+    - {kind: service, fixture: 03_web_api.yaml, needs: python HTTP API scaffold}
+    - {kind: notebook, fixture: 04_ai_research.yaml, needs: reproducible notebook gates}
+    - {kind: experiment, fixture: 04_ai_research.yaml, needs: provenance overlay}
+    - {kind: research-result, fixture: 04_ai_research.yaml}
+    - {kind: desktop-app, fixture: 05_large_multilanguage.yaml, needs: native desktop, not Electron}
+    - {kind: library, tech: rust, fixture: 05_large_multilanguage.yaml, needs: maturin/cargo}
+
+resources:
+  # ---- 产线图纸 already owned ----
+  - id: python-cli
+    slot: profile
+    status: owned
+    recipe: uv-app
+    provider: uv
+  - id: python-library
+    slot: profile
+    status: owned
+    recipe: uv-lib
+    provider: uv
+  - id: node-library
+    slot: profile
+    status: owned
+    recipe: npm-library
+    provider: npm
+  - id: browser-extension-js
+    slot: profile
+    status: owned
+    recipe: npm-browser-extension
+    provider: npm
+    limitation: chrome/firefox runtime claims UNVERIFIED
+
+  # ---- 物料 providers owned ----
+  - id: uv
+    slot: provider
+    status: owned
+    pin_supported: "0.10.0"
+    observed_latest: "0.12.7"
+    docs: https://docs.astral.sh/uv/concepts/projects/init/
+  - id: npm
+    slot: provider
+    status: owned
+    pin_supported: "10.9.2"
+    observed_latest: "12.0.2"
+
+  # ---- 量具 / 车间 owned ----
+  - id: verification-spine
+    slot: workshop
+    status: owned
+    note: suite id from registry; commands cannot be injected by registry data
+  - id: golden-matrix
+    slot: workshop
+    status: owned
+    path: scripts/run_golden_matrix.py
+  - id: compatibility-lab
+    slot: workshop
+    status: owned
+    path: scripts/run_compatibility_lab.py
+  - id: upgrade-matrix
+    slot: workshop
+    status: owned
+  - id: extension-matrix
+    slot: workshop
+    status: owned
+  - id: runner-matrix
+    slot: workshop
+    status: owned
+  - id: host-matrix
+    slot: workshop
+    status: owned
+  - id: release-gate
+    slot: workshop
+    status: owned
+  - id: product-dogfood
+    slot: workshop
+    status: owned
+
+  # ---- 规章 owned ----
+  - id: policy-safe-defaults
+    slot: policy
+    status: owned
+  - id: formula-baseline-engineering
+    slot: formula
+    status: owned
+  - id: blueprint-schema-0.1
+    slot: schema
+    status: owned
+  - id: extension-api-1
+    slot: schema
+    status: owned
+  - id: project-lock
+    slot: lock
+    status: owned
+  - id: recovery-upgrade
+    slot: workshop
+    status: owned
+
+  # ---- 工牌 / 门房 / 调度 ----
+  - id: harness-codex
+    slot: harness-compat
+    status: owned-contract
+    emits: AGENTS.md
+  - id: harness-claude
+    slot: harness-compat
+    status: owned-contract
+    emits: CLAUDE.md
+  - id: host-aionui
+    slot: host
+    status: owned-plan-only
+  - id: runner-dagu
+    slot: runner
+    status: owned-boundary
+  - id: process-spec-kit
+    slot: process
+    status: owned-contract
+    runtime_verified: false
+    ref: https://github.com/github/spec-kit/releases/tag/v1.0.1
+
+  # ---- 语言根脚手架 observed ----
+  - id: uv-build-backend
+    slot: provider-option
+    status: observed
+    docs: https://docs.astral.sh/uv/concepts/projects/init/
+    note: uv init default build-backend uv_build; hatchling/flit/setuptools selectable
+  - id: hatchling
+    slot: provider-option
+    status: observed
+    docs: https://hatch.pypa.io/latest/config/project-templates/
+    drawing: src-layout + tests + optional CI workflow
+  - id: pnpm
+    slot: provider-candidate
+    status: observed
+    note: replaceable npm Provider; Plasmo strongly recommends pnpm
+  - id: yarn
+    slot: provider-candidate
+    status: observed
+
+  # ---- CLI 车身 ----
+  - id: argparse
+    slot: generated-body
+    status: owned
+    note: current python-cli body
+  - id: typer
+    slot: generated-body
+    status: observed
+    docs: https://typer.tiangolo.com/tutorial/package/
+    drawing: uv init --package + src/{pkg}/main.py + [project.scripts]
+    not: new harness
+
+  # ---- HTTP / web (golden 03 already asks) ----
+  - id: fastapi
+    slot: profile-candidate
+    status: observed
+    docs: https://fastapi.tiangolo.com/tutorial/bigger-applications/
+    official_template: https://github.com/fastapi/full-stack-fastapi-template
+    drawing: app/main.py + routers/ + uvicorn; pytest
+    maps_to_intent: fixtures/golden/03_web_api.yaml service
+  - id: uvicorn
+    slot: material
+    status: observed
+    with: fastapi
+
+  # ---- MCP ----
+  - id: mcp-python-sdk-v2
+    slot: profile-candidate
+    status: observed
+    repo: https://github.com/modelcontextprotocol/python-sdk
+    docs: https://py.sdk.modelcontextprotocol.io/get-started/first-steps/
+    drawing: src/{pkg}/server.py MCPServer @tool @resource @prompt
+  - id: mcp-typescript-sdk-v2
+    slot: profile-candidate
+    status: observed
+    repo: https://github.com/modelcontextprotocol/typescript-sdk
+    docs: https://ts.sdk.modelcontextprotocol.io/v2/
+    drawing: src/index.ts McpServer + serveStdio + zod; npm type=module
+    package: "@modelcontextprotocol/server"
+
+  # ---- 浏览器扩展框架 ----
+  - id: wxt
+    slot: profile-candidate
+    status: observed
+    docs: https://wxt.dev/guide/essentials/project-structure
+    drawing: wxt.config.ts + entrypoints/
+  - id: plasmo
+    slot: profile-candidate
+    status: observed
+    docs: https://docs.plasmo.com/framework
+    drawing: popup.tsx / contents / background.ts; manifest generated
+  - id: extension-js
+    slot: profile-candidate
+    status: observed
+    npm: extension
+    note: another MV3 zero-config line; compare with WXT before picking a successor
+
+  # ---- Skill / 说明书 ----
+  - id: agents-md
+    slot: skill-artifact
+    status: owned-emitted
+    docs: https://agents.md/
+    steward: Agentic AI Foundation / Linux Foundation
+  - id: agent-skills-skill-md
+    slot: skill-artifact
+    status: observed
+    docs: https://code.claude.com/docs/en/skills
+    standard: https://agentskills.io
+    drawing: skills/{name}/SKILL.md YAML frontmatter name+description
+  - id: spec-kit-skills-dirs
+    slot: process-overlay
+    status: owned-contract
+    paths: [.agents/skills, .claude/skills]
+    note: Factory owns AGENTS.md/CLAUDE.md and does not install Spec Kit agent-context extension
+
+  # ---- 生成物里的 agent 库（不是工厂大脑） ----
+  - id: pydantic-ai
+    slot: generated-body
+    status: observed
+    repo: https://github.com/pydantic/pydantic-ai
+    not: factory harness
+  - id: openai-agents-python
+    slot: generated-body
+    status: observed
+    repo: https://github.com/openai/openai-agents-python
+    not: factory harness
+
+  # ---- 模板更新引擎 ----
+  - id: copier
+    slot: provider-candidate
+    status: observed
+    docs: https://copier.readthedocs.io/en/latest/comparisons/
+    use: overlay update of factory artifacts
+  - id: cookiecutter
+    slot: provider-candidate
+    status: observed
+    note: fire-and-forget; Copier preferred for update/merge
+
+  # ---- 量具候选（验证门物料） ----
+  - id: pytest
+    slot: verification-tool
+    status: observed
+    note: current python gates use unittest; pytest is additive candidate
+  - id: ruff
+    slot: verification-tool
+    status: observed
+  - id: node-test
+    slot: verification-tool
+    status: owned
+  - id: playwright
+    slot: verification-tool
+    status: observed
+    maps_to: browser-extension runtime claims currently UNVERIFIED
+  - id: pre-commit
+    slot: overlay
+    status: observed
+  - id: github-actions
+    slot: overlay
+    status: observed
+    note: evidence for public CI is optional; local gates remain authority
+
+  # ---- 文档 / 打包 ----
+  - id: mkdocs
+    slot: overlay
+    status: observed
+  - id: flit-core
+    slot: provider-option
+    status: observed
+  - id: setuptools
+    slot: provider-option
+    status: observed
+  - id: maturin
+    slot: profile-candidate
+    status: observed
+    maps_to_intent: fixtures/golden/05 rust library component
+
+  # ---- 研究/笔记本 (golden 04) ----
+  - id: jupyter-notebook
+    slot: profile-candidate
+    status: observed
+    maps_to_intent: fixtures/golden/04_ai_research.yaml
+    verification_idea: notebook executes, parameters+data provenance preserved
+
+  # ---- 工厂自身产线（造工厂的车间，不是用户项目） ----
+  - id: factory-self-wpf
+    slot: factory-self
+    status: owned
+    pins: [.NET 10.0.400, WPF-UI 4.3.0]
+  - id: factory-self-nsis
+    slot: factory-self
+    status: owned
+    pin: NSIS 3.12
+  - id: factory-self-bootstrap
+    slot: factory-self
+    status: owned
+
+out_of_universe:
+  - Factory-owned model loop / session / permissions
+  - Electron / WebView shell
+  - IDE
+  - plugin marketplace
+  - LangChain/CrewAI/AutoGPT as Core
+  - auto-upgrade to observed_latest
+  - absorbing Dagu/AionUI/Codex/Claude source
+
+stage_gates:
+  A: {name: this-universe-catalog, ship: false, need: user-accept}
+  B: {name: python-mcp-server, blocked_by: A}
+  C: {name: node-mcp-server-or-wxt, blocked_by: B}
+  D: {name: fastapi-service-for-golden-03, blocked_by: C}
+  E: {name: copier-overlay, blocked_by: D}

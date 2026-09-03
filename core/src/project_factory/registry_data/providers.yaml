@@ -1,0 +1,155 @@
+schema_version: "0.1"
+providers:
+  - id: uv
+    version: "0.1"
+    capability: project_scaffolding
+    executable: uv
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["0.10.0"]
+    supported_versions: ["0.10.0"]
+    integration: public-cli
+    upstream_source_modified: false
+
+  - id: npm
+    version: "0.1"
+    capability: project_scaffolding
+    executable: npm
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["10.9.2"]
+    supported_versions: ["10.9.2"]
+    integration: public-cli
+    upstream_source_modified: false
+
+  - id: cargo
+    version: "0.1"
+    capability: project_scaffolding
+    executable: cargo
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["1.98.0"]
+    supported_versions: ["1.98.0"]
+    integration: public-cli
+    upstream_source_modified: false
+
+  - id: dotnet
+    version: "0.1"
+    capability: project_scaffolding
+    executable: dotnet
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["9.0.315"]
+    supported_versions: ["9.0.315"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: go
+    version: "0.1"
+    capability: project_scaffolding
+    executable: go
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["1.22.0"]
+    supported_versions: ["1.22.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: java
+    version: "0.1"
+    capability: project_scaffolding
+    executable: gradle
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["8.8"]
+    supported_versions: ["8.8"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: kotlin
+    version: "0.1"
+    capability: project_scaffolding
+    executable: gradle
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["8.8"]
+    supported_versions: ["8.8"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: dart
+    version: "0.1"
+    capability: project_scaffolding
+    executable: dart
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["3.4.0"]
+    supported_versions: ["3.4.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: swift
+    version: "0.1"
+    capability: project_scaffolding
+    executable: swift
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["5.10.0"]
+    supported_versions: ["5.10.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: cpp
+    version: "0.1"
+    capability: project_scaffolding
+    executable: cmake
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["3.28.0"]
+    supported_versions: ["3.28.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: c
+    version: "0.1"
+    capability: project_scaffolding
+    executable: gcc
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["13.2.0"]
+    supported_versions: ["13.2.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: php
+    version: "0.1"
+    capability: project_scaffolding
+    executable: php
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["8.3.0"]
+    supported_versions: ["8.3.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: r
+    version: "0.1"
+    capability: project_scaffolding
+    executable: Rscript
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["4.4.0"]
+    supported_versions: ["4.4.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: flutter
+    version: "0.1"
+    capability: project_scaffolding
+    executable: flutter
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["3.22.0"]
+    supported_versions: ["3.22.0"]
+    integration: public-cli
+    upstream_source_modified: false
+  - id: godot
+    version: "0.1"
+    capability: project_scaffolding
+    executable: godot
+    version_args: ["--version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    tested_versions: ["4.2.0"]
+    supported_versions: ["4.2.0"]
+    integration: public-cli
+    upstream_source_modified: false

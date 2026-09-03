@@ -1,0 +1,6 @@
+schema_version: "0.1"
+project:
+  purpose: "Invalid unknown root field fixture."
+work_products:
+  - kind: "cli"
+runner: "some-product"

@@ -1,0 +1,10 @@
+schema_version: '0.1'
+project:
+  purpose: 做一个 JavaScript library，提供可复用的字符串处理能力，长期维护。
+work_products:
+- kind: library
+technology:
+  required:
+  - javascript
+lifecycle:
+  horizon: long-lived

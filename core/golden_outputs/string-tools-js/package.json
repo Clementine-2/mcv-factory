@@ -1,0 +1,19 @@
+{
+  "description": "做一个 JavaScript library，提供可复用的字符串处理能力，长期维护。",
+  "exports": "./src/index.js",
+  "files": [
+    "src",
+    "README.md",
+    "AGENTS.md",
+    ".project",
+    "project.lock.json"
+  ],
+  "main": "./src/index.js",
+  "name": "string-tools-js",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

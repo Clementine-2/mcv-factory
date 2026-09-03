@@ -1,0 +1,26 @@
+schema_version: "0.1"
+project:
+  purpose: "Run and preserve reproducible machine-learning experiments."
+work_products:
+  - kind: "notebook"
+  - kind: "experiment"
+  - kind: "research-result"
+technology:
+  required:
+    - "python"
+targets:
+  - kind: "runtime"
+    value: "local"
+lifecycle:
+  stage: "experiment"
+  horizon: "long-lived"
+scope:
+  scale_hint: "medium"
+constraints:
+  quality:
+    - attribute: "reproducibility"
+      level: "critical"
+extensions:
+  research:
+    preserve_data_provenance: true
+    preserve_experiment_parameters: true

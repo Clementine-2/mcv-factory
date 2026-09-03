@@ -1,0 +1,6 @@
+schema_version: "0.1"
+unresolved:
+  - path: "/targets"
+    reason: "Mobile target must be resolved before selecting the project scaffold."
+    blocking: false
+    resolution_required: true

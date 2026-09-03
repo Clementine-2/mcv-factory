@@ -1,0 +1,112 @@
+# 语言根。JetBrains 2025 主语言：Python 35% Java 33% JS 26% TS 22% C# 12% C++ 11% PHP 9% Kotlin 8%
+# Promise Index：TS / Rust / Go 最高。工厂按「能独立成项目」收根，不按时髦词收。
+schema: project-factory-warehouse/2
+slot: language_root
+
+items:
+  - id: python
+    status: owned
+    why: "SO 2025 使用率跃升；AI/数据/后端默认语言。厂里已有 CLI 与 library 产线"
+    provider: uv
+
+  - id: javascript
+    status: owned
+    note: "生成物默认应倾向 TypeScript；纯 JS 仅作选项"
+    provider: npm
+
+  - id: typescript
+    status: owned
+    why: "五年涨幅最大；Web/Node/RN 事实标准。应成为 node 产线默认语言根"
+    provider: npm
+
+  - id: rust
+    status: owned
+    provider: cargo
+    scaffold: cargo-new
+    why: "系统、CLI、WASM、Bevy、Tauri 后端"
+
+  - id: go
+    status: observed
+    provider: go-modules
+    why: "云服务 / CLI（Cobra）成熟"
+
+  - id: csharp
+    status: owned
+    provider: nuget-dotnet
+    why: "ASP.NET Core、WPF（机床也用，但用户产线是另一钉）"
+    warning: "机床 .NET 10 与用户项目 .NET 必须两套升级路径"
+
+  - id: java
+    status: observed
+    provider: maven
+    alt_provider: gradle
+    why: "企业服务 Spring Boot 仍是主根之一"
+
+  - id: kotlin
+    status: observed
+    provider: gradle
+    why: "Android / KMP / Ktor"
+
+  - id: dart
+    status: observed
+    provider: pub
+    why: "Flutter 的语言根"
+
+  - id: swift
+    status: observed
+    provider: spm
+    why: "iOS / macOS 原生"
+
+  - id: cpp
+    status: observed
+    provider: cmake
+    why: "Qt、嵌入式、游戏引擎插件"
+
+  - id: c
+    status: observed
+    provider: cmake
+    why: "A.1：embedded/native/system 已覆盖却只有 C++ 没有 C，倒置。C 进原材料，不进 owned"
+
+  - id: sql
+    status: observed
+    why: "schema-migration-repo、dbt、分析变换的语言根。不是「再发明一种数据库项目」"
+    maps_to: [schema-migration-repo, analytics-transform]
+
+  - id: powershell
+    status: observed
+    why: "Windows 自动化 / 包装脚本。机床侧已有 ps1，用户产线另钉"
+
+  - id: posix-shell
+    status: observed
+    why: "Bash/POSIX。CI 包装、Unix 工具胶，常作 overlay 语言而不是主产线"
+
+  - id: php
+    status: observed
+    provider: composer
+    why: "Laravel 覆盖大量 Web 存量；语言在调查中下降但仍是种类覆盖"
+
+  - id: r
+    status: observed
+    why: "数据科研。observed，不变 owned"
+    maps_to: [notebook, experiment]
+
+  - id: julia
+    status: observed
+    why: "科学计算。observed，不变 owned"
+
+  - id: ruby
+    status: deferred
+    why: "调查中长期下降；Rails 只作长尾。A.1 不扶正"
+
+  - id: elixir
+    status: deferred
+    why: "Phoenix 最受钦佩但用量小"
+
+  - id: lua
+    status: deferred
+
+  - id: zig
+    status: deferred
+
+  - id: haskell
+    status: deferred

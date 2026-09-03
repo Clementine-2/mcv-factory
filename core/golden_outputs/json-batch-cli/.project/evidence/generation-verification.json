@@ -1,0 +1,225 @@
+{
+  "claim_summary": {
+    "FAILED": 0,
+    "PARTIALLY_VERIFIED": 0,
+    "UNVERIFIED": 0,
+    "VERIFIED": 3
+  },
+  "claims": [
+    {
+      "evidence_gates": [
+        "cli-runs",
+        "cli-version"
+      ],
+      "id": "entry-point-usable",
+      "limitation": null,
+      "material": true,
+      "scope": "local generated scaffold",
+      "statement": "The generated CLI entry point runs locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "unit-tests"
+      ],
+      "id": "tests-pass",
+      "limitation": null,
+      "material": true,
+      "scope": "local generated scaffold",
+      "statement": "The generated scaffold unit tests pass locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "package-build",
+        "package-artifacts"
+      ],
+      "id": "package-builds",
+      "limitation": null,
+      "material": true,
+      "scope": "local package build",
+      "statement": "The generated scaffold builds a wheel and source distribution locally.",
+      "status": "VERIFIED"
+    }
+  ],
+  "environment": {
+    "runtime": {
+      "id": "python",
+      "probe_returncode": 0,
+      "version_output": "Python 3.13.5"
+    },
+    "scaffolder": {
+      "id": "uv",
+      "version": "0.10.0"
+    }
+  },
+  "gates": [
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {
+          "Project scaffold ready": true
+        }
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [
+          "Project scaffold ready"
+        ],
+        "returncode": 0
+      },
+      "id": "cli-runs",
+      "method": "command",
+      "observed": {
+        "command": [
+          "uv",
+          "--offline",
+          "run",
+          "json-batch-cli"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "Using CPython 3.13.5 interpreter at: /usr/bin/python3\nCreating virtual environment at: .venv\n   Building json-batch-cli @ file://<PROJECT_ROOT>\n      Built json-batch-cli @ file://<PROJECT_ROOT>\nInstalled 1 package in 1ms\n",
+        "stdout": "Project scaffold ready. Implement domain behavior through the coding-agent workflow.\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "generated CLI entry point"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {
+          "0.1.0": true
+        }
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [
+          "0.1.0"
+        ],
+        "returncode": 0
+      },
+      "id": "cli-version",
+      "method": "command",
+      "observed": {
+        "command": [
+          "uv",
+          "--offline",
+          "run",
+          "json-batch-cli",
+          "--version"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "json-batch-cli 0.1.0\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "generated CLI version"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "unit-tests",
+      "method": "command",
+      "observed": {
+        "command": [
+          "uv",
+          "--offline",
+          "run",
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "test_main_runs (test_smoke.SmokeTest.test_main_runs) ... ok\ntest_version_is_defined (test_smoke.SmokeTest.test_version_is_defined) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n",
+        "stdout": ""
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local unit tests"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "package-build",
+      "method": "command",
+      "observed": {
+        "command": [
+          "uv",
+          "--offline",
+          "build"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "Building source distribution (uv build backend)...\nBuilding wheel from source distribution (uv build backend)...\nSuccessfully built dist/json_batch_cli-0.1.0.tar.gz\nSuccessfully built dist/json_batch_cli-0.1.0-py3-none-any.whl\n",
+        "stdout": ""
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local Python package build"
+    },
+    {
+      "evidence_level": "PASSED",
+      "expected": {
+        "min_matches": 2,
+        "patterns": [
+          "dist/*.whl",
+          "dist/*.tar.gz"
+        ]
+      },
+      "id": "package-artifacts",
+      "method": "artifact",
+      "observed": {
+        "artifacts": [
+          {
+            "path": "dist/json_batch_cli-0.1.0-py3-none-any.whl",
+            "sha256": "2b32d4c5891380907930e1d9744c7ade406507f741c3167766506d4227189db4"
+          },
+          {
+            "path": "dist/json_batch_cli-0.1.0.tar.gz",
+            "sha256": "82f427af3d9d1927f96d87541ce3b65bd1a572c72ad6a02712c5201dfe4f4fd1"
+          }
+        ],
+        "match_count": 2
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "wheel and source distribution artifacts"
+    }
+  ],
+  "generated_at_utc": "2026-08-29T20:09:37.837751+00:00",
+  "limitations": [
+    "Public PyPI publication and installation are outside this verification scope."
+  ],
+  "required_gate_failures": [],
+  "required_gates_passed": true,
+  "schema_version": "0.1",
+  "scope": "generated Python CLI bootstrap scaffold",
+  "status": "VERIFIED",
+  "suite": {
+    "id": "python-cli",
+    "version": "0.1"
+  }
+}

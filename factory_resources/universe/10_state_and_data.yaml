@@ -1,0 +1,49 @@
+# 状态能力。Postgres 是供应商，relational-db 才是能力。
+# 「独立的 schema/migration 仓」才是 work_product，普通服务带个库不是新种类。
+schema: project-factory-warehouse/2
+slot: state_capability
+stage: A.1
+
+items:
+  - id: stateless
+    status: observed
+    note: "默认；可省略"
+  - id: local-files
+    status: observed
+  - id: embedded-db
+    status: observed
+    example_providers: [sqlite]
+  - id: relational-db
+    status: observed
+    example_providers: [postgres, mysql, sqlserver]
+  - id: document-db
+    status: observed
+    example_providers: [mongodb]
+  - id: kv-cache
+    status: observed
+    example_providers: [redis, memcached]
+  - id: queue
+    status: observed
+    example_providers: [redis-queue, rabbitmq, sqs]
+    note: "状态里的队列；消费端执行模型是 queue-worker"
+  - id: blob-store
+    status: observed
+    example_providers: [s3, azure-blob, minio]
+  - id: search-index
+    status: observed
+    example_providers: [opensearch, meilisearch]
+  - id: vector-db
+    status: observed
+    example_providers: [pgvector, milvus, qdrant]
+    note: "RAG 用这个能力，不为此发明 rag-kind 以外的堆栈名"
+  - id: schema-migrations
+    status: observed
+    example_providers: [alembic, flyway, prisma-migrate, goose]
+  - id: event-log
+    status: observed
+    example_providers: [kafka, nats-jetstream]
+    note: "持久事件流；和普通 queue 分开"
+  - id: secrets-store
+    status: observed
+    note: "运行时读密钥的位置；策略在 security 轴"
+    example_providers: [env, vault, aws-sm]

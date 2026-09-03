@@ -1,0 +1,16 @@
+schema_version: "0.1"
+project:
+  purpose: "Minimal Python HTTP API with a health endpoint."
+work_products:
+  - kind: "service"
+technology:
+  required:
+    - "python"
+targets:
+  - kind: "environment"
+    value: "server"
+lifecycle:
+  stage: "prototype"
+  horizon: "short-lived"
+scope:
+  scale_hint: "tiny"

@@ -1,0 +1,14 @@
+[project]
+name = "json-batch-cli"
+version = "0.1.0"
+description = "做一个 Python 命令行工具，批量读取一个目录里的 JSON 并转换格式。不能覆盖原始文件。"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+json-batch-cli = "json_batch_cli:main"
+
+[build-system]
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"

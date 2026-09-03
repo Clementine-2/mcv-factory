@@ -1,0 +1,195 @@
+{
+  "claim_summary": {
+    "FAILED": 0,
+    "PARTIALLY_VERIFIED": 0,
+    "UNVERIFIED": 2,
+    "VERIFIED": 3
+  },
+  "claims": [
+    {
+      "evidence_gates": [
+        "manifest-check"
+      ],
+      "id": "manifest-structure",
+      "limitation": null,
+      "material": true,
+      "scope": "static manifest structure",
+      "statement": "The generated Manifest V3 structure passes the local manifest gate.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "module-tests"
+      ],
+      "id": "module-tests-pass",
+      "limitation": null,
+      "material": true,
+      "scope": "local generated scaffold",
+      "statement": "The generated JavaScript smoke tests pass locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "package-pack",
+        "package-artifact"
+      ],
+      "id": "package-created",
+      "limitation": null,
+      "material": true,
+      "scope": "local package build",
+      "statement": "The generated extension scaffold can be packed locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [],
+      "id": "chrome-runtime",
+      "limitation": "Chrome was not launched by this suite.",
+      "material": true,
+      "scope": "Chrome runtime",
+      "statement": "The extension works in a real Chrome runtime.",
+      "status": "UNVERIFIED"
+    },
+    {
+      "evidence_gates": [],
+      "id": "firefox-runtime",
+      "limitation": "Firefox was not launched by this suite.",
+      "material": true,
+      "scope": "Firefox runtime",
+      "statement": "The extension works in a real Firefox runtime.",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "environment": {
+    "runtime": {
+      "id": "node",
+      "probe_returncode": 0,
+      "version_output": "v22.16.0"
+    },
+    "scaffolder": {
+      "id": "npm",
+      "version": "10.9.2"
+    }
+  },
+  "gates": [
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {
+          "manifest ok": true
+        }
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [
+          "manifest ok"
+        ],
+        "returncode": 0
+      },
+      "id": "manifest-check",
+      "method": "command",
+      "observed": {
+        "command": [
+          "npm",
+          "run",
+          "check:manifest"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "\n> cross-browser-helper@0.1.0 check:manifest\n> node ./scripts/check-manifest.js\n\nmanifest ok\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "Manifest V3 structure"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "module-tests",
+      "method": "command",
+      "observed": {
+        "command": [
+          "npm",
+          "test"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "\n> cross-browser-helper@0.1.0 test\n> node --test\n\nTAP version 13\n# Subtest: manifest and module are usable\nok 1 - manifest and module are usable\n  ---\n  duration_ms: 0.688492\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 51.758432\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local JavaScript smoke tests"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "package-pack",
+      "method": "command",
+      "observed": {
+        "command": [
+          "npm",
+          "pack",
+          "--ignore-scripts"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "npm notice\nnpm notice 📦  cross-browser-helper@0.1.0\nnpm notice Tarball Contents\nnpm notice 282B .project/blueprint.meta.yaml\nnpm notice 426B .project/blueprint.yaml\nnpm notice 2.0kB .project/contract/agent-contract.md\nnpm notice 3.2kB .project/evidence/harness-compatibility.json\nnpm notice 1.5kB .project/evidence/host-compatibility.json\nnpm notice 772B .project/evidence/process-integration.json\nnpm notice 69B .project/extensions.lock.json\nnpm notice 3.3kB .project/generation.json\nnpm notice 1.2kB .project/host/aionui.json\nnpm notice 356B .project/host/README.md\nnpm notice 696B .project/process/INSTALL.md\nnpm notice 1.3kB .project/process/spec-kit-plan.json\nnpm notice 2.0kB AGENTS.md\nnpm notice 691B README.md\nnpm notice 261B manifest.json\nnpm notice 496B package.json\nnpm notice 219B popup.html\nnpm notice 5.6kB project.lock.json\nnpm notice 243B scripts/check-manifest.js\nnpm notice 80B src/popup.js\nnpm notice 478B tests/smoke.test.js\nnpm notice Tarball Details\nnpm notice name: cross-browser-helper\nnpm notice version: 0.1.0\nnpm notice filename: cross-browser-helper-0.1.0.tgz\nnpm notice package size: 6.6 kB\nnpm notice unpacked size: 25.3 kB\nnpm notice shasum: 37b030b76e448833a0ea20bc20b48cbef6541f1c\nnpm notice integrity: sha512-3lsbasc774JAh[...]v4+BIrvpiEG9g==\nnpm notice total files: 21\nnpm notice\n",
+        "stdout": "cross-browser-helper-0.1.0.tgz\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local extension package creation"
+    },
+    {
+      "evidence_level": "PASSED",
+      "expected": {
+        "min_matches": 1,
+        "patterns": [
+          "*.tgz"
+        ]
+      },
+      "id": "package-artifact",
+      "method": "artifact",
+      "observed": {
+        "artifacts": [
+          {
+            "path": "cross-browser-helper-0.1.0.tgz",
+            "sha256": "1ea40ea97232a4603c18a48e8d7bda04ae411c13860885ea10efbdd27203eec4"
+          }
+        ],
+        "match_count": 1
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "extension npm tarball artifact"
+    }
+  ],
+  "generated_at_utc": "2026-08-29T20:09:40.224456+00:00",
+  "limitations": [
+    "Manifest structure, JavaScript tests, and local packaging are checked; real Chrome and Firefox runtime compatibility remain unverified."
+  ],
+  "required_gate_failures": [],
+  "required_gates_passed": true,
+  "schema_version": "0.1",
+  "scope": "generated JavaScript browser-extension bootstrap scaffold",
+  "status": "PARTIALLY_VERIFIED",
+  "suite": {
+    "id": "browser-extension-js",
+    "version": "0.1"
+  }
+}

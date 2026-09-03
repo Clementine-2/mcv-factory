@@ -1,0 +1,20 @@
+schema_version: "0.1"
+process_integrations:
+  - id: spec-kit
+    adapter_version: "0.1"
+    upstream_version: "1.0.1"
+    executable: specify
+    supported_harnesses: [codex, claude]
+    default_harness: codex
+    script_type: py
+    agent_context_extension: false
+    upstream_source_modified: false
+    runtime_verified: false
+    upstream_contract:
+      repository: https://github.com/github/spec-kit
+      ref: v1.0.1
+      release: https://github.com/github/spec-kit/releases/tag/v1.0.1
+      codex_skills_dir: .agents/skills
+      claude_skills_dir: .claude/skills
+      checked_at: "2026-08-30"
+    notes: "The public integration contract and adapter command plan are pinned. Windows contract labs use a local test double; the real specify CLI remains unverified until it is present and version-pinned."

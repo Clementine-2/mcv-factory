@@ -1,0 +1,15 @@
+schema_version: "0.1"
+project:
+  purpose: "Invalid nested component fixture."
+work_products:
+  - kind: "service"
+components:
+  - id: "backend"
+    purpose: "Backend"
+    work_products:
+      - kind: "service"
+    components:
+      - id: "nested"
+        purpose: "Nested child"
+        work_products:
+          - kind: "library"

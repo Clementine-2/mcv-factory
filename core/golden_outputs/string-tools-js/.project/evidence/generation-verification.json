@@ -1,0 +1,178 @@
+{
+  "claim_summary": {
+    "FAILED": 0,
+    "PARTIALLY_VERIFIED": 0,
+    "UNVERIFIED": 0,
+    "VERIFIED": 3
+  },
+  "claims": [
+    {
+      "evidence_gates": [
+        "library-imports"
+      ],
+      "id": "library-importable",
+      "limitation": null,
+      "material": true,
+      "scope": "local generated scaffold",
+      "statement": "The generated JavaScript library imports locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "unit-tests"
+      ],
+      "id": "tests-pass",
+      "limitation": null,
+      "material": true,
+      "scope": "local generated scaffold",
+      "statement": "The generated Node tests pass locally.",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence_gates": [
+        "package-pack",
+        "package-artifact"
+      ],
+      "id": "package-created",
+      "limitation": null,
+      "material": true,
+      "scope": "local package build",
+      "statement": "The generated scaffold can be packed as an npm tarball locally.",
+      "status": "VERIFIED"
+    }
+  ],
+  "environment": {
+    "runtime": {
+      "id": "node",
+      "probe_returncode": 0,
+      "version_output": "v22.16.0"
+    },
+    "scaffolder": {
+      "id": "npm",
+      "version": "10.9.2"
+    }
+  },
+  "gates": [
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {
+          "scaffold ready": true
+        }
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [
+          "scaffold ready"
+        ],
+        "returncode": 0
+      },
+      "id": "library-imports",
+      "method": "command",
+      "observed": {
+        "command": [
+          "node",
+          "--input-type=module",
+          "-e",
+          "import('./src/index.js').then(m => console.log(m.scaffoldStatus()))"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "node library scaffold ready\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "generated JavaScript library import"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "unit-tests",
+      "method": "command",
+      "observed": {
+        "command": [
+          "npm",
+          "test"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "\n> string-tools-js@0.1.0 test\n> node --test\n\nTAP version 13\n# Subtest: library imports\nok 1 - library imports\n  ---\n  duration_ms: 0.668643\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 49.282419\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local Node tests"
+    },
+    {
+      "checks": {
+        "returncode_zero": true,
+        "stdout_contains": {}
+      },
+      "evidence_level": "PASSED",
+      "expected": {
+        "output_contains": [],
+        "returncode": 0
+      },
+      "id": "package-pack",
+      "method": "command",
+      "observed": {
+        "command": [
+          "npm",
+          "pack",
+          "--ignore-scripts"
+        ],
+        "cwd": ".",
+        "returncode": 0,
+        "stderr": "npm notice\nnpm notice 📦  string-tools-js@0.1.0\nnpm notice Tarball Contents\nnpm notice 211B .project/blueprint.meta.yaml\nnpm notice 234B .project/blueprint.yaml\nnpm notice 2.0kB .project/contract/agent-contract.md\nnpm notice 3.2kB .project/evidence/harness-compatibility.json\nnpm notice 1.5kB .project/evidence/host-compatibility.json\nnpm notice 772B .project/evidence/process-integration.json\nnpm notice 69B .project/extensions.lock.json\nnpm notice 3.3kB .project/generation.json\nnpm notice 1.2kB .project/host/aionui.json\nnpm notice 356B .project/host/README.md\nnpm notice 696B .project/process/INSTALL.md\nnpm notice 1.3kB .project/process/spec-kit-plan.json\nnpm notice 2.0kB AGENTS.md\nnpm notice 736B README.md\nnpm notice 410B package.json\nnpm notice 5.6kB project.lock.json\nnpm notice 110B src/index.js\nnpm notice Tarball Details\nnpm notice name: string-tools-js\nnpm notice version: 0.1.0\nnpm notice filename: string-tools-js-0.1.0.tgz\nnpm notice package size: 6.1 kB\nnpm notice unpacked size: 23.7 kB\nnpm notice shasum: bb9c14f60074b0a1f2ae9ffcf139033eee280d96\nnpm notice integrity: sha512-G87eljIFjsqGL[...]o6uBUkBCqM+1A==\nnpm notice total files: 17\nnpm notice\n",
+        "stdout": "string-tools-js-0.1.0.tgz\n"
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "local npm package creation"
+    },
+    {
+      "evidence_level": "PASSED",
+      "expected": {
+        "min_matches": 1,
+        "patterns": [
+          "*.tgz"
+        ]
+      },
+      "id": "package-artifact",
+      "method": "artifact",
+      "observed": {
+        "artifacts": [
+          {
+            "path": "string-tools-js-0.1.0.tgz",
+            "sha256": "3359cfaa67cc1f1971fc3930f7c4aa77659e44f073aa67c4ccf7a98982c19129"
+          }
+        ],
+        "match_count": 1
+      },
+      "required": true,
+      "status": "PASSED",
+      "target": "npm tarball artifact"
+    }
+  ],
+  "generated_at_utc": "2026-08-29T20:09:39.034761+00:00",
+  "limitations": [
+    "Public npm publication and installation are outside this verification scope."
+  ],
+  "required_gate_failures": [],
+  "required_gates_passed": true,
+  "schema_version": "0.1",
+  "scope": "generated JavaScript library bootstrap scaffold",
+  "status": "VERIFIED",
+  "suite": {
+    "id": "node-library",
+    "version": "0.1"
+  }
+}

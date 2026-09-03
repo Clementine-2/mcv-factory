@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-factory.local/schemas/extension-manifest-0.1.json",
+  "type": "object",
+  "required": ["schema_version", "extension", "requires", "contributes"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "extension": {
+      "type": "object",
+      "required": ["id", "version", "mode", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "mode": {"enum": ["declarative", "trusted-code"]},
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "requires": {
+      "type": "object",
+      "required": ["factory_api"],
+      "additionalProperties": false,
+      "properties": {
+        "factory_api": {"const": "1"}
+      }
+    },
+    "contributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "registry": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "capabilities": {"type": "array", "items": {"type": "object"}},
+            "providers": {"type": "array", "items": {"type": "object"}},
+            "profiles": {"type": "array", "items": {"type": "object"}},
+            "formulas": {"type": "array", "items": {"type": "object"}},
+            "policies": {"type": "array", "items": {"type": "object"}}
+          }
+        },
+        "project_artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "kind", "source", "target"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {"type": "string", "minLength": 1},
+              "kind": {"enum": ["skill", "domain-extension", "documentation", "metadata"]},
+              "source": {"type": "string", "minLength": 1},
+              "target": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "code": {
+      "type": "object",
+      "required": ["distribution", "distribution_version", "entry_point_group", "entry_point_name"],
+      "additionalProperties": false,
+      "properties": {
+        "distribution": {"type": "string", "minLength": 1},
+        "distribution_version": {"type": "string", "minLength": 1},
+        "entry_point_group": {"const": "project_factory.extensions"},
+        "entry_point_name": {"type": "string", "minLength": 1},
+        "search_path": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"extension": {"properties": {"mode": {"const": "trusted-code"}}}}},
+      "then": {"required": ["code"]}
+    },
+    {
+      "if": {"properties": {"extension": {"properties": {"mode": {"const": "declarative"}}}}},
+      "then": {"not": {"required": ["code"]}}
+    }
+  ]
+}

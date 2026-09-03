@@ -1,0 +1,37 @@
+schema_version: "0.1"
+project:
+  purpose: "Operate a long-lived web product with a browser UI and HTTP API."
+work_products:
+  - kind: "web-ui"
+  - kind: "service"
+targets:
+  - kind: "platform"
+    value: "web"
+  - kind: "environment"
+    value: "server"
+lifecycle:
+  stage: "active"
+  horizon: "long-lived"
+scope:
+  scale_hint: "large"
+constraints:
+  quality:
+    - attribute: "security"
+      level: "high"
+    - attribute: "reliability"
+      level: "high"
+components:
+  - id: "frontend"
+    purpose: "User-facing browser interface"
+    work_products:
+      - kind: "web-ui"
+    technology:
+      required:
+        - "typescript"
+  - id: "backend"
+    purpose: "HTTP API and server-side application logic"
+    work_products:
+      - kind: "service"
+    technology:
+      required:
+        - "python"

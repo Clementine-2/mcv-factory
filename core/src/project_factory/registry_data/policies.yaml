@@ -1,0 +1,12 @@
+schema_version: "0.1"
+policies:
+  - id: safe-defaults
+    version: "0.1"
+    priority: 100
+    applies_to: ["*"]
+    rules:
+      max_parallelism: 1
+      allow_multi_agent: false
+      allow_runner: true
+      require_evidence: true
+    description: Conservative safe defaults. Runner is permitted only when Formula requires long-running autonomy; default interactive work remains runner-free.

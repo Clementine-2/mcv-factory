@@ -1,0 +1,44 @@
+schema_version: "0.1"
+project:
+  purpose: "Maintain a long-lived multi-platform software system across desktop, backend, and shared core components."
+work_products:
+  - kind: "desktop-app"
+  - kind: "service"
+  - kind: "library"
+lifecycle:
+  stage: "active"
+  horizon: "long-lived"
+scope:
+  scale_hint: "very-large"
+constraints:
+  hard:
+    - "Must support multiple desktop operating systems."
+  quality:
+    - attribute: "reliability"
+      level: "high"
+    - attribute: "backward-compatibility"
+      level: "high"
+    - attribute: "maintainability"
+      level: "high"
+components:
+  - id: "desktop"
+    purpose: "Desktop user interface"
+    work_products:
+      - kind: "desktop-app"
+    technology:
+      required:
+        - "typescript"
+  - id: "core"
+    purpose: "Shared performance-sensitive core"
+    work_products:
+      - kind: "library"
+    technology:
+      required:
+        - "rust"
+  - id: "backend"
+    purpose: "Backend services and automation"
+    work_products:
+      - kind: "service"
+    technology:
+      required:
+        - "python"

@@ -1,0 +1,65 @@
+schema: project-factory-warehouse/2
+stage: A.1
+status: CATALOG_ONLY_PENDING_USER_ACCEPTANCE
+ship_allowed: false
+core_untouched: true
+date: "2026-08-31"
+coverage_claim: >
+  Kind lists are not a coverage proof. Coverage is only claimed when
+  coverage_fixtures/ corpus entries map onto PROJECT_SPEC without inventing
+  a new work_product kind. Do not write "99%".
+
+observed_latest_is_not_supported: true
+constitution: work/FACTORY_CONSTITUTION.md
+project_spec: universe/PROJECT_SPEC.schema.yaml
+
+# 一个资源只能属于一个 slot。禁止把机床和用户轮子写进同一条。
+# 维度账不是 work_product。禁止把 postgres 收成一种「项目种类」。
+slots:
+  - work_product      # What：造哪种成品
+  - language_root
+  - provider
+  - scaffold
+  - generated_body
+  - verification_tool
+  - overlay
+  - process
+  - harness_compat
+  - host
+  - runner
+  - factory_self
+  - golden
+  - execution_model   # 怎么被叫醒 / 在哪跑
+  - state_capability
+  - integration_capability
+  - delivery_channel
+  - artifact_type
+  - repo_topology
+  - quality_gate_kind
+  - security_capability
+  - ops_capability
+  - compatibility_axis
+  - lifecycle_capability
+
+statuses:
+  owned: "已经在 0.14.1 产线或机床上"
+  observed: "仓库已收，未进产线，不是 supported"
+  candidate: "值得比，先不并列为继任者"
+  deferred: "长尾，覆盖率用得着但不优先"
+  out_of_universe: "进了就会把工厂做成不该做的东西"
+
+id_rules:
+  - kebab-case
+  - work_product ids are kind names: cli, http-service, web-spa
+  - profile-shaped ids are language-or-domain first: python-mcp-server
+  - factory_self ids MUST start with factory-self-
+  - never reuse an id across slots
+
+plugin_contract:
+  new_profile: "factory.generation.<id> + registry profile + suite id"
+  new_provider: "factory.registry.providers.<id>"
+  new_body: "option on an existing profile, not a new harness"
+  new_gauge: "factory.verification.<id>; registry cannot inject commands"
+  kernel_forbidden: "if kind == ...  散落在 kernel 里"
+
+sources_file: SOURCES.md

@@ -1,0 +1,27 @@
+[project]
+name = "project-factory-blueprint-kernel"
+version = "0.14.30"
+description = "Project Factory continuous-evolution product with a human-first CLI, evidence-first generation, recovery, upgrades and bounded external integrations"
+requires-python = ">=3.11"
+dependencies = [
+  "jsonschema==4.26.0",
+  "PyYAML==6.0.3",
+]
+
+[project.scripts]
+project-factory = "project_factory.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+project_factory = [
+  "registry_data/*.yaml",
+  "schema_data/*.json",
+  "overlay/template/*.yml",
+  "overlay/template/*.jinja",
+  "overlay/template/skills/factory-discipline/*.jinja",
+]

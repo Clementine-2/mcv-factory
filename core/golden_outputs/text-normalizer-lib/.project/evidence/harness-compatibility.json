@@ -1,0 +1,84 @@
+{
+  "adapters": {
+    "claude": {
+      "adapter_version": "0.1",
+      "context_file": "CLAUDE.md",
+      "context_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d",
+      "contract_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d",
+      "id": "claude",
+      "runtime_status": "UNAVAILABLE",
+      "upstream_contract": {
+        "checked_at": "2026-08-30",
+        "reference": "https://github.com/github/spec-kit/tree/v1.0.1",
+        "source": "Spec Kit v1.0.1 Claude/agent-context integration contract"
+      },
+      "upstream_source_modified": false
+    },
+    "codex": {
+      "adapter_version": "0.1",
+      "context_file": "AGENTS.md",
+      "context_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d",
+      "contract_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d",
+      "id": "codex",
+      "runtime_status": "UNAVAILABLE",
+      "upstream_contract": {
+        "checked_at": "2026-08-30",
+        "reference": "https://openai.com/index/introducing-codex/",
+        "source": "OpenAI Codex AGENTS.md project instructions"
+      },
+      "upstream_source_modified": false
+    }
+  },
+  "canonical_contract": {
+    "path": ".project/contract/agent-contract.md",
+    "sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d"
+  },
+  "claims": [
+    {
+      "evidence": {
+        "canonical_path": ".project/contract/agent-contract.md",
+        "canonical_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d",
+        "context_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d"
+      },
+      "id": "codex-context-contract",
+      "limitation": "Harness runtime execution was not performed by Project Factory in this environment.",
+      "scope": "AGENTS.md",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence": {
+        "runtime_probe": "UNAVAILABLE"
+      },
+      "id": "codex-runtime",
+      "limitation": "Executable presence is not equivalent to an end-to-end coding-session test.",
+      "scope": "codex",
+      "status": "UNVERIFIED"
+    },
+    {
+      "evidence": {
+        "canonical_path": ".project/contract/agent-contract.md",
+        "canonical_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d",
+        "context_sha256": "e61ef21070492ecbacf453e6f2214633af6cf1d926a53810111037cc0785472d"
+      },
+      "id": "claude-context-contract",
+      "limitation": "Harness runtime execution was not performed by Project Factory in this environment.",
+      "scope": "CLAUDE.md",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence": {
+        "runtime_probe": "UNAVAILABLE"
+      },
+      "id": "claude-runtime",
+      "limitation": "Executable presence is not equivalent to an end-to-end coding-session test.",
+      "scope": "claude",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "limitations": [
+    "Context-file parity is verified; live Codex/Claude Code task execution is outside the current verification evidence.",
+    "The same canonical contract is copied byte-for-byte to each harness context file to prevent semantic drift at generation time."
+  ],
+  "schema_version": "0.1",
+  "status": "PARTIALLY_VERIFIED"
+}

@@ -1,0 +1,44 @@
+schema_version: "0.1"
+harnesses:
+  - id: codex
+    adapter_version: "0.1"
+    context_file: AGENTS.md
+    executable: codex
+    default: true
+    upstream_contract:
+      source: OpenAI Codex AGENTS.md project instructions
+      reference: https://openai.com/index/introducing-codex/
+      checked_at: "2026-08-30"
+    notes: "Codex reads AGENTS.md instructions scoped by directory tree."
+
+  - id: claude
+    adapter_version: "0.1"
+    context_file: CLAUDE.md
+    executable: claude
+    default: true
+    upstream_contract:
+      source: Spec Kit v1.0.1 Claude/agent-context integration contract
+      reference: https://github.com/github/spec-kit/tree/v1.0.1
+      checked_at: "2026-08-30"
+    notes: "Claude Code project context is materialized through CLAUDE.md; Spec Kit keeps its Claude skills in .claude/skills."
+
+  - id: cursor
+    adapter_version: "0.1"
+    context_file: .cursor/rules
+    executable: cursor
+    default: false
+    upstream_contract:
+      source: Cursor project rules via .cursor/rules (byte-identical to canonical contract)
+      reference: https://docs.cursor.com/context/rules
+      checked_at: "2026-09-01"
+    notes: "Optional. Same canonical contract as Codex AGENTS.md; written to .cursor/rules."
+
+  - id: gemini
+    adapter_version: "0.1"
+    context_file: GEMINI.md
+    executable: gemini
+    default: false
+    upstream_contract:
+      source: Gemini CLI GEMINI.md project context
+      checked_at: "2026-09-01"
+    notes: "Optional adapter. Byte-identical to the canonical contract."

@@ -1,0 +1,39 @@
+schema_version: "0.1"
+runners:
+  - id: dagu
+    adapter_version: "0.1"
+    capability: long_running_execution
+    executable: dagu
+    version_args: ["version"]
+    version_regex: "(\\d+\\.\\d+\\.\\d+)"
+    default: true
+    protocol: dagu-yaml-v2
+    allowed_harnesses: [codex, claude]
+    upstream_contract:
+      source: dagucloud/dagu upstream source and CLI references
+      release_observed: "2.11.2"
+      release_published: "2026-07-31"
+      contract_checked_at: "2026-08-30"
+      tag_commit: "a1a3c286b26cbad934bb9f8344f2f9aa51385981"
+      local_max_active_runs_semantics: "deprecated_ignored_for_local_dag_queues"
+      repository: "https://github.com/dagucloud/dagu"
+      cli_reference: "skills/dagu/references/cli.md"
+      harness_reference: "skills/dagu/references/harnesses.md"
+    features:
+      dag_timeout: true
+      step_timeout: true
+      retry_policy: true
+      repeat_policy: true
+      max_active_runs: true
+      max_active_steps: true
+      run_status: true
+      run_history: true
+      harness_run: true
+    boundaries:
+      owns_harness: false
+      owns_project_logic: false
+      owns_verification_truth: false
+      owns_extensions: false
+      owns_interactive_host: false
+      owns_project_lock: false
+    notes: "External lifecycle Provider. Factory generates a bounded Dagu DAG but does not install or auto-start Dagu. Windows contract labs use a local test double; a successful dagu start is not workflow completion. Dagu v2.11.2 max_active_runs is not relied upon for local same-project admission; Factory runner start holds an OS advisory lock."

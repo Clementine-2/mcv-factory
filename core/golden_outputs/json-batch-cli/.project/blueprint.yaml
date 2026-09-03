@@ -1,0 +1,11 @@
+schema_version: '0.1'
+project:
+  purpose: 做一个 Python 命令行工具，批量读取一个目录里的 JSON 并转换格式。不能覆盖原始文件。
+work_products:
+- kind: cli
+technology:
+  required:
+  - python
+constraints:
+  hard:
+  - 不能覆盖原始文件

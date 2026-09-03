@@ -1,0 +1,10 @@
+schema_version: '0.1'
+project:
+  purpose: 做一个 Python library，提供可复用的文本标准化能力，长期维护。
+work_products:
+- kind: library
+technology:
+  required:
+  - python
+lifecycle:
+  horizon: long-lived

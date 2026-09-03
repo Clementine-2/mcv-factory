@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "cross-browser-helper",
+  "version": "0.1.0",
+  "description": "做一个 JavaScript 浏览器扩展，必须支持 Chrome 和 Firefox，先建立可靠项目基地。",
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

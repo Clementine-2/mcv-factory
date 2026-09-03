@@ -1,0 +1,1096 @@
+schema_version: "0.1"
+profiles:
+  - id: iac-opentofu
+    version: "0.1"
+    priority: 143
+    family: iac
+    match:
+      work_products_any: [iac]
+      technology_required_all: [opentofu]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: opentofu-tf
+    verification_recipe: iac-opentofu
+    materialization: minimal
+
+  - id: python-observability
+    version: "0.1"
+    priority: 142
+    family: data
+    intent: observability-agent
+    match:
+      work_products_any: [observability-agent]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-observability
+    verification_recipe: python-observability
+    materialization: minimal
+
+  - id: python-event-driven
+    version: "0.1"
+    priority: 141
+    family: data
+    intent: event-driven-app
+    match:
+      work_products_any: [event-driven-app]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-event-driven
+    verification_recipe: python-event-driven
+    materialization: minimal
+
+  - id: python-grpc
+    version: "0.1"
+    priority: 140
+    family: grpc-service
+    match:
+      work_products_any: [grpc-service]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-grpc
+    verification_recipe: python-grpc
+    materialization: minimal
+
+  - id: python-container-stack
+    version: "0.1"
+    priority: 139
+    family: container-stack
+    match:
+      work_products_any: [container-stack]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-compose-stack
+    verification_recipe: python-container-stack
+    materialization: minimal
+
+  - id: python-model-serving
+    version: "0.1"
+    priority: 138
+    family: data
+    intent: model-serving
+    match:
+      work_products_any: [model-serving]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-model-serving
+    verification_recipe: python-model-serving
+    materialization: minimal
+
+  - id: python-rag
+    version: "0.1"
+    priority: 137
+    family: data
+    intent: rag-application
+    match:
+      work_products_any: [rag-application]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-rag
+    verification_recipe: python-rag
+    materialization: minimal
+
+  - id: python-analytics-dbt
+    version: "0.1"
+    priority: 136
+    family: data
+    intent: analytics-transform
+    match:
+      work_products_any: [analytics-transform]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-dbt
+    verification_recipe: python-analytics-dbt
+    materialization: minimal
+
+  - id: typescript-http-nest
+    version: "0.1"
+    priority: 94
+    family: service
+    match:
+      work_products_any: [service, http-service]
+      technology_required_all: [nestjs]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-nest
+    verification_recipe: typescript-http-nest
+    materialization: minimal
+
+  - id: python-experiment
+    version: "0.1"
+    priority: 135
+    family: data
+    intent: experiment
+    match:
+      work_products_any: [experiment]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-experiment
+    verification_recipe: python-experiment
+    materialization: minimal
+
+  - id: typescript-design-system
+    version: "0.1"
+    priority: 134
+    family: design-system
+    match:
+      work_products_any: [design-system]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-design-system
+    verification_recipe: typescript-design-system
+    materialization: minimal
+
+  - id: python-agent-workflow
+    version: "0.1"
+    priority: 133
+    family: data
+    intent: agent-workflow
+    match:
+      work_products_any: [agent-workflow]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-agent-workflow
+    verification_recipe: python-agent-workflow
+    materialization: minimal
+
+  - id: python-schema-contract
+    version: "0.1"
+    priority: 132
+    family: data
+    intent: schema-contract
+    match:
+      work_products_any: [schema-contract]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-schema-contract
+    verification_recipe: python-schema-contract
+    materialization: minimal
+
+  - id: python-realtime
+    version: "0.1"
+    priority: 131
+    family: realtime-service
+    match:
+      work_products_any: [realtime-service]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-realtime
+    verification_recipe: python-realtime
+    materialization: minimal
+
+  - id: typescript-graphql
+    version: "0.1"
+    priority: 128
+    family: graphql-api
+    match:
+      work_products_any: [graphql-api]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-graphql
+    verification_recipe: typescript-graphql
+    materialization: minimal
+
+  - id: python-scraper
+    version: "0.1"
+    priority: 127
+    family: data
+    intent: scraper
+    match:
+      work_products_any: [scraper]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-scraper
+    verification_recipe: python-scraper
+    materialization: minimal
+
+  - id: python-bot
+    version: "0.1"
+    priority: 126
+    family: data
+    intent: bot
+    match:
+      work_products_any: [bot]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-discord-bot
+    verification_recipe: python-bot
+    materialization: minimal
+
+  - id: python-eval-harness
+    version: "0.1"
+    priority: 125
+    family: data
+    intent: eval-harness
+    match:
+      work_products_any: [eval-harness]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-eval-harness
+    verification_recipe: python-eval-harness
+    materialization: minimal
+
+  - id: typescript-http-hono
+    version: "0.1"
+    priority: 93
+    family: service
+    match:
+      work_products_any: [service, http-service]
+      technology_required_any: [typescript, javascript, hono]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-hono
+    verification_recipe: typescript-http-hono
+    materialization: minimal
+
+  - id: typescript-generated-sdk
+    version: "0.1"
+    priority: 124
+    family: generated-sdk
+    match:
+      work_products_any: [generated-sdk]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-openapi-sdk
+    verification_recipe: typescript-generated-sdk
+    materialization: minimal
+
+  - id: python-schema-migration
+    version: "0.1"
+    priority: 123
+    family: data
+    intent: schema-migration-repo
+    match:
+      work_products_any: [schema-migration-repo]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-alembic
+    verification_recipe: python-schema-migration
+    materialization: minimal
+
+  - id: python-data-pipeline
+    version: "0.1"
+    priority: 121
+    family: data
+    intent: data-pipeline
+    match:
+      work_products_any: [data-pipeline]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-data-pipeline
+    verification_recipe: python-data-pipeline
+    materialization: minimal
+
+  - id: typescript-mcp-server
+    version: "0.1"
+    priority: 115
+    family: mcp-server
+    match:
+      work_products_any: [mcp-server]
+      technology_required_any: [typescript, javascript]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-mcp-server
+    verification_recipe: typescript-mcp-server
+    materialization: minimal
+
+  - id: typescript-cli
+    version: "0.1"
+    priority: 95
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_any: [typescript, javascript, commander]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-commander-cli
+    verification_recipe: typescript-cli
+    materialization: minimal
+
+  - id: playwright-test-suite
+    version: "0.1"
+    priority: 119
+    family: test-suite
+    match:
+      work_products_any: [test-suite]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-playwright-suite
+    verification_recipe: playwright-test-suite
+    materialization: minimal
+
+  - id: cloudflare-worker
+    version: "0.1"
+    priority: 118
+    family: serverless-function
+    match:
+      work_products_any: [serverless-function]
+      technology_required_all: [cloudflare]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-cloudflare-worker
+    verification_recipe: cloudflare-worker
+    materialization: minimal
+
+  - id: python-tui
+    version: "0.1"
+    priority: 117
+    family: tui
+    match:
+      work_products_any: [tui]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-textual-tui
+    verification_recipe: python-tui
+    materialization: minimal
+
+  - id: python-lambda
+    version: "0.1"
+    priority: 114
+    family: serverless-function
+    match:
+      work_products_any: [serverless-function]
+      technology_required_any: [python, lambda]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-lambda
+    verification_recipe: python-lambda
+    materialization: minimal
+
+  - id: typescript-static-astro
+    version: "0.1"
+    priority: 113
+    family: static-site
+    match:
+      work_products_any: [static-site]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-astro
+    verification_recipe: typescript-static-astro
+    materialization: minimal
+
+  - id: rust-http-service
+    version: "0.1"
+    priority: 102
+    family: service
+    match:
+      work_products_any: [service, http-service]
+      technology_required_any: [rust, axum]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [cargo]
+    scaffold_recipe: cargo-axum
+    verification_recipe: rust-http-service
+    materialization: minimal
+
+  - id: rust-cli
+    version: "0.1"
+    priority: 89
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_any: [rust, clap]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [cargo]
+    scaffold_recipe: cargo-cli
+    verification_recipe: rust-cli
+    materialization: minimal
+
+  - id: typescript-web-svelte
+    version: "0.1"
+    priority: 98
+    family: web
+    match:
+      work_products_any: [web-ui, web-spa]
+      technology_required_all: [svelte]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-vite-svelte
+    verification_recipe: typescript-web-ui
+    materialization: minimal
+
+  - id: vscode-extension
+    version: "0.1"
+    priority: 116
+    family: vscode-extension
+    match:
+      work_products_any: [vscode-extension]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-vscode-extension
+    verification_recipe: vscode-extension
+    materialization: minimal
+
+  - id: github-action
+    version: "0.1"
+    priority: 111
+    family: ci-action
+    match:
+      work_products_any: [ci-action]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-github-action
+    verification_recipe: github-action
+    materialization: minimal
+
+  - id: python-docs-site
+    version: "0.1"
+    priority: 109
+    family: docs-site
+    match:
+      work_products_any: [docs-site]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-mkdocs
+    verification_recipe: python-docs-site
+    materialization: minimal
+
+  - id: python-cli-typer
+    version: "0.1"
+    priority: 101
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [typer]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-typer-app
+    verification_recipe: python-cli
+    materialization: minimal
+
+  - id: python-cli
+    version: "0.2"
+    priority: 100
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [python]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-app
+    verification_recipe: python-cli
+    materialization: minimal
+
+  - id: python-library
+    version: "0.1"
+    priority: 90
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [python]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-lib
+    verification_recipe: python-library
+    materialization: minimal
+
+  - id: typescript-library
+    version: "0.1"
+    priority: 85
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [typescript]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-ts-library
+    verification_recipe: typescript-library
+    materialization: minimal
+
+  - id: node-library
+    version: "0.1"
+    priority: 80
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [javascript]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-library
+    verification_recipe: node-library
+    materialization: minimal
+
+  - id: typescript-web-vue
+    version: "0.1"
+    priority: 99
+    family: web
+    match:
+      work_products_any: [web-ui, web-spa]
+      technology_required_all: [vue]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-vite-vue
+    verification_recipe: typescript-web-ui
+    materialization: minimal
+
+  - id: typescript-web-ssr
+    version: "0.1"
+    priority: 98
+    family: web
+    match:
+      work_products_any: [web-ssr, web-ui]
+      technology_required_all: [nextjs]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-next-web
+    verification_recipe: typescript-web-ssr
+    materialization: minimal
+
+  - id: typescript-web-react
+    version: "0.1"
+    priority: 97
+    family: web
+    match:
+      work_products_any: [web-ui, web-spa]
+      technology_required_all: [react]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-vite-react
+    verification_recipe: typescript-web-ui
+    materialization: minimal
+
+  - id: typescript-web-ui
+    version: "0.1"
+    priority: 96
+    family: web
+    match:
+      work_products_any: [web-ui, web-spa]
+      technology_required_all: [typescript]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-vite-web
+    verification_recipe: typescript-web-ui
+    materialization: minimal
+
+  - id: csharp-desktop-avalonia
+    version: "0.1"
+    priority: 106
+    family: desktop-app
+    match:
+      work_products_any: [desktop-app]
+      technology_required_all: [avalonia]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [dotnet]
+    scaffold_recipe: dotnet-avalonia
+    verification_recipe: csharp-desktop-avalonia
+    materialization: minimal
+
+  - id: csharp-desktop
+    version: "0.1"
+    priority: 103
+    family: desktop-app
+    match:
+      work_products_any: [desktop-app]
+      technology_required_all: [csharp]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [dotnet]
+    scaffold_recipe: dotnet-wpf
+    verification_recipe: csharp-desktop
+    materialization: minimal
+
+  - id: csharp-library
+    version: "0.1"
+    priority: 89
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [csharp]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [dotnet]
+    scaffold_recipe: dotnet-library
+    verification_recipe: csharp-library
+    materialization: minimal
+
+  - id: rust-library
+    version: "0.1"
+    priority: 88
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [rust]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [cargo]
+    scaffold_recipe: cargo-lib
+    verification_recipe: rust-library
+    materialization: minimal
+
+  - id: python-notebook
+    version: "0.1"
+    priority: 108
+    family: data
+    intent: notebook
+    match:
+      work_products_any: [notebook]
+      technology_required_all: [python]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-notebook
+    verification_recipe: python-notebook
+    materialization: minimal
+
+  - id: csharp-http-service
+    version: "0.1"
+    priority: 104
+    family: service
+    match:
+      work_products_any: [service, http-service]
+      technology_required_all: [csharp]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [dotnet]
+    scaffold_recipe: dotnet-aspnet
+    verification_recipe: csharp-http-service
+    materialization: minimal
+
+  - id: python-http-service
+    version: "0.1"
+    priority: 105
+    family: service
+    match:
+      work_products_any: [service, http-service]
+      technology_required_all: [python]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-fastapi-service
+    verification_recipe: python-http-service
+    materialization: minimal
+
+  - id: python-native-extension
+    version: "0.1"
+    priority: 107
+    family: native-extension
+    match:
+      work_products_any: [native-extension]
+      technology_required_all: [rust]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [cargo]
+    scaffold_recipe: maturin-pyo3
+    verification_recipe: python-native-extension
+    materialization: minimal
+
+  - id: python-mcp-server
+    version: "0.1"
+    priority: 120
+    family: mcp-server
+    match:
+      work_products_any: [mcp-server]
+      technology_required_all: [python]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [uv]
+    scaffold_recipe: uv-mcp-server
+    verification_recipe: python-mcp-server
+    materialization: minimal
+
+  - id: browser-extension-wxt
+    version: "0.1"
+    priority: 115
+    family: browser-extension
+    match:
+      work_products_any: [browser-extension]
+      technology_required_all: [typescript]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-wxt-extension
+    verification_recipe: browser-extension-wxt
+    materialization: minimal
+
+  - id: browser-extension-js
+    version: "0.1"
+    priority: 110
+    family: browser-extension
+    match:
+      work_products_any: [browser-extension]
+      technology_required_all: [javascript]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: npm-browser-extension
+    verification_recipe: browser-extension-js
+    materialization: minimal
+  - id: go-cli
+    version: "0.1"
+    priority: 1
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [go]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [go]
+    scaffold_recipe: go-cli
+    verification_recipe: go-cli
+    materialization: minimal
+
+  - id: go-library
+    version: "0.1"
+    priority: 2
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [go]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [go]
+    scaffold_recipe: go-lib
+    verification_recipe: go-lib
+    materialization: minimal
+
+  - id: java-cli
+    version: "0.1"
+    priority: 3
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [java]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [java]
+    scaffold_recipe: java-cli
+    verification_recipe: java-cli
+    materialization: minimal
+
+  - id: java-library
+    version: "0.1"
+    priority: 4
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [java]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [java]
+    scaffold_recipe: java-lib
+    verification_recipe: java-lib
+    materialization: minimal
+
+  - id: kotlin-cli
+    version: "0.1"
+    priority: 5
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [kotlin]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [kotlin]
+    scaffold_recipe: kotlin-cli
+    verification_recipe: kotlin-cli
+    materialization: minimal
+
+  - id: kotlin-library
+    version: "0.1"
+    priority: 6
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [kotlin]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [kotlin]
+    scaffold_recipe: kotlin-lib
+    verification_recipe: kotlin-lib
+    materialization: minimal
+
+  - id: dart-cli
+    version: "0.1"
+    priority: 7
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [dart]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [dart]
+    scaffold_recipe: dart-cli
+    verification_recipe: dart-cli
+    materialization: minimal
+
+  - id: dart-library
+    version: "0.1"
+    priority: 8
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [dart]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [dart]
+    scaffold_recipe: dart-lib
+    verification_recipe: dart-lib
+    materialization: minimal
+
+  - id: swift-cli
+    version: "0.1"
+    priority: 9
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [swift]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [swift]
+    scaffold_recipe: swift-cli
+    verification_recipe: swift-cli
+    materialization: minimal
+
+  - id: swift-library
+    version: "0.1"
+    priority: 10
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [swift]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [swift]
+    scaffold_recipe: swift-lib
+    verification_recipe: swift-lib
+    materialization: minimal
+
+  - id: cpp-cli
+    version: "0.1"
+    priority: 11
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [cpp]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [cpp]
+    scaffold_recipe: cpp-cli
+    verification_recipe: cpp-cli
+    materialization: minimal
+
+  - id: cpp-library
+    version: "0.1"
+    priority: 12
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [cpp]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [cpp]
+    scaffold_recipe: cpp-lib
+    verification_recipe: cpp-lib
+    materialization: minimal
+
+  - id: c-cli
+    version: "0.1"
+    priority: 13
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [c]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [c]
+    scaffold_recipe: c-cli
+    verification_recipe: c-cli
+    materialization: minimal
+
+  - id: c-library
+    version: "0.1"
+    priority: 14
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [c]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [c]
+    scaffold_recipe: c-lib
+    verification_recipe: c-lib
+    materialization: minimal
+
+  - id: php-cli
+    version: "0.1"
+    priority: 15
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [php]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [php]
+    scaffold_recipe: php-cli
+    verification_recipe: php-cli
+    materialization: minimal
+
+  - id: php-library
+    version: "0.1"
+    priority: 16
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [php]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [php]
+    scaffold_recipe: php-lib
+    verification_recipe: php-lib
+    materialization: minimal
+
+  - id: r-cli
+    version: "0.1"
+    priority: 17
+    family: cli
+    match:
+      work_products_any: [cli]
+      technology_required_all: [r]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [r]
+    scaffold_recipe: r-cli
+    verification_recipe: r-cli
+    materialization: minimal
+
+  - id: r-library
+    version: "0.1"
+    priority: 18
+    family: library
+    match:
+      work_products_any: [library]
+      technology_required_all: [r]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [r]
+    scaffold_recipe: r-lib
+    verification_recipe: r-lib
+    materialization: minimal
+
+  - id: flutter-mobile
+    version: "0.1"
+    priority: 19
+    family: mobile-app
+    match:
+      work_products_any: [mobile-app]
+      technology_required_all: [flutter]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [flutter]
+    scaffold_recipe: mobile-flutter
+    verification_recipe: flutter-mobile
+    materialization: minimal
+
+  - id: kotlin-mobile
+    version: "0.1"
+    priority: 20
+    family: mobile-app
+    match:
+      work_products_any: [mobile-app]
+      technology_required_all: [kotlin]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [kotlin]
+    scaffold_recipe: mobile-kotlin
+    verification_recipe: kotlin-mobile
+    materialization: minimal
+
+  - id: swift-mobile
+    version: "0.1"
+    priority: 21
+    family: mobile-app
+    match:
+      work_products_any: [mobile-app]
+      technology_required_all: [swift]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [swift]
+    scaffold_recipe: mobile-swift
+    verification_recipe: swift-mobile
+    materialization: minimal
+
+  - id: bevy-game
+    version: "0.1"
+    priority: 22
+    family: game
+    match:
+      work_products_any: [game]
+      technology_required_any: [rust,bevy]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [cargo]
+    scaffold_recipe: game-bevy
+    verification_recipe: bevy-game
+    materialization: minimal
+
+  - id: godot-game
+    version: "0.1"
+    priority: 23
+    family: game
+    match:
+      work_products_any: [game]
+      technology_required_all: [godot]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [godot]
+    scaffold_recipe: game-godot
+    verification_recipe: godot-game
+    materialization: minimal
+
+  - id: typescript-userscript
+    version: "0.1"
+    priority: 24
+    family: userscript
+    match:
+      work_products_any: [userscript]
+      technology_required_all: [typescript]
+    capabilities: [project_scaffolding]
+    provider_preferences:
+      project_scaffolding: [npm]
+    scaffold_recipe: userscript-ts
+    verification_recipe: typescript-userscript
+    materialization: minimal
+

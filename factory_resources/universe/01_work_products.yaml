@@ -1,0 +1,328 @@
+# 工作产品槽位 = 「用户要造哪种成品」
+# 不是覆盖率证明。覆盖率只看 coverage_fixtures/。
+# 组合栈不要在这里新开 kind。
+schema: project-factory-warehouse/2
+slot: work_product
+stage: A.1
+
+items:
+  # ---- 已经能量产（0.14.1 四条线映射到这些 kind）----
+  - id: cli
+    status: owned
+    maps_to_profile: python-cli
+    also_needs: [go-cli, rust-cli, node-cli]
+    note: "当前车身 argparse；成熟轮子 Typer / Cobra / Clap / Commander"
+
+  - id: library
+    status: owned
+    maps_to_profile: [python-library, node-library, rust-library, csharp-library]
+    also_needs: [go-module, java-library]
+    note: "可发布的包，不是可执行入口"
+
+  - id: browser-extension
+    status: owned
+    maps_to_profile: [browser-extension-js, browser-extension-wxt]
+    limitation: "Chrome/Firefox 运行时 claim 故意 UNVERIFIED"
+    successor_candidates: [wxt]
+    note: "JavaScript 请求仍走手写 MV3；TypeScript 请求走 browser-extension-wxt（0.14.3 工作树）"
+
+  # ---- 夹具已经会说、还没有产线 ----
+  - id: web-spa
+    status: owned
+    maps_to_profile:  [typescript-web-ui, typescript-web-react, typescript-web-vue, typescript-web-svelte]
+    fixture: fixtures/golden/03_web_api.yaml
+    needs: "TS/JS SPA 图纸；官方 create-vite"
+    wheels: [react, vue, svelte, solid]
+
+  - id: web-ssr
+    status: owned
+    maps_to_profile:  [typescript-web-ssr]
+    needs: "元框架产线，与 SPA 分开"
+    wheels: [nextjs, nuxt, sveltekit, astro]
+
+  - id: http-service
+    status: owned
+    maps_to_profile:  [python-http-service, csharp-http-service, typescript-http-nest, typescript-http-hono, rust-http-service]
+    fixture: fixtures/golden/03_web_api.yaml
+    needs: "最小 service，不做官方全栈巨舰"
+    wheels: [fastapi, nestjs, spring-boot, aspnet-core, axum, chi]
+
+  - id: notebook
+    status: owned
+    maps_to_profile:  [python-notebook]
+    fixture: fixtures/golden/04_ai_research.yaml
+    needs: "跑得过 + 参数和数据出处"
+    wheels: [jupyter, cookiecutter-data-science]
+
+  - id: experiment
+    status: owned
+    maps_to_profile:  [python-experiment]
+    fixture: fixtures/golden/04_ai_research.yaml
+
+  - id: research-result
+    status: observed
+    fixture: fixtures/golden/04_ai_research.yaml
+
+  - id: desktop-app
+    status: owned
+    maps_to_profile:  [csharp-desktop, csharp-desktop-avalonia]
+    fixture: fixtures/golden/05_large_multilanguage.yaml
+    factory_self_forbidden: [electron, webview-shell]
+    user_project_preferred: [tauri, wpf, winui, avalonia, swiftui, qt]
+    user_project_observed_heavy: electron
+
+  - id: rust-library
+    status: observed
+    fixture: fixtures/golden/05_large_multilanguage.yaml
+    wheels: [cargo-lib, maturin]
+
+  # ---- 为覆盖率补的种类（仓库收齐，产线后开）----
+  - id: tui
+    status: owned
+    maps_to_profile:  [python-tui]
+    note: "终端界面，不是纯 CLI 参数解析"
+    wheels: [textual, ratatui, bubbletea, ink]
+
+  - id: mcp-server
+    status: owned
+    maps_to_profile: python-mcp-server
+    note: "给 Agent 用的工具车。工厂自己不当 Host。0.14.2 已有 Python 产线；Inspector/真 Host 仍 UNVERIFIED"
+    wheels: [mcp-python-sdk-v2, mcp-typescript-sdk-v2, mcp-csharp-sdk, mcp-go-sdk, mcp-rust-sdk]
+
+  - id: mcp-client
+    status: observed
+    note: "生成物可以是 client 库；工厂内核不是 client 运行时"
+
+  - id: graphql-api
+    status: owned
+    maps_to_profile:  [typescript-graphql]
+    wheels: [strawberry, graphene, nestjs-graphql, gqlgen]
+
+  - id: grpc-service
+    status: owned
+    maps_to_profile: python-grpc
+    limitation: "进程内 servicer；绑端口 claim 故意 UNVERIFIED"
+    wheels: [grpc-go, tonic, grpcio, connect-es]
+
+  - id: realtime-service
+    status: owned
+    maps_to_profile:  [python-realtime]
+    note: "WebSocket / SSE / 实时通道"
+    wheels: [fastapi-websocket, socket-io, phoenix-channels]
+
+  - id: background-worker
+    status: observed
+    wheels: [celery, rq, bullmq, sidekiq, tokio-worker]
+
+  - id: scheduled-job
+    status: observed
+    wheels: [apscheduler, node-cron, systemd-timer-docs]
+
+  - id: static-site
+    status: owned
+    maps_to_profile:  [typescript-static-astro]
+    wheels: [astro, hugo, 11ty, vitepress]
+
+  - id: docs-site
+    status: owned
+    maps_to_profile:  [python-docs-site]
+    wheels: [mkdocs-material, docusaurus, vitepress, sphinx]
+
+  - id: design-system
+    status: owned
+    maps_to_profile:  [typescript-design-system]
+    note: "组件库 / 设计令牌，通常是 library 的一种特化"
+    wheels: [storybook, shadcn-ui]
+
+  - id: vscode-extension
+    status: owned
+    maps_to_profile:  [vscode-extension]
+    scaffold: yo-code
+    docs: https://github.com/microsoft/vscode-generator-code
+
+  - id: office-addin
+    status: deferred
+    scaffold: yo-office
+
+  - id: userscript
+    status: deferred
+    note: "油猴脚本；覆盖长尾，不优先"
+
+  - id: mobile-app
+    status: observed
+    wheels: [flutter, expo, react-native, kotlin-multiplatform, swiftui, jetpack-compose]
+    note: "跨平台三强 + 双端原生。Ionic/Capacitor 不进首选"
+
+  - id: game
+    status: observed
+    wheels: [godot, bevy, unity-observed]
+    note: "开源优先 Godot / Bevy；Unity 只记观察"
+
+  - id: embedded-firmware
+    status: observed
+    wheels: [platformio, rust-embedded, zephyr]
+    note: "IoT / MCU。覆盖种类，产线很后"
+
+  - id: wasm-module
+    status: observed
+    wheels: [wasm-pack, wasm-bindgen, wit-bindgen]
+
+  - id: native-extension
+    status: owned
+    maps_to_profile:  [python-native-extension]
+    note: "Python/JS 调 Rust/C"
+    wheels: [maturin, napi-rs, pyo3, cffi]
+
+  - id: ml-training
+    status: observed
+    wheels: [pytorch, lightning, keras]
+    note: "训练可复现；与 notebook 分开，避免把研究笔记当训练产线"
+
+  - id: data-pipeline
+    status: owned
+    maps_to_profile:  [python-data-pipeline]
+    wheels: [dagster, prefect, airflow, kedro]
+
+  - id: analytics-transform
+    status: owned
+    maps_to_profile:  [python-analytics-dbt]
+    wheels: [dbt-core]
+
+  - id: iac
+    status: owned
+    maps_to_profile: [iac-opentofu]
+    wheels: [opentofu, pulumi, terraform-observed, aws-cdk]
+    note: "开源优先 OpenTofu；Terraform BSL 只记观察。F09 已上车（opentofu-tf 图纸）"
+
+  - id: kubernetes-operator
+    status: deferred
+    wheels: [kubebuilder, operator-sdk]
+
+  - id: container-stack
+    status: owned
+    maps_to_profile:  [python-container-stack]
+    wheels: [docker-compose, dockerfile]
+    note: "常作为 overlay，很少单独成为唯一产线"
+
+  - id: monorepo
+    status: observed
+    wheels: [pnpm-workspaces, turborepo, nx, cargo-workspaces, uv-workspaces]
+    note: "工作空间形态，不是一种业务产品，但是一种项目类型"
+
+  - id: bot
+    status: owned
+    maps_to_profile:  [python-bot]
+    wheels: [discord-py, discord-js, slack-bolt, telegraf]
+    note: "聊天机器人是常见学生/小品类"
+
+  - id: scraper
+    status: owned
+    maps_to_profile:  [python-scraper]
+    wheels: [playwright, scrapy, crawlee]
+
+  - id: language-server
+    status: deferred
+    wheels: [lsp-pyright-pattern, tower-lsp]
+
+  - id: compiler-tooling
+    status: deferred
+    note: "lexer/parser/transpiler。长尾"
+
+  - id: schema-contract
+    status: owned
+    maps_to_profile:  [python-schema-contract]
+    wheels: [openapi-generator, buf, smithy]
+    note: "API 合同仓库，常与 http-service 成对"
+
+  - id: test-suite
+    status: owned
+    maps_to_profile:  [playwright-test-suite]
+    wheels: [playwright-project, pytest-only, vitest-project]
+    note: "独立 E2E/量具仓库，也可当 overlay"
+
+  - id: cms-site
+    status: deferred
+    wheels: [wordpress-theme]
+    note: "客户需求大、工厂原生匹配差。记种类不装首选产线"
+
+  - id: blockchain-dapp
+    status: deferred
+    note: "长尾；不进近阶段产线"
+
+  - id: ar-vr
+    status: deferred
+
+  - id: polyglot-workspace
+    status: observed
+    fixture: fixtures/golden/05_large_multilanguage.yaml
+    note: "仓拓扑优先用 repo_topology.polyglot-workspace；此 kind 仅当「产品就是多语言仓骨架」时用"
+
+  # ---- A.1 补洞：独立开发形态，不是组合名 ----
+  - id: serverless-function
+    status: owned
+    maps_to_profile:  [python-lambda, cloudflare-worker]
+    execution_default: serverless-invoke
+    note: "Lambda / Azure Functions / Cloudflare Workers / Vercel。边缘用 execution.edge-invoke，不要再开 edge-kind"
+
+  - id: os-service
+    status: observed
+    execution_default: daemon-os-service
+    note: "Windows Service / systemd / 托盘常驻。桌面 GUI 仍走 desktop-app，只是多一个 execution"
+
+  - id: generated-sdk
+    status: owned
+    maps_to_profile:  [typescript-generated-sdk]
+    note: "OpenAPI/Protobuf 生成的客户端。生命周期与手写 library 不同：合同变了要再生成"
+
+  - id: schema-migration-repo
+    status: owned
+    maps_to_profile:  [python-schema-migration]
+    note: "仓的主体就是 schema/migration。服务自带迁移只填 state.schema-migrations"
+
+  - id: event-driven-app
+    status: owned
+    maps_to_profile: python-event-driven
+    execution_default: queue-worker
+    limitation: "进程内 handle；Kafka/broker 故意 UNVERIFIED"
+    note: "producer/consumer/processor。不是带个 Celery 的 HTTP 服务——那是 http-service + extra_execution.queue-worker"
+
+  - id: ci-action
+    status: owned
+    maps_to_profile:  [github-action]
+    note: "GitHub Action / 可发布的 CI 插件本身就是产品"
+
+  - id: model-serving
+    status: owned
+    maps_to_profile:  [python-model-serving]
+    note: "模型推理服务。常是 http-service 的特化；单独 kind 避免和「普通 REST」混生命周期"
+
+  - id: rag-application
+    status: owned
+    maps_to_profile:  [python-rag]
+    note: "检索增强。状态轴会有 vector-db；不要写成 postgres-rag-fastapi kind"
+
+  - id: eval-harness
+    status: owned
+    maps_to_profile:  [python-eval-harness]
+    note: "评测集与跑分仓。接近 test-suite + experiment，但产物是分数卡"
+
+  - id: agent-workflow
+    status: owned
+    maps_to_profile:  [python-agent-workflow]
+    note: "用户项目里的 agent 工作流。工厂自己不当 Harness。可与 mcp-server 组合"
+
+  - id: observability-agent
+    status: owned
+    maps_to_profile: python-observability
+    limitation: "内存 span exporter；collector/sidecar 故意 UNVERIFIED"
+    note: "collector / sidecar / 探针，本身就是独立软件"
+
+  - id: packaging-repo
+    status: observed
+    note: "仓的主体是打包/分发工程，不是应用代码"
+
+coverage:
+  statement: >
+    kind 列表不是 99% 证明。代表需求必须能映射到 PROJECT_SPEC，
+    且不得为普通组合发明新 kind。见 coverage_fixtures/。
+  do_not_promote: [cms-site, blockchain-dapp, ar-vr, office-addin, userscript]

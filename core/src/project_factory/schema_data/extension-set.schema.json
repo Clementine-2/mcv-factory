@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-factory.local/schemas/extension-set-0.1.json",
+  "type": "object",
+  "required": ["schema_version", "factory_api", "extensions"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "factory_api": {"const": "1"},
+    "extensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "version", "mode", "manifest", "manifest_sha256", "enabled", "trust"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "version": {"type": "string"},
+          "mode": {"enum": ["declarative", "trusted-code"]},
+          "manifest": {"type": "string"},
+          "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "enabled": {"type": "boolean"},
+          "trust": {"enum": ["declarative", "trusted-code"]}
+        }
+      }
+    }
+  }
+}

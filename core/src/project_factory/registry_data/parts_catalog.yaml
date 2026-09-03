@@ -1,0 +1,1833 @@
+schema_version: '0.1'
+source: Project Factory registry (Core 0.14.30)
+generated_at: '2026-09-02T13:23:37Z'
+summary:
+  profiles: 79
+  providers: 15
+  families: 26
+  families_with_overlap: 3
+assembly_rules:
+  max_work_products_per_project: 1
+  allowed_multi_product_splits:
+  - families: &id001
+    - service
+    - web
+    note: 'frontend-backend-split: exactly one web product + one http-service'
+  cross_family:
+    default: mutex (reject)
+    allowed_splits:
+    - *id001
+    silent_drop:
+      description: requesting a non-service product together with a service product builds only the non-service
+        product; the service product is silently dropped (no error, no advisor warning)
+      pairs:
+      - families:
+        - browser-extension
+        - service
+        dropped_family: service
+      - families:
+        - ci-action
+        - service
+        dropped_family: service
+      - families:
+        - container-stack
+        - service
+        dropped_family: service
+      - families:
+        - data
+        - service
+        dropped_family: service
+      - families:
+        - design-system
+        - service
+        dropped_family: service
+      - families:
+        - desktop-app
+        - service
+        dropped_family: service
+      - families:
+        - docs-site
+        - service
+        dropped_family: service
+      - families:
+        - generated-sdk
+        - service
+        dropped_family: service
+      - families:
+        - graphql-api
+        - service
+        dropped_family: service
+      - families:
+        - grpc-service
+        - service
+        dropped_family: service
+      - families:
+        - iac
+        - service
+        dropped_family: service
+      - families:
+        - mcp-server
+        - service
+        dropped_family: service
+      - families:
+        - native-extension
+        - service
+        dropped_family: service
+      - families:
+        - realtime-service
+        - service
+        dropped_family: service
+      - families:
+        - serverless-function
+        - service
+        dropped_family: service
+      - families:
+        - service
+        - static-site
+        dropped_family: service
+      - families:
+        - service
+        - test-suite
+        dropped_family: service
+      - families:
+        - service
+        - tui
+        dropped_family: service
+      - families:
+        - service
+        - vscode-extension
+        dropped_family: service
+    mutex_pairs:
+    - - browser-extension
+      - ci-action
+    - - browser-extension
+      - cli
+    - - browser-extension
+      - container-stack
+    - - browser-extension
+      - data
+    - - browser-extension
+      - design-system
+    - - browser-extension
+      - desktop-app
+    - - browser-extension
+      - docs-site
+    - - browser-extension
+      - game
+    - - browser-extension
+      - generated-sdk
+    - - browser-extension
+      - graphql-api
+    - - browser-extension
+      - grpc-service
+    - - browser-extension
+      - iac
+    - - browser-extension
+      - library
+    - - browser-extension
+      - mcp-server
+    - - browser-extension
+      - mobile-app
+    - - browser-extension
+      - native-extension
+    - - browser-extension
+      - realtime-service
+    - - browser-extension
+      - serverless-function
+    - - browser-extension
+      - static-site
+    - - browser-extension
+      - test-suite
+    - - browser-extension
+      - tui
+    - - browser-extension
+      - userscript
+    - - browser-extension
+      - vscode-extension
+    - - browser-extension
+      - web
+    - - ci-action
+      - cli
+    - - ci-action
+      - container-stack
+    - - ci-action
+      - data
+    - - ci-action
+      - design-system
+    - - ci-action
+      - desktop-app
+    - - ci-action
+      - docs-site
+    - - ci-action
+      - game
+    - - ci-action
+      - generated-sdk
+    - - ci-action
+      - graphql-api
+    - - ci-action
+      - grpc-service
+    - - ci-action
+      - iac
+    - - ci-action
+      - library
+    - - ci-action
+      - mcp-server
+    - - ci-action
+      - mobile-app
+    - - ci-action
+      - native-extension
+    - - ci-action
+      - realtime-service
+    - - ci-action
+      - serverless-function
+    - - ci-action
+      - static-site
+    - - ci-action
+      - test-suite
+    - - ci-action
+      - tui
+    - - ci-action
+      - userscript
+    - - ci-action
+      - vscode-extension
+    - - ci-action
+      - web
+    - - cli
+      - container-stack
+    - - cli
+      - data
+    - - cli
+      - design-system
+    - - cli
+      - desktop-app
+    - - cli
+      - docs-site
+    - - cli
+      - game
+    - - cli
+      - generated-sdk
+    - - cli
+      - graphql-api
+    - - cli
+      - grpc-service
+    - - cli
+      - iac
+    - - cli
+      - library
+    - - cli
+      - mcp-server
+    - - cli
+      - mobile-app
+    - - cli
+      - native-extension
+    - - cli
+      - realtime-service
+    - - cli
+      - serverless-function
+    - - cli
+      - service
+    - - cli
+      - static-site
+    - - cli
+      - test-suite
+    - - cli
+      - tui
+    - - cli
+      - userscript
+    - - cli
+      - vscode-extension
+    - - cli
+      - web
+    - - container-stack
+      - data
+    - - container-stack
+      - design-system
+    - - container-stack
+      - desktop-app
+    - - container-stack
+      - docs-site
+    - - container-stack
+      - game
+    - - container-stack
+      - generated-sdk
+    - - container-stack
+      - graphql-api
+    - - container-stack
+      - grpc-service
+    - - container-stack
+      - iac
+    - - container-stack
+      - library
+    - - container-stack
+      - mcp-server
+    - - container-stack
+      - mobile-app
+    - - container-stack
+      - native-extension
+    - - container-stack
+      - realtime-service
+    - - container-stack
+      - serverless-function
+    - - container-stack
+      - static-site
+    - - container-stack
+      - test-suite
+    - - container-stack
+      - tui
+    - - container-stack
+      - userscript
+    - - container-stack
+      - vscode-extension
+    - - container-stack
+      - web
+    - - data
+      - design-system
+    - - data
+      - desktop-app
+    - - data
+      - docs-site
+    - - data
+      - game
+    - - data
+      - generated-sdk
+    - - data
+      - graphql-api
+    - - data
+      - grpc-service
+    - - data
+      - iac
+    - - data
+      - library
+    - - data
+      - mcp-server
+    - - data
+      - mobile-app
+    - - data
+      - native-extension
+    - - data
+      - realtime-service
+    - - data
+      - serverless-function
+    - - data
+      - static-site
+    - - data
+      - test-suite
+    - - data
+      - tui
+    - - data
+      - userscript
+    - - data
+      - vscode-extension
+    - - data
+      - web
+    - - design-system
+      - desktop-app
+    - - design-system
+      - docs-site
+    - - design-system
+      - game
+    - - design-system
+      - generated-sdk
+    - - design-system
+      - graphql-api
+    - - design-system
+      - grpc-service
+    - - design-system
+      - iac
+    - - design-system
+      - library
+    - - design-system
+      - mcp-server
+    - - design-system
+      - mobile-app
+    - - design-system
+      - native-extension
+    - - design-system
+      - realtime-service
+    - - design-system
+      - serverless-function
+    - - design-system
+      - static-site
+    - - design-system
+      - test-suite
+    - - design-system
+      - tui
+    - - design-system
+      - userscript
+    - - design-system
+      - vscode-extension
+    - - design-system
+      - web
+    - - desktop-app
+      - docs-site
+    - - desktop-app
+      - game
+    - - desktop-app
+      - generated-sdk
+    - - desktop-app
+      - graphql-api
+    - - desktop-app
+      - grpc-service
+    - - desktop-app
+      - iac
+    - - desktop-app
+      - library
+    - - desktop-app
+      - mcp-server
+    - - desktop-app
+      - mobile-app
+    - - desktop-app
+      - native-extension
+    - - desktop-app
+      - realtime-service
+    - - desktop-app
+      - serverless-function
+    - - desktop-app
+      - static-site
+    - - desktop-app
+      - test-suite
+    - - desktop-app
+      - tui
+    - - desktop-app
+      - userscript
+    - - desktop-app
+      - vscode-extension
+    - - desktop-app
+      - web
+    - - docs-site
+      - game
+    - - docs-site
+      - generated-sdk
+    - - docs-site
+      - graphql-api
+    - - docs-site
+      - grpc-service
+    - - docs-site
+      - iac
+    - - docs-site
+      - library
+    - - docs-site
+      - mcp-server
+    - - docs-site
+      - mobile-app
+    - - docs-site
+      - native-extension
+    - - docs-site
+      - realtime-service
+    - - docs-site
+      - serverless-function
+    - - docs-site
+      - static-site
+    - - docs-site
+      - test-suite
+    - - docs-site
+      - tui
+    - - docs-site
+      - userscript
+    - - docs-site
+      - vscode-extension
+    - - docs-site
+      - web
+    - - game
+      - generated-sdk
+    - - game
+      - graphql-api
+    - - game
+      - grpc-service
+    - - game
+      - iac
+    - - game
+      - library
+    - - game
+      - mcp-server
+    - - game
+      - mobile-app
+    - - game
+      - native-extension
+    - - game
+      - realtime-service
+    - - game
+      - serverless-function
+    - - game
+      - service
+    - - game
+      - static-site
+    - - game
+      - test-suite
+    - - game
+      - tui
+    - - game
+      - userscript
+    - - game
+      - vscode-extension
+    - - game
+      - web
+    - - generated-sdk
+      - graphql-api
+    - - generated-sdk
+      - grpc-service
+    - - generated-sdk
+      - iac
+    - - generated-sdk
+      - library
+    - - generated-sdk
+      - mcp-server
+    - - generated-sdk
+      - mobile-app
+    - - generated-sdk
+      - native-extension
+    - - generated-sdk
+      - realtime-service
+    - - generated-sdk
+      - serverless-function
+    - - generated-sdk
+      - static-site
+    - - generated-sdk
+      - test-suite
+    - - generated-sdk
+      - tui
+    - - generated-sdk
+      - userscript
+    - - generated-sdk
+      - vscode-extension
+    - - generated-sdk
+      - web
+    - - graphql-api
+      - grpc-service
+    - - graphql-api
+      - iac
+    - - graphql-api
+      - library
+    - - graphql-api
+      - mcp-server
+    - - graphql-api
+      - mobile-app
+    - - graphql-api
+      - native-extension
+    - - graphql-api
+      - realtime-service
+    - - graphql-api
+      - serverless-function
+    - - graphql-api
+      - static-site
+    - - graphql-api
+      - test-suite
+    - - graphql-api
+      - tui
+    - - graphql-api
+      - userscript
+    - - graphql-api
+      - vscode-extension
+    - - graphql-api
+      - web
+    - - grpc-service
+      - iac
+    - - grpc-service
+      - library
+    - - grpc-service
+      - mcp-server
+    - - grpc-service
+      - mobile-app
+    - - grpc-service
+      - native-extension
+    - - grpc-service
+      - realtime-service
+    - - grpc-service
+      - serverless-function
+    - - grpc-service
+      - static-site
+    - - grpc-service
+      - test-suite
+    - - grpc-service
+      - tui
+    - - grpc-service
+      - userscript
+    - - grpc-service
+      - vscode-extension
+    - - grpc-service
+      - web
+    - - iac
+      - library
+    - - iac
+      - mcp-server
+    - - iac
+      - mobile-app
+    - - iac
+      - native-extension
+    - - iac
+      - realtime-service
+    - - iac
+      - serverless-function
+    - - iac
+      - static-site
+    - - iac
+      - test-suite
+    - - iac
+      - tui
+    - - iac
+      - userscript
+    - - iac
+      - vscode-extension
+    - - iac
+      - web
+    - - library
+      - mcp-server
+    - - library
+      - mobile-app
+    - - library
+      - native-extension
+    - - library
+      - realtime-service
+    - - library
+      - serverless-function
+    - - library
+      - service
+    - - library
+      - static-site
+    - - library
+      - test-suite
+    - - library
+      - tui
+    - - library
+      - userscript
+    - - library
+      - vscode-extension
+    - - library
+      - web
+    - - mcp-server
+      - mobile-app
+    - - mcp-server
+      - native-extension
+    - - mcp-server
+      - realtime-service
+    - - mcp-server
+      - serverless-function
+    - - mcp-server
+      - static-site
+    - - mcp-server
+      - test-suite
+    - - mcp-server
+      - tui
+    - - mcp-server
+      - userscript
+    - - mcp-server
+      - vscode-extension
+    - - mcp-server
+      - web
+    - - mobile-app
+      - native-extension
+    - - mobile-app
+      - realtime-service
+    - - mobile-app
+      - serverless-function
+    - - mobile-app
+      - service
+    - - mobile-app
+      - static-site
+    - - mobile-app
+      - test-suite
+    - - mobile-app
+      - tui
+    - - mobile-app
+      - userscript
+    - - mobile-app
+      - vscode-extension
+    - - mobile-app
+      - web
+    - - native-extension
+      - realtime-service
+    - - native-extension
+      - serverless-function
+    - - native-extension
+      - static-site
+    - - native-extension
+      - test-suite
+    - - native-extension
+      - tui
+    - - native-extension
+      - userscript
+    - - native-extension
+      - vscode-extension
+    - - native-extension
+      - web
+    - - realtime-service
+      - serverless-function
+    - - realtime-service
+      - static-site
+    - - realtime-service
+      - test-suite
+    - - realtime-service
+      - tui
+    - - realtime-service
+      - userscript
+    - - realtime-service
+      - vscode-extension
+    - - realtime-service
+      - web
+    - - serverless-function
+      - static-site
+    - - serverless-function
+      - test-suite
+    - - serverless-function
+      - tui
+    - - serverless-function
+      - userscript
+    - - serverless-function
+      - vscode-extension
+    - - serverless-function
+      - web
+    - - service
+      - userscript
+    - - static-site
+      - test-suite
+    - - static-site
+      - tui
+    - - static-site
+      - userscript
+    - - static-site
+      - vscode-extension
+    - - static-site
+      - web
+    - - test-suite
+      - tui
+    - - test-suite
+      - userscript
+    - - test-suite
+      - vscode-extension
+    - - test-suite
+      - web
+    - - tui
+      - userscript
+    - - tui
+      - vscode-extension
+    - - tui
+      - web
+    - - userscript
+      - vscode-extension
+    - - userscript
+      - web
+    - - vscode-extension
+      - web
+    note: derived from plan_assembly over every family pair. web+service is the only 2-product split;
+      any other cross-family pair is rejected unless one side is a service product (which is silently
+      dropped).
+  same_family_overlap:
+    families:
+    - data
+    - service
+    - web
+    checks: &id002
+    - family: data
+      kinds:
+      - agent-workflow
+      - analytics-transform
+      plan_mode: reject
+      dropped: []
+    - family: service
+      kinds:
+      - http-service
+      - service
+      plan_mode: single
+      dropped: []
+    - family: web
+      kinds:
+      - web-spa
+      - web-ssr
+      plan_mode: reject
+      dropped: []
+    note: picking >1 product from the same family triggers the advisor's OVERLAP_* warning and is also
+      rejected by the planner (MUTEX) -> effectively 1 product per project.
+verification:
+  cross_family_pairs_checked: 325
+  cross_family_outcomes:
+    split: 1
+    silent_drop: 19
+    reject: 305
+    other_unexpected: 0
+  same_family_checks: *id002
+families:
+  browser-extension:
+    label: browser-extension
+    work_products:
+    - browser-extension
+    tech:
+    - javascript
+    - typescript
+    intent_subtypes: []
+    profile_count: 2
+    profiles:
+    - id: browser-extension-js
+      work_products:
+      - browser-extension
+      tech:
+      - javascript
+      provider:
+      - npm
+      scaffold_recipe: npm-browser-extension
+      verification_recipe: browser-extension-js
+      intent: ''
+    - id: browser-extension-wxt
+      work_products:
+      - browser-extension
+      tech:
+      - typescript
+      provider:
+      - npm
+      scaffold_recipe: npm-wxt-extension
+      verification_recipe: browser-extension-wxt
+      intent: ''
+  ci-action:
+    label: ci-action
+    work_products:
+    - ci-action
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: github-action
+      work_products:
+      - ci-action
+      tech: []
+      provider:
+      - npm
+      scaffold_recipe: npm-github-action
+      verification_recipe: github-action
+      intent: ''
+  cli:
+    label: 命令行工具
+    work_products:
+    - cli
+    tech:
+    - c
+    - clap
+    - commander
+    - cpp
+    - dart
+    - go
+    - java
+    - javascript
+    - kotlin
+    - php
+    - python
+    - r
+    - rust
+    - swift
+    - typer
+    - typescript
+    intent_subtypes: []
+    profile_count: 13
+    profiles:
+    - id: c-cli
+      work_products:
+      - cli
+      tech:
+      - c
+      provider:
+      - c
+      scaffold_recipe: c-cli
+      verification_recipe: c-cli
+      intent: ''
+    - id: cpp-cli
+      work_products:
+      - cli
+      tech:
+      - cpp
+      provider:
+      - cpp
+      scaffold_recipe: cpp-cli
+      verification_recipe: cpp-cli
+      intent: ''
+    - id: dart-cli
+      work_products:
+      - cli
+      tech:
+      - dart
+      provider:
+      - dart
+      scaffold_recipe: dart-cli
+      verification_recipe: dart-cli
+      intent: ''
+    - id: go-cli
+      work_products:
+      - cli
+      tech:
+      - go
+      provider:
+      - go
+      scaffold_recipe: go-cli
+      verification_recipe: go-cli
+      intent: ''
+    - id: java-cli
+      work_products:
+      - cli
+      tech:
+      - java
+      provider:
+      - java
+      scaffold_recipe: java-cli
+      verification_recipe: java-cli
+      intent: ''
+    - id: kotlin-cli
+      work_products:
+      - cli
+      tech:
+      - kotlin
+      provider:
+      - kotlin
+      scaffold_recipe: kotlin-cli
+      verification_recipe: kotlin-cli
+      intent: ''
+    - id: php-cli
+      work_products:
+      - cli
+      tech:
+      - php
+      provider:
+      - php
+      scaffold_recipe: php-cli
+      verification_recipe: php-cli
+      intent: ''
+    - id: python-cli
+      work_products:
+      - cli
+      tech:
+      - python
+      provider:
+      - uv
+      scaffold_recipe: uv-app
+      verification_recipe: python-cli
+      intent: ''
+    - id: python-cli-typer
+      work_products:
+      - cli
+      tech:
+      - typer
+      provider:
+      - uv
+      scaffold_recipe: uv-typer-app
+      verification_recipe: python-cli
+      intent: ''
+    - id: r-cli
+      work_products:
+      - cli
+      tech:
+      - r
+      provider:
+      - r
+      scaffold_recipe: r-cli
+      verification_recipe: r-cli
+      intent: ''
+    - id: rust-cli
+      work_products:
+      - cli
+      tech:
+      - clap
+      - rust
+      provider:
+      - cargo
+      scaffold_recipe: cargo-cli
+      verification_recipe: rust-cli
+      intent: ''
+    - id: swift-cli
+      work_products:
+      - cli
+      tech:
+      - swift
+      provider:
+      - swift
+      scaffold_recipe: swift-cli
+      verification_recipe: swift-cli
+      intent: ''
+    - id: typescript-cli
+      work_products:
+      - cli
+      tech:
+      - commander
+      - javascript
+      - typescript
+      provider:
+      - npm
+      scaffold_recipe: npm-commander-cli
+      verification_recipe: typescript-cli
+      intent: ''
+  container-stack:
+    label: container-stack
+    work_products:
+    - container-stack
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: python-container-stack
+      work_products:
+      - container-stack
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-compose-stack
+      verification_recipe: python-container-stack
+      intent: ''
+  data:
+    label: 数据/AI
+    work_products:
+    - agent-workflow
+    - analytics-transform
+    - bot
+    - data-pipeline
+    - eval-harness
+    - event-driven-app
+    - experiment
+    - model-serving
+    - notebook
+    - observability-agent
+    - rag-application
+    - schema-contract
+    - schema-migration-repo
+    - scraper
+    tech:
+    - python
+    intent_subtypes:
+    - agent-workflow
+    - analytics-transform
+    - bot
+    - data-pipeline
+    - eval-harness
+    - event-driven-app
+    - experiment
+    - model-serving
+    - notebook
+    - observability-agent
+    - rag-application
+    - schema-contract
+    - schema-migration-repo
+    - scraper
+    profile_count: 14
+    profiles:
+    - id: python-agent-workflow
+      work_products:
+      - agent-workflow
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-agent-workflow
+      verification_recipe: python-agent-workflow
+      intent: agent-workflow
+    - id: python-analytics-dbt
+      work_products:
+      - analytics-transform
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-dbt
+      verification_recipe: python-analytics-dbt
+      intent: analytics-transform
+    - id: python-bot
+      work_products:
+      - bot
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-discord-bot
+      verification_recipe: python-bot
+      intent: bot
+    - id: python-data-pipeline
+      work_products:
+      - data-pipeline
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-data-pipeline
+      verification_recipe: python-data-pipeline
+      intent: data-pipeline
+    - id: python-eval-harness
+      work_products:
+      - eval-harness
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-eval-harness
+      verification_recipe: python-eval-harness
+      intent: eval-harness
+    - id: python-event-driven
+      work_products:
+      - event-driven-app
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-event-driven
+      verification_recipe: python-event-driven
+      intent: event-driven-app
+    - id: python-experiment
+      work_products:
+      - experiment
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-experiment
+      verification_recipe: python-experiment
+      intent: experiment
+    - id: python-model-serving
+      work_products:
+      - model-serving
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-model-serving
+      verification_recipe: python-model-serving
+      intent: model-serving
+    - id: python-notebook
+      work_products:
+      - notebook
+      tech:
+      - python
+      provider:
+      - uv
+      scaffold_recipe: uv-notebook
+      verification_recipe: python-notebook
+      intent: notebook
+    - id: python-observability
+      work_products:
+      - observability-agent
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-observability
+      verification_recipe: python-observability
+      intent: observability-agent
+    - id: python-rag
+      work_products:
+      - rag-application
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-rag
+      verification_recipe: python-rag
+      intent: rag-application
+    - id: python-schema-contract
+      work_products:
+      - schema-contract
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-schema-contract
+      verification_recipe: python-schema-contract
+      intent: schema-contract
+    - id: python-schema-migration
+      work_products:
+      - schema-migration-repo
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-alembic
+      verification_recipe: python-schema-migration
+      intent: schema-migration-repo
+    - id: python-scraper
+      work_products:
+      - scraper
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-scraper
+      verification_recipe: python-scraper
+      intent: scraper
+  design-system:
+    label: design-system
+    work_products:
+    - design-system
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: typescript-design-system
+      work_products:
+      - design-system
+      tech: []
+      provider:
+      - npm
+      scaffold_recipe: npm-design-system
+      verification_recipe: typescript-design-system
+      intent: ''
+  desktop-app:
+    label: desktop-app
+    work_products:
+    - desktop-app
+    tech:
+    - avalonia
+    - csharp
+    intent_subtypes: []
+    profile_count: 2
+    profiles:
+    - id: csharp-desktop
+      work_products:
+      - desktop-app
+      tech:
+      - csharp
+      provider:
+      - dotnet
+      scaffold_recipe: dotnet-wpf
+      verification_recipe: csharp-desktop
+      intent: ''
+    - id: csharp-desktop-avalonia
+      work_products:
+      - desktop-app
+      tech:
+      - avalonia
+      provider:
+      - dotnet
+      scaffold_recipe: dotnet-avalonia
+      verification_recipe: csharp-desktop-avalonia
+      intent: ''
+  docs-site:
+    label: docs-site
+    work_products:
+    - docs-site
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: python-docs-site
+      work_products:
+      - docs-site
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-mkdocs
+      verification_recipe: python-docs-site
+      intent: ''
+  game:
+    label: game
+    work_products:
+    - game
+    tech:
+    - bevy
+    - godot
+    - rust
+    intent_subtypes: []
+    profile_count: 2
+    profiles:
+    - id: bevy-game
+      work_products:
+      - game
+      tech:
+      - bevy
+      - rust
+      provider:
+      - cargo
+      scaffold_recipe: game-bevy
+      verification_recipe: bevy-game
+      intent: ''
+    - id: godot-game
+      work_products:
+      - game
+      tech:
+      - godot
+      provider:
+      - godot
+      scaffold_recipe: game-godot
+      verification_recipe: godot-game
+      intent: ''
+  generated-sdk:
+    label: generated-sdk
+    work_products:
+    - generated-sdk
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: typescript-generated-sdk
+      work_products:
+      - generated-sdk
+      tech: []
+      provider:
+      - npm
+      scaffold_recipe: npm-openapi-sdk
+      verification_recipe: typescript-generated-sdk
+      intent: ''
+  graphql-api:
+    label: graphql-api
+    work_products:
+    - graphql-api
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: typescript-graphql
+      work_products:
+      - graphql-api
+      tech: []
+      provider:
+      - npm
+      scaffold_recipe: npm-graphql
+      verification_recipe: typescript-graphql
+      intent: ''
+  grpc-service:
+    label: grpc-service
+    work_products:
+    - grpc-service
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: python-grpc
+      work_products:
+      - grpc-service
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-grpc
+      verification_recipe: python-grpc
+      intent: ''
+  iac:
+    label: iac
+    work_products:
+    - iac
+    tech:
+    - opentofu
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: iac-opentofu
+      work_products:
+      - iac
+      tech:
+      - opentofu
+      provider:
+      - uv
+      scaffold_recipe: opentofu-tf
+      verification_recipe: iac-opentofu
+      intent: ''
+  library:
+    label: 库
+    work_products:
+    - library
+    tech:
+    - c
+    - cpp
+    - csharp
+    - dart
+    - go
+    - java
+    - javascript
+    - kotlin
+    - php
+    - python
+    - r
+    - rust
+    - swift
+    - typescript
+    intent_subtypes: []
+    profile_count: 14
+    profiles:
+    - id: c-library
+      work_products:
+      - library
+      tech:
+      - c
+      provider:
+      - c
+      scaffold_recipe: c-lib
+      verification_recipe: c-lib
+      intent: ''
+    - id: cpp-library
+      work_products:
+      - library
+      tech:
+      - cpp
+      provider:
+      - cpp
+      scaffold_recipe: cpp-lib
+      verification_recipe: cpp-lib
+      intent: ''
+    - id: csharp-library
+      work_products:
+      - library
+      tech:
+      - csharp
+      provider:
+      - dotnet
+      scaffold_recipe: dotnet-library
+      verification_recipe: csharp-library
+      intent: ''
+    - id: dart-library
+      work_products:
+      - library
+      tech:
+      - dart
+      provider:
+      - dart
+      scaffold_recipe: dart-lib
+      verification_recipe: dart-lib
+      intent: ''
+    - id: go-library
+      work_products:
+      - library
+      tech:
+      - go
+      provider:
+      - go
+      scaffold_recipe: go-lib
+      verification_recipe: go-lib
+      intent: ''
+    - id: java-library
+      work_products:
+      - library
+      tech:
+      - java
+      provider:
+      - java
+      scaffold_recipe: java-lib
+      verification_recipe: java-lib
+      intent: ''
+    - id: kotlin-library
+      work_products:
+      - library
+      tech:
+      - kotlin
+      provider:
+      - kotlin
+      scaffold_recipe: kotlin-lib
+      verification_recipe: kotlin-lib
+      intent: ''
+    - id: node-library
+      work_products:
+      - library
+      tech:
+      - javascript
+      provider:
+      - npm
+      scaffold_recipe: npm-library
+      verification_recipe: node-library
+      intent: ''
+    - id: php-library
+      work_products:
+      - library
+      tech:
+      - php
+      provider:
+      - php
+      scaffold_recipe: php-lib
+      verification_recipe: php-lib
+      intent: ''
+    - id: python-library
+      work_products:
+      - library
+      tech:
+      - python
+      provider:
+      - uv
+      scaffold_recipe: uv-lib
+      verification_recipe: python-library
+      intent: ''
+    - id: r-library
+      work_products:
+      - library
+      tech:
+      - r
+      provider:
+      - r
+      scaffold_recipe: r-lib
+      verification_recipe: r-lib
+      intent: ''
+    - id: rust-library
+      work_products:
+      - library
+      tech:
+      - rust
+      provider:
+      - cargo
+      scaffold_recipe: cargo-lib
+      verification_recipe: rust-library
+      intent: ''
+    - id: swift-library
+      work_products:
+      - library
+      tech:
+      - swift
+      provider:
+      - swift
+      scaffold_recipe: swift-lib
+      verification_recipe: swift-lib
+      intent: ''
+    - id: typescript-library
+      work_products:
+      - library
+      tech:
+      - typescript
+      provider:
+      - npm
+      scaffold_recipe: npm-ts-library
+      verification_recipe: typescript-library
+      intent: ''
+  mcp-server:
+    label: mcp-server
+    work_products:
+    - mcp-server
+    tech:
+    - javascript
+    - python
+    - typescript
+    intent_subtypes: []
+    profile_count: 2
+    profiles:
+    - id: python-mcp-server
+      work_products:
+      - mcp-server
+      tech:
+      - python
+      provider:
+      - uv
+      scaffold_recipe: uv-mcp-server
+      verification_recipe: python-mcp-server
+      intent: ''
+    - id: typescript-mcp-server
+      work_products:
+      - mcp-server
+      tech:
+      - javascript
+      - typescript
+      provider:
+      - npm
+      scaffold_recipe: npm-mcp-server
+      verification_recipe: typescript-mcp-server
+      intent: ''
+  mobile-app:
+    label: mobile-app
+    work_products:
+    - mobile-app
+    tech:
+    - flutter
+    - kotlin
+    - swift
+    intent_subtypes: []
+    profile_count: 3
+    profiles:
+    - id: flutter-mobile
+      work_products:
+      - mobile-app
+      tech:
+      - flutter
+      provider:
+      - flutter
+      scaffold_recipe: mobile-flutter
+      verification_recipe: flutter-mobile
+      intent: ''
+    - id: kotlin-mobile
+      work_products:
+      - mobile-app
+      tech:
+      - kotlin
+      provider:
+      - kotlin
+      scaffold_recipe: mobile-kotlin
+      verification_recipe: kotlin-mobile
+      intent: ''
+    - id: swift-mobile
+      work_products:
+      - mobile-app
+      tech:
+      - swift
+      provider:
+      - swift
+      scaffold_recipe: mobile-swift
+      verification_recipe: swift-mobile
+      intent: ''
+  native-extension:
+    label: native-extension
+    work_products:
+    - native-extension
+    tech:
+    - rust
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: python-native-extension
+      work_products:
+      - native-extension
+      tech:
+      - rust
+      provider:
+      - cargo
+      scaffold_recipe: maturin-pyo3
+      verification_recipe: python-native-extension
+      intent: ''
+  realtime-service:
+    label: realtime-service
+    work_products:
+    - realtime-service
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: python-realtime
+      work_products:
+      - realtime-service
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-realtime
+      verification_recipe: python-realtime
+      intent: ''
+  serverless-function:
+    label: serverless-function
+    work_products:
+    - serverless-function
+    tech:
+    - cloudflare
+    - lambda
+    - python
+    intent_subtypes: []
+    profile_count: 2
+    profiles:
+    - id: cloudflare-worker
+      work_products:
+      - serverless-function
+      tech:
+      - cloudflare
+      provider:
+      - npm
+      scaffold_recipe: npm-cloudflare-worker
+      verification_recipe: cloudflare-worker
+      intent: ''
+    - id: python-lambda
+      work_products:
+      - serverless-function
+      tech:
+      - lambda
+      - python
+      provider:
+      - uv
+      scaffold_recipe: uv-lambda
+      verification_recipe: python-lambda
+      intent: ''
+  service:
+    label: 后端服务
+    work_products:
+    - http-service
+    - service
+    tech:
+    - axum
+    - csharp
+    - hono
+    - javascript
+    - nestjs
+    - python
+    - rust
+    - typescript
+    intent_subtypes: []
+    profile_count: 5
+    profiles:
+    - id: csharp-http-service
+      work_products:
+      - http-service
+      - service
+      tech:
+      - csharp
+      provider:
+      - dotnet
+      scaffold_recipe: dotnet-aspnet
+      verification_recipe: csharp-http-service
+      intent: ''
+    - id: python-http-service
+      work_products:
+      - http-service
+      - service
+      tech:
+      - python
+      provider:
+      - uv
+      scaffold_recipe: uv-fastapi-service
+      verification_recipe: python-http-service
+      intent: ''
+    - id: rust-http-service
+      work_products:
+      - http-service
+      - service
+      tech:
+      - axum
+      - rust
+      provider:
+      - cargo
+      scaffold_recipe: cargo-axum
+      verification_recipe: rust-http-service
+      intent: ''
+    - id: typescript-http-hono
+      work_products:
+      - http-service
+      - service
+      tech:
+      - hono
+      - javascript
+      - typescript
+      provider:
+      - npm
+      scaffold_recipe: npm-hono
+      verification_recipe: typescript-http-hono
+      intent: ''
+    - id: typescript-http-nest
+      work_products:
+      - http-service
+      - service
+      tech:
+      - nestjs
+      provider:
+      - npm
+      scaffold_recipe: npm-nest
+      verification_recipe: typescript-http-nest
+      intent: ''
+  static-site:
+    label: static-site
+    work_products:
+    - static-site
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: typescript-static-astro
+      work_products:
+      - static-site
+      tech: []
+      provider:
+      - npm
+      scaffold_recipe: npm-astro
+      verification_recipe: typescript-static-astro
+      intent: ''
+  test-suite:
+    label: test-suite
+    work_products:
+    - test-suite
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: playwright-test-suite
+      work_products:
+      - test-suite
+      tech: []
+      provider:
+      - npm
+      scaffold_recipe: npm-playwright-suite
+      verification_recipe: playwright-test-suite
+      intent: ''
+  tui:
+    label: tui
+    work_products:
+    - tui
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: python-tui
+      work_products:
+      - tui
+      tech: []
+      provider:
+      - uv
+      scaffold_recipe: uv-textual-tui
+      verification_recipe: python-tui
+      intent: ''
+  userscript:
+    label: userscript
+    work_products:
+    - userscript
+    tech:
+    - typescript
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: typescript-userscript
+      work_products:
+      - userscript
+      tech:
+      - typescript
+      provider:
+      - npm
+      scaffold_recipe: userscript-ts
+      verification_recipe: typescript-userscript
+      intent: ''
+  vscode-extension:
+    label: vscode-extension
+    work_products:
+    - vscode-extension
+    tech: []
+    intent_subtypes: []
+    profile_count: 1
+    profiles:
+    - id: vscode-extension
+      work_products:
+      - vscode-extension
+      tech: []
+      provider:
+      - npm
+      scaffold_recipe: npm-vscode-extension
+      verification_recipe: vscode-extension
+      intent: ''
+  web:
+    label: Web 前端
+    work_products:
+    - web-spa
+    - web-ssr
+    - web-ui
+    tech:
+    - nextjs
+    - react
+    - svelte
+    - typescript
+    - vue
+    intent_subtypes: []
+    profile_count: 5
+    profiles:
+    - id: typescript-web-react
+      work_products:
+      - web-spa
+      - web-ui
+      tech:
+      - react
+      provider:
+      - npm
+      scaffold_recipe: npm-vite-react
+      verification_recipe: typescript-web-ui
+      intent: ''
+    - id: typescript-web-ssr
+      work_products:
+      - web-ssr
+      - web-ui
+      tech:
+      - nextjs
+      provider:
+      - npm
+      scaffold_recipe: npm-next-web
+      verification_recipe: typescript-web-ssr
+      intent: ''
+    - id: typescript-web-svelte
+      work_products:
+      - web-spa
+      - web-ui
+      tech:
+      - svelte
+      provider:
+      - npm
+      scaffold_recipe: npm-vite-svelte
+      verification_recipe: typescript-web-ui
+      intent: ''
+    - id: typescript-web-ui
+      work_products:
+      - web-spa
+      - web-ui
+      tech:
+      - typescript
+      provider:
+      - npm
+      scaffold_recipe: npm-vite-web
+      verification_recipe: typescript-web-ui
+      intent: ''
+    - id: typescript-web-vue
+      work_products:
+      - web-spa
+      - web-ui
+      tech:
+      - vue
+      provider:
+      - npm
+      scaffold_recipe: npm-vite-vue
+      verification_recipe: typescript-web-ui
+      intent: ''

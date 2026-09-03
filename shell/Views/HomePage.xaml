@@ -1,0 +1,110 @@
+<Page x:Class="ProjectFactory.Workbench.Views.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Background="Transparent">
+  <ScrollViewer x:Name="RootScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ClipToBounds="True">
+    <Grid Margin="40,32,40,48" HorizontalAlignment="Stretch">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="34" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="30" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <StackPanel>
+        <TextBlock Text="PROJECT FACTORY" Style="{StaticResource PageEyebrow}" />
+        <TextBlock Text="把想法变成可以继续开发的项目。" Style="{StaticResource PageTitle}" Margin="0,10,0,10" />
+        <TextBlock Text="说清楚你想做什么就够了。Factory 会整理需求、选择已经验证过的项目类型，再生成并机械验证。" Style="{StaticResource PageLead}" />
+        <StackPanel Orientation="Horizontal" Margin="0,26,0,0">
+          <ui:Button Content="新建项目" Appearance="Primary" Padding="20,11" Click="Create_Click" />
+          <ui:Button Content="最近项目" Appearance="Secondary" Padding="20,11" Margin="10,0,0,0" Click="Projects_Click" />
+          <ui:Button Content="资源 / 热更新" Appearance="Secondary" Padding="20,11" Margin="10,0,0,0" Click="Resources_Click" />
+        </StackPanel>
+      </StackPanel>
+
+      <Grid Grid.Row="2">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1.55*" />
+          <ColumnDefinition Width="18" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <ui:Card Grid.Column="0" Padding="24" MinHeight="150" VerticalAlignment="Stretch">
+          <Grid>
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="当前状态" FontSize="13" FontWeight="SemiBold" />
+                <TextBlock Text="只显示会影响你开始工作的事情" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Margin="0,3,0,0" />
+              </StackPanel>
+              <ui:ProgressRing x:Name="StatusProgress" Grid.Column="1" Width="20" Height="20" IsIndeterminate="True" />
+            </Grid>
+            <StackPanel Grid.Row="1" Margin="0,22,0,0">
+              <TextBlock x:Name="StatusHeadline" Text="正在确认运行环境…" FontFamily="{StaticResource AppDisplayFont}" FontSize="25" FontWeight="SemiBold" />
+              <TextBlock x:Name="StatusDetail" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,7,0,0" LineHeight="20" />
+              <ui:Button x:Name="StatusActionButton" Content="去工具查看原因" Appearance="Secondary" Margin="0,14,0,0" Visibility="Collapsed" Click="StatusAction_Click" />
+            </StackPanel>
+          </Grid>
+        </ui:Card>
+
+        <ui:Card Grid.Column="2" Padding="24" MinHeight="150" VerticalAlignment="Stretch">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+          <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TextBlock Text="可生成的项目类型" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <ui:Button x:Name="ToggleProfilesButton" Grid.Column="1" Content="展开" Appearance="Secondary" Padding="10,4" FontSize="11" Click="ToggleProfiles_Click" Visibility="Collapsed"/>
+          </Grid>
+          <TextBlock x:Name="ReadyProfiles" Grid.Row="1" Text="—" FontSize="15" FontWeight="SemiBold" Margin="0,14,0,6" TextWrapping="Wrap" LineHeight="22" MaxHeight="48" TextTrimming="CharacterEllipsis" />
+          <TextBlock x:Name="ReadyProfilesHint" Grid.Row="2" Text="不支持的类型会明确说明原因，不会假装生成成功。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" LineHeight="18" />
+          </Grid>
+        </ui:Card>
+      </Grid>
+
+      <StackPanel Grid.Row="4">
+        <Grid Margin="0,0,0,14">
+          <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <TextBlock Text="从这里开始" Style="{StaticResource SectionTitle}" />
+          <ui:Button Grid.Column="1" Content="查看全部项目" Appearance="Secondary" Click="Projects_Click" />
+        </Grid>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <ui:Card Grid.Column="0" Padding="20">
+            <StackPanel>
+              <TextBlock Text="Python CLI" FontSize="15" FontWeight="SemiBold" />
+              <TextBlock Text="自动化、命令行工具、本地脚本产品。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Margin="0,7,0,0" TextWrapping="Wrap" />
+              <ui:Button Content="用这个开始" Appearance="Secondary" Margin="0,18,0,0" HorizontalAlignment="Left" Tag="python-cli" Click="Template_Click" />
+            </StackPanel>
+          </ui:Card>
+          <ui:Card Grid.Column="2" Padding="20">
+            <StackPanel>
+              <TextBlock Text="Python Library" FontSize="15" FontWeight="SemiBold" />
+              <TextBlock Text="可复用 API、测试、wheel 与 sdist。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Margin="0,7,0,0" TextWrapping="Wrap" />
+              <ui:Button Content="用这个开始" Appearance="Secondary" Margin="0,18,0,0" HorizontalAlignment="Left" Tag="python-library" Click="Template_Click" />
+            </StackPanel>
+          </ui:Card>
+          <ui:Card Grid.Column="4" Padding="20">
+            <StackPanel>
+              <TextBlock Text="浏览器扩展" FontSize="15" FontWeight="SemiBold" />
+              <TextBlock Text="浏览器工具、页面增强与轻量插件。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Margin="0,7,0,0" TextWrapping="Wrap" />
+              <ui:Button Content="用这个开始" Appearance="Secondary" Margin="0,18,0,0" HorizontalAlignment="Left" Tag="browser-extension" Click="Template_Click" />
+            </StackPanel>
+          </ui:Card>
+        </Grid>
+      </StackPanel>
+    </Grid>
+  </ScrollViewer>
+</Page>

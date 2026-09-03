@@ -1,0 +1,39 @@
+schema_version: "0.1"
+subjects:
+  - id: uv
+    kind: provider
+    adapter_version: "0.1"
+    supported_versions: ["0.10.0"]
+    tested_versions: ["0.10.0"]
+    required_checks: [version-probe, python-cli-golden, python-library-golden, upstream-diff-zero]
+
+  - id: npm
+    kind: provider
+    adapter_version: "0.1"
+    supported_versions: ["10.9.2"]
+    tested_versions: ["10.9.2"]
+    required_checks: [version-probe, node-library-golden, browser-extension-golden, upstream-diff-zero]
+
+  - id: spec-kit
+    kind: process
+    adapter_version: "0.1"
+    supported_contract_versions: ["1.0.1"]
+    supported_versions: []
+    tested_versions: []
+    required_checks: [version-probe, codex-integration-contract, claude-integration-contract, real-runtime-install]
+
+  - id: codex
+    kind: harness
+    adapter_version: "0.1"
+    supported_contract_versions: ["contract-2026-08-30"]
+    supported_versions: []
+    tested_versions: []
+    required_checks: [context-contract, real-runtime-read]
+
+  - id: claude
+    kind: harness
+    adapter_version: "0.1"
+    supported_contract_versions: ["contract-2026-08-30"]
+    supported_versions: []
+    tested_versions: []
+    required_checks: [context-contract, real-runtime-read]

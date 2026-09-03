@@ -1,0 +1,56 @@
+schema_version: "0.1"
+extension:
+  id: trusted-lab
+  version: "2.0.0"
+  mode: trusted-code
+  description: Test-only trusted-code extension proving Provider, Formula adapter and migration hook registration.
+requires:
+  factory_api: "1"
+contributes:
+  registry:
+    providers:
+      - id: trusted-lab.uv
+        version: "1.0"
+        capability: project_scaffolding
+        executable: uv
+        version_args: ["--version"]
+        version_regex: "uv ([0-9]+\\.[0-9]+\\.[0-9]+)"
+        tested_versions: ["0.10.0"]
+        supported_versions: ["0.10.0"]
+        integration: public-cli
+        upstream_source_modified: false
+    profiles:
+      - id: trusted-lab.python-cli
+        version: "2.0"
+        priority: 170
+        match:
+          work_products_any: [cli]
+          technology_required_all: [python]
+        capabilities: [project_scaffolding]
+        provider_preferences:
+          project_scaffolding: [trusted-lab.uv]
+        scaffold_recipe: uv-app
+        verification_recipe: python-cli
+        materialization: minimal
+    formulas:
+      - id: trusted-lab.audit-formula
+        version: "2.0"
+        priority: 10
+        applies_to: ["*"]
+        adapter: trusted-lab.audit-v1
+        description: Adds an auditable trace entry without broadening execution authority.
+  project_artifacts:
+    - id: domain-note
+      kind: domain-extension
+      source: assets/domain.md
+      target: domain/domain.md
+    - id: version-marker
+      kind: metadata
+      source: assets/version.txt
+      target: version.txt
+code:
+  distribution: project-factory-trusted-lab
+  distribution_version: "2.0.0"
+  entry_point_group: project_factory.extensions
+  entry_point_name: trusted-lab
+  search_path: plugin_site

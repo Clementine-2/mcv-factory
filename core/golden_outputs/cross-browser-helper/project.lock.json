@@ -1,0 +1,258 @@
+{
+  "blueprint_schema_version": "0.1",
+  "blueprint_sha256": "b437f7bd156d7a14e5e240ce7720d19f3f3e3138e77479c133d9096d0406146e",
+  "capabilities": [
+    "project_scaffolding"
+  ],
+  "compatibility_policy": {
+    "automatic_promotion": false,
+    "provider_generation_requires": "SUPPORTED"
+  },
+  "decision_context": {
+    "intent": {
+      "autonomy": "interactive",
+      "change_scope": "project",
+      "kind": "bootstrap",
+      "risk": "normal"
+    },
+    "repository": {
+      "clean_worktree": null,
+      "existing_project": false,
+      "test_state": "unknown"
+    }
+  },
+  "decision_trace": [
+    "formula: no large-project structure requires more than minimal materialization",
+    "formula: current intent does not justify elevated verification"
+  ],
+  "execution_decision": {
+    "agent_topology": "single-main-agent",
+    "checkpoint_policy": "milestone",
+    "evidence_required": true,
+    "formula_id": "baseline-engineering",
+    "formula_version": "0.1",
+    "isolation": "none",
+    "materialization": "minimal",
+    "parallelism": 1,
+    "reviewer_required": false,
+    "runner_required": false,
+    "verification_depth": "baseline"
+  },
+  "extension_artifacts": [],
+  "extension_contract": {
+    "api_version": "1",
+    "automatic_code_loading": false,
+    "state_required_for_reverification": false
+  },
+  "extensions": [],
+  "factory": {
+    "stage": "P12",
+    "version": "0.13.0"
+  },
+  "formula": {
+    "id": "baseline-engineering",
+    "version": "0.1"
+  },
+  "formulas": [
+    {
+      "adapter": "baseline-engineering-v1",
+      "id": "baseline-engineering",
+      "version": "0.1"
+    }
+  ],
+  "generated_at_utc": "2026-08-29T20:09:40.224456+00:00",
+  "harness_contract": {
+    "adapters": {
+      "claude": {
+        "adapter_version": "0.1",
+        "context_file": "CLAUDE.md",
+        "context_sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba",
+        "contract_sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba",
+        "id": "claude",
+        "runtime_status": "UNAVAILABLE",
+        "upstream_contract": {
+          "checked_at": "2026-08-30",
+          "reference": "https://github.com/github/spec-kit/tree/v1.0.1",
+          "source": "Spec Kit v1.0.1 Claude/agent-context integration contract"
+        },
+        "upstream_source_modified": false
+      },
+      "codex": {
+        "adapter_version": "0.1",
+        "context_file": "AGENTS.md",
+        "context_sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba",
+        "contract_sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba",
+        "id": "codex",
+        "runtime_status": "UNAVAILABLE",
+        "upstream_contract": {
+          "checked_at": "2026-08-30",
+          "reference": "https://openai.com/index/introducing-codex/",
+          "source": "OpenAI Codex AGENTS.md project instructions"
+        },
+        "upstream_source_modified": false
+      }
+    },
+    "canonical_contract": {
+      "path": ".project/contract/agent-contract.md",
+      "sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba"
+    },
+    "runtime_verified": false,
+    "status": "PARTIALLY_VERIFIED"
+  },
+  "host_integration": {
+    "hosts": {
+      "aionui": {
+        "adapter_version": "0.1",
+        "boundaries": {
+          "owns_extensions": false,
+          "owns_harness_runtime": false,
+          "owns_project_lock": false,
+          "owns_runner": false,
+          "owns_verification": false
+        },
+        "id": "aionui",
+        "plan_path": ".project/host/aionui.json",
+        "plan_sha256": "2f663918c589ec9a5992b6926ff02d14ea501c7ef1c3bc54b83be5c66c714a75",
+        "protocol": "acp",
+        "runtime_verified": false
+      }
+    },
+    "runtime_verified": false,
+    "status": "PARTIALLY_VERIFIED"
+  },
+  "lock_schema_version": "0.9",
+  "managed_files": {
+    ".project/contract/agent-contract.md": {
+      "ownership": "factory-managed",
+      "sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba"
+    },
+    ".project/evidence/harness-compatibility.json": {
+      "ownership": "factory-managed",
+      "sha256": "ad2d3e508a5efa4e38bca48aabf574afa48a19b40c21a1fb6c57c18016bc30f2"
+    },
+    ".project/evidence/host-compatibility.json": {
+      "ownership": "factory-managed",
+      "sha256": "ae259043ed6320de5ee3c1bfc544d77a7847e5516909f74e038a49d5fba28596"
+    },
+    ".project/evidence/process-integration.json": {
+      "ownership": "factory-managed",
+      "sha256": "a3afba75eb9f2d86fbe3af8c5a2ba9100843f27d8b68125fe12b4bba9d7169b3"
+    },
+    ".project/extensions.lock.json": {
+      "ownership": "factory-managed",
+      "sha256": "b3038895ec882090216a7d2c9866950064c4e4a2b89f71f1ee275e3d715bf734"
+    },
+    ".project/generation.json": {
+      "ownership": "factory-managed",
+      "sha256": "0a0e0ec5420e2b0ffa3e404e2eaff111900a1bc1c7f73cebcb6c73ed03aa4c03"
+    },
+    ".project/host/README.md": {
+      "ownership": "factory-managed",
+      "sha256": "f38d276359b8c0d4ebf7e6faf0fdd891b848edff16e55ae9a588d7c3ae8b6a27"
+    },
+    ".project/host/aionui.json": {
+      "ownership": "factory-managed",
+      "sha256": "2f663918c589ec9a5992b6926ff02d14ea501c7ef1c3bc54b83be5c66c714a75"
+    },
+    ".project/process/INSTALL.md": {
+      "ownership": "factory-managed",
+      "sha256": "6edc3c648a7f5797ad2ca2d8109acfe3b02154619637d027010ef6c8c83245a5"
+    },
+    ".project/process/spec-kit-plan.json": {
+      "ownership": "factory-managed",
+      "sha256": "63237e2e93a77144be5bc39d04f7512f684977de2fa1d075a8d4b199dbcb5aa9"
+    },
+    "AGENTS.md": {
+      "ownership": "factory-managed",
+      "sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba"
+    },
+    "CLAUDE.md": {
+      "ownership": "factory-managed",
+      "sha256": "e90478da3d07ec3957699966f7b968ce4df726019b88f4fd091eb33f894e06ba"
+    }
+  },
+  "policies": [
+    {
+      "id": "safe-defaults",
+      "rules": {
+        "allow_multi_agent": false,
+        "allow_runner": true,
+        "max_parallelism": 1,
+        "require_evidence": true
+      },
+      "version": "0.1"
+    }
+  ],
+  "process_integration": {
+    "agent_context_extension": false,
+    "provider": {
+      "adapter_version": "0.1",
+      "id": "spec-kit",
+      "upstream_source_modified": false,
+      "upstream_version": "1.0.1"
+    },
+    "runtime_verified": false,
+    "status": "PLANNED_NOT_INSTALLED",
+    "target_harnesses": [
+      "codex",
+      "claude"
+    ]
+  },
+  "profile": {
+    "id": "browser-extension-js",
+    "scaffold_recipe": "npm-browser-extension",
+    "verification_recipe": "browser-extension-js",
+    "verification_suite": {
+      "id": "browser-extension-js",
+      "version": "0.1"
+    },
+    "version": "0.1"
+  },
+  "project_name": "cross-browser-helper",
+  "providers": {
+    "project_scaffolding": {
+      "compatibility_state": "SUPPORTED",
+      "id": "npm",
+      "integration": "public-cli",
+      "upstream_source_modified": false,
+      "version": "10.9.2"
+    }
+  },
+  "runner_integration": null,
+  "semantic_intake": {
+    "adapter": {
+      "id": "deterministic-baseline",
+      "trust_class": "deterministic-baseline",
+      "version": "0.2"
+    },
+    "guard": {
+      "readiness_status": "USABLE",
+      "schema_status": "STRUCTURALLY_VALID",
+      "secret_redactions": 0,
+      "status": "PASS"
+    },
+    "source_requirement_sha256": "b31dc3de0e4f2958c3b884563bd2107e68d29d82173a030923a567d5a2fae060",
+    "support": []
+  },
+  "upgrade_contract": {
+    "automatic_apply": false,
+    "business_files_outside_overlay": true,
+    "dry_run_required": true,
+    "rollback_before_apply": true,
+    "version": "0.3"
+  },
+  "upgrade_history": [],
+  "verification": {
+    "claim_summary": {
+      "FAILED": 0,
+      "PARTIALLY_VERIFIED": 0,
+      "UNVERIFIED": 2,
+      "VERIFIED": 3
+    },
+    "status": "PARTIALLY_VERIFIED",
+    "suite": {
+      "id": "browser-extension-js",
+      "version": "0.1"
+    }
+  }
+}

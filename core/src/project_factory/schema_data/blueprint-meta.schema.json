@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-factory.local/schemas/blueprint-meta.schema.json",
+  "title": "Project Blueprint Metadata Schema V0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "provenance": {
+      "type": "object",
+      "propertyNames": {"pattern": "^/"},
+      "additionalProperties": {"$ref": "#/$defs/provenance_record"}
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/assumption"}
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/unresolved"}
+    }
+  },
+  "$defs": {
+    "provenance_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source"],
+      "properties": {
+        "source": {
+          "enum": ["EXPLICIT", "INFERRED", "DETECTED", "DEFAULT"]
+        },
+        "note": {"type": "string", "minLength": 1}
+      }
+    },
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "value", "reason"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "pattern": "^/"},
+        "value": {},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "unresolved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "reason", "blocking"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^/"},
+        "reason": {"type": "string", "minLength": 1},
+        "blocking": {"type": "boolean"},
+        "resolution_required": {"type": "boolean", "default": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+schema: project-factory-project-spec/1
+stage: A.1
+core_untouched: true
+note: >
+  Coordinate paper for any generated project. Values are capability ids
+  from dimension ledgers. Providers bind later. Combinations are points,
+  not new work_product ids.
+
+required:
+  - work_products   # 1..n kind ids; n>1 means composition, not a new kind
+  - runtime.language
+  - runtime.execution
+
+fields:
+  work_products:
+    type: list
+    item: work_product.id
+  runtime:
+    language: language_root.id
+    languages_by_package: "optional map package -> language"
+    execution: execution_model.id
+    extra_executions: "optional list, e.g. queue-worker beside long-running-server"
+    version_policy: [supported, observed, pin]
+  framework:
+    body: generated_body.id
+    bodies_by_package: "optional"
+  state:
+    type: list
+    item: {capability: state_capability.id, provider: optional}
+  integration:
+    type: list
+    item: {capability: integration_capability.id, provider: optional}
+  delivery:
+    artifacts: [artifact_type.id]
+    channels: [delivery_channel.id]
+    ci: {capability: ci-pipeline, provider: optional}
+  repo:
+    topology: repo_topology.id
+  quality:
+    gates: [quality_gate_kind.id]
+    tools: "verification_tool ids; tools are providers"
+  security:
+    type: list
+    item: security_capability.id
+  ops:
+    type: list
+    item: ops_capability.id
+  compatibility:
+    os: [windows, linux, macos, rt-os]
+    arch: [x64, arm64, wasm32]
+    browsers: optional
+    runtimes: optional
+  lifecycle:
+    upgrade: lifecycle_capability.id
+    deprecation: optional
+
+profile_rule: >
+  A Profile binds work_product + language_root (+ default execution, default body).
+  It MUST NOT encode state/integration/delivery/ci in its id.

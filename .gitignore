@@ -1,0 +1,60 @@
+# ============================================================
+# Project Factory — .gitignore
+# Open-source source tree only. Build outputs, virtual
+# environments, installers and agent working dirs are excluded.
+# ============================================================
+
+# ---- .NET / WPF build outputs ----
+bin/
+obj/
+publish_win64/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+.vs/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+build/
+dist/
+*.whl
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Installer build artifacts (NSIS) ----
+installer/build/
+installer/dist/
+installer/logs/
+installer/publish/
+installer/.tooling/
+
+# ---- Release / binary artifacts (never in source) ----
+*.exe
+*.msi
+*.sha256
+*SHA256.txt
+CHECKSUMS.sha256
+MANIFEST.sha256
+
+# ---- Agent / tooling working dirs (excluded by policy) ----
+.workbuddy/
+.aionrs/
+.opencode/
+night_run/
+history/
+artifacts/
+evidence_summary/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+*.swp

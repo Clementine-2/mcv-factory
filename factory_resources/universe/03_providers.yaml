@@ -1,0 +1,187 @@
+# 物料：包管理 / 构建后端 / 官方脚手架。看见 latest ≠ supported。
+schema: project-factory-warehouse/2
+slot: provider
+
+items:
+  - id: uv
+    status: owned
+    pin_supported: "0.10.0"
+    observed_latest: "0.12.7"
+    docs: https://docs.astral.sh/uv/concepts/projects/init/
+    why: "SO 2025 最受钦佩的 tag 技术之一。Python 语言根。"
+    scaffolds: ["uv init --app", "uv init --lib", "uv init --package", "uv init --build-backend maturin"]
+
+  - id: npm
+    status: owned
+    pin_supported: "10.9.2"
+    observed_latest: "12.0.2"
+    why: "Node 默认。厂里 node-library / extension 在用"
+
+  - id: pnpm
+    status: observed
+    why: "JS monorepo 默认基座；Plasmo 强烈建议。可替换 npm Provider"
+    docs_note: "2026 monorepo 对比里 pnpm workspaces 是轻量基线"
+
+  - id: yarn
+    status: observed
+    note: "可替换，不优先于 pnpm/npm"
+
+  - id: bun
+    status: observed
+    why: "State of JS 2025 后端 runtime 第三。作 runtime 选项，不立刻替换 npm 门"
+
+  - id: cargo
+    status: owned
+    pin_supported: "1.98.0"
+    observed_latest: "1.90.0"
+    why: "SO 2025 最受钦佩的云/基础设施工具。Rust 自包含：build/test/publish/workspace。已用于 rust-library/cli/http-service/maturin 产线"
+
+  - id: go-modules
+    status: observed
+    init: "go mod init"
+
+  - id: nuget-dotnet
+    status: owned
+    pin_supported: "9.0.315"
+    observed_latest: "10.0.400"
+    init: "dotnet new"
+    note: "已用于 csharp-library/csharp-desktop/avalonia/http-service 产线；与机床 .NET 两套钉"
+
+  - id: maven
+    status: observed
+    why: "Java 调查里仍是最常用构建"
+
+  - id: gradle
+    status: observed
+    why: "Android / Kotlin 默认"
+
+  - id: composer
+    status: observed
+
+  - id: pub
+    status: observed
+    why: "Dart/Flutter"
+
+  - id: spm
+    status: observed
+    why: "Swift Package Manager"
+
+  - id: cmake
+    status: observed
+
+  - id: hatchling
+    status: observed
+    slot_also: provider-option
+    docs: https://hatch.pypa.io/latest/config/project-templates/
+    note: "uv --build-backend hatchling；src-layout + tests"
+
+  - id: uv-build
+    status: observed
+    note: "uv init 默认 build-backend"
+
+  - id: maturin
+    status: observed
+    maps_to: [rust-library, native-extension]
+    docs: https://www.maturin.rs/
+
+  - id: scikit-build-core
+    status: observed
+    note: "C/C++/Fortran/Cython 扩展；uv --build-backend"
+
+  - id: flit-core
+    status: observed
+
+  - id: setuptools
+    status: observed
+
+# 官方脚手架（语言根之上的成熟入口，优先于社区二手模板）
+scaffolds:
+  - id: uv-init
+    status: owned
+    command: "uv init"
+    slot: scaffold
+  - id: cargo-new
+    status: owned
+    command: "cargo new --bin|--lib"
+    note: "已用于 rust-library/cli 产线验证"
+  - id: cargo-generate
+    status: observed
+    repo: https://github.com/cargo-generate/cargo-generate
+    why: "Rust 模板标准"
+  - id: create-vite
+    status: observed
+    npm: create-vite
+    version_observed: "9.2.0"
+    docs: https://www.npmjs.com/package/create-vite
+    templates: [vanilla-ts, vue-ts, react-ts, svelte-ts, solid-ts, preact-ts, lit-ts, qwik-ts]
+  - id: create-next-app
+    status: observed
+    npm: create-next-app
+    version_observed: "16.3.3"
+    docs: https://nextjs.org/docs/app/api-reference/cli/create-next-app
+    extras: "官方已可生成 AGENTS.md"
+  - id: create-vue
+    status: observed
+    repo: https://github.com/vuejs/create-vue
+  - id: create-nuxt
+    status: observed
+    note: "nuxt/cli，create-nuxt-app 已迁走"
+  - id: create-astro
+    status: observed
+    npm: create-astro
+    version_observed: "5.2.4"
+  - id: nest-cli
+    status: observed
+    command: "nest new"
+    docs: https://docs.nestjs.com/first-steps
+  - id: spring-initializr
+    status: observed
+    url: https://start.spring.io
+  - id: dotnet-new
+    status: owned
+    templates: [console, classlib, webapi, wpf, winui, worker]
+    note: "已用于 csharp-* 产线验证"
+  - id: flutter-create
+    status: observed
+    command: "flutter create"
+  - id: expo-create
+    status: observed
+    command: "npx create-expo-app"
+  - id: wxt-init
+    status: owned
+    command: "npx wxt init"
+    note: "已用于 browser-extension-wxt 产线"
+  - id: yo-code
+    status: observed
+    command: "yo code"
+    repo: https://github.com/microsoft/vscode-generator-code
+    version_observed: "1.12.0"
+  - id: playwright-init
+    status: observed
+    command: "npm init playwright@latest"
+    docs: https://playwright.dev/docs/intro
+  - id: copier
+    status: observed
+    docs: https://copier.readthedocs.io/en/latest/comparisons/
+    why: "可 copier update。工厂 overlay 首选，不替换语言根"
+  - id: cookiecutter
+    status: observed
+    why: "社区模板最多，一次成型。工厂不拿它当可更新 overlay"
+  - id: django-admin-startproject
+    status: observed
+  - id: laravel-installer
+    status: observed
+  - id: pulumi-new
+    status: observed
+    command: "pulumi new"
+  - id: tofu-init
+    status: observed
+    command: "tofu init"
+  - id: dbt-init
+    status: observed
+  - id: godot-project
+    status: observed
+    note: "引擎工程，不是 cargo/uv 那种包"
+  - id: bevy-template
+    status: observed
+    via: cargo-generate

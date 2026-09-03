@@ -1,0 +1,53 @@
+# 执行模型：谁叫醒这个进程。与「造什么」正交。
+# FastAPI 可以是 long-running-server，也可以包一层 serverless-invoke。
+schema: project-factory-warehouse/2
+slot: execution_model
+stage: A.1
+
+items:
+  - id: interactive-cli
+    status: owned
+    note: "人敲一行，进程结束。python-cli 默认"
+  - id: tui-session
+    status: observed
+    note: "占住终端直到退出"
+  - id: in-process-library
+    status: owned
+    note: "被别人 import；没有自己的主循环。library 默认"
+  - id: long-running-server
+    status: owned
+    note: "HTTP/gRPC/MCP streamable HTTP 常驻端口"
+  - id: stdio-server
+    status: owned
+    note: "MCP stdio 一类：父进程拉起，标准流说话"
+  - id: daemon-os-service
+    status: observed
+    note: "Windows Service / systemd / launchd。后台 Agent、托盘常驻常落这里"
+  - id: scheduled-batch
+    status: observed
+    note: "cron / 任务计划 / 批处理，跑完就退出"
+  - id: queue-worker
+    status: observed
+    note: "从队列取活。不等于 HTTP worker"
+  - id: serverless-invoke
+    status: owned
+    note: "Lambda / Azure Functions：请求进来才有进程"
+  - id: edge-invoke
+    status: owned
+    note: "Cloudflare Workers / Vercel Edge：边缘节点短调用"
+  - id: browser-runtime
+    status: owned
+    note: "扩展、前端包、用户脚本在浏览器里跑"
+  - id: desktop-gui
+    status: owned
+  - id: mobile-app
+    status: observed
+  - id: notebook-kernel
+    status: owned
+  - id: game-loop
+    status: observed
+  - id: firmware-on-device
+    status: observed
+  - id: language-server-process
+    status: deferred
+    note: "LSP 常驻，可先映射 long-running-server + stdio-server"

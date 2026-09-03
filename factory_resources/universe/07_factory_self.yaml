@@ -1,0 +1,37 @@
+# 机床：造工厂的工具。永远不是用户产线。
+schema: project-factory-warehouse/2
+slot: factory_self
+
+items:
+  - id: factory-self-wpf
+    status: owned
+    pins: [.NET 10.0.400, WPF-UI 4.3.0]
+    namespace_future: ProjectFactory.Machine.Shell
+    note: "阶段 0 用户口径：粗糙但基本能用，现在通过，以后打磨"
+
+  - id: factory-self-nsis
+    status: owned
+    pin: NSIS 3.12
+
+  - id: factory-self-bootstrap
+    status: owned
+
+  - id: factory-self-bridge
+    status: owned
+    note: "有界 JSON 子进程。外壳不拥有 VERIFIED"
+
+  - id: factory-self-core-wheel
+    status: owned
+    version: "0.14.1"
+    note: "P∞。无真实缺陷、无明确新产线验收，不动"
+
+  - id: factory-self-kernel-deps
+    status: owned
+    pins: [jsonschema==4.26.0, PyYAML==6.0.3]
+    note: "内核依赖必须极少。用户轮子不准回流进这里"
+
+rules:
+  - 机床依赖与用户项目依赖两套钉、两套升级路径
+  - 机床目录不得出现在生成仓库里
+  - 外壳改观感不得修改 kernel schema
+  - Electron / WebView 不得成为机床外壳

@@ -1,0 +1,29 @@
+# 仓怎么切。monorepo 不是一种业务产品。
+schema: project-factory-warehouse/2
+slot: repo_topology
+stage: A.1
+
+items:
+  - id: single-package
+    status: owned
+    note: "0.14.1 四条线都是这种"
+  - id: multi-package-workspace
+    status: observed
+    example_providers: [uv-workspaces, cargo-workspaces, pnpm-workspaces]
+    note: "同一语言多个包"
+  - id: monorepo
+    status: observed
+    example_providers: [pnpm-workspaces, turborepo, nx]
+    note: "多包 + 编排；仍不是 work_product"
+  - id: frontend-backend-split
+    status: owned
+    note: "两摊代码一个仓或两个仓；两个 work_product 组合"
+  - id: polyglot-workspace
+    status: observed
+    note: "多语言；夹具 05。由多条产线组合，不是一条巨舰产线"
+  - id: contract-plus-impl
+    status: observed
+    note: "schema-contract 仓 + 实现仓"
+  - id: generated-and-handwritten
+    status: observed
+    note: "OpenAPI 生成 SDK 与手写包装共存"

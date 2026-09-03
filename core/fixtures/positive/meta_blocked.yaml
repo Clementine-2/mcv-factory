@@ -1,0 +1,6 @@
+schema_version: "0.1"
+unresolved:
+  - path: "/constraints/hard"
+    reason: "Requested workflow may overwrite the only copy of irreplaceable source data."
+    blocking: true
+    resolution_required: true

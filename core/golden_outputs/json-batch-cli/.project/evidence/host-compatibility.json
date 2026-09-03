@@ -1,0 +1,49 @@
+{
+  "claims": [
+    {
+      "evidence": {
+        "plan_sha256": "2f663918c589ec9a5992b6926ff02d14ea501c7ef1c3bc54b83be5c66c714a75",
+        "target_harnesses": [
+          "codex",
+          "claude"
+        ]
+      },
+      "id": "aionui-workspace-contract",
+      "limitation": "Only the Host workspace/harness contract is verified; no GUI process or live Agent task was executed.",
+      "scope": ".project/host/aionui.json",
+      "status": "VERIFIED"
+    },
+    {
+      "evidence": {
+        "runtime_probe": "NOT_RUN"
+      },
+      "id": "aionui-runtime",
+      "limitation": "Interactive Host runtime remains outside current execution evidence.",
+      "scope": "aionui",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "hosts": {
+    "aionui": {
+      "adapter_version": "0.1",
+      "boundaries": {
+        "owns_extensions": false,
+        "owns_harness_runtime": false,
+        "owns_project_lock": false,
+        "owns_runner": false,
+        "owns_verification": false
+      },
+      "id": "aionui",
+      "plan_path": ".project/host/aionui.json",
+      "plan_sha256": "2f663918c589ec9a5992b6926ff02d14ea501c7ef1c3bc54b83be5c66c714a75",
+      "protocol": "acp",
+      "runtime_verified": false
+    }
+  },
+  "limitations": [
+    "Host plan materialization is verified; live Host runtime is not.",
+    "No Host executable, package, setting, or external state is installed or modified by Project Factory."
+  ],
+  "schema_version": "0.1",
+  "status": "PARTIALLY_VERIFIED"
+}

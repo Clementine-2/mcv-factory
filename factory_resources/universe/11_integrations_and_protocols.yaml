@@ -1,0 +1,47 @@
+# 对外怎么连。协议是能力，Express/FastAPI 实现 REST 只是车身。
+schema: project-factory-warehouse/2
+slot: integration_capability
+stage: A.1
+
+items:
+  - id: rest-http
+    status: observed
+    often_with: [http-service]
+  - id: graphql
+    status: observed
+  - id: grpc
+    status: observed
+  - id: websocket
+    status: observed
+  - id: sse
+    status: observed
+  - id: webhook-inbound
+    status: observed
+  - id: webhook-outbound
+    status: observed
+  - id: openapi-contract
+    status: observed
+    note: "合同本身可独立成 schema-contract 仓"
+  - id: asyncapi-contract
+    status: observed
+  - id: protobuf-contract
+    status: observed
+  - id: oauth-oidc
+    status: observed
+  - id: saml
+    status: deferred
+  - id: mcp-stdio
+    status: observed
+  - id: mcp-streamable-http
+    status: observed
+  - id: event-bus-publish
+    status: observed
+    example_providers: [kafka, nats, rabbitmq, sns]
+  - id: event-bus-consume
+    status: observed
+    note: "和 execution.queue-worker / 工作产品 event-driven-app 一起用"
+  - id: email-sms
+    status: observed
+  - id: third-party-http-client
+    status: observed
+    note: "调用别人的 API；SDK 生成物见 generated-sdk"

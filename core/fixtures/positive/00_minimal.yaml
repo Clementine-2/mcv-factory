@@ -1,0 +1,5 @@
+schema_version: "0.1"
+project:
+  purpose: "Create a tiny utility."
+work_products:
+  - kind: "cli"

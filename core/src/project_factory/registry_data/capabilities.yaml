@@ -1,0 +1,9 @@
+schema_version: "0.1"
+capabilities:
+  - id: project_scaffolding
+    version: "0.1"
+    description: Create a native project skeleton without implementing domain behavior.
+
+  - id: long_running_execution
+    version: "0.1"
+    description: Execute finite Agent batches under external schedule, timeout, retry, liveness and run-history control.

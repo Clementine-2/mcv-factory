@@ -1,0 +1,26 @@
+schema_version: "0.1"
+project:
+  purpose: "Provide browser-based AI functionality through a cross-browser extension."
+work_products:
+  - kind: "browser-extension"
+targets:
+  - kind: "browser"
+    value: "chrome"
+  - kind: "browser"
+    value: "firefox"
+technology:
+  required:
+    - "typescript"
+lifecycle:
+  stage: "prototype"
+  horizon: "long-lived"
+scope:
+  scale_hint: "medium"
+constraints:
+  hard:
+    - "Must support Chrome and Firefox."
+  quality:
+    - attribute: "maintainability"
+      level: "high"
+    - attribute: "privacy"
+      level: "high"

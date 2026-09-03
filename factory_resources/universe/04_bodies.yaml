@@ -1,0 +1,414 @@
+# 轮子 = 生成项目里的车身框架。每个类目收最成熟的几个，不是 GitHub 搜到的全收。
+# 调查锚点：SO 2025 web（Node 48.7 React 44.7 Next 20.8 Express 19.9 ASP.NET Core 19.7
+# Angular 18.2 Vue 17.6 FastAPI 14.8 Spring Boot 14.7 Flask 14.4）；
+# CLI 王者：Typer / Click / Cobra / Clap / Commander；
+# MCP 官方 SDK 分档；桌面优先非 Electron；移动 Flutter / Expo / KMP。
+schema: project-factory-warehouse/2
+slot: generated_body
+
+cli:
+  - id: argparse
+    status: owned
+    lang: python
+    note: "当前 python-cli 车身，能毕业，偏瘦"
+  - id: typer
+    status: owned
+    lang: python
+    docs: https://typer.tiangolo.com/tutorial/package/
+    drawing: "uv init --package + src/{pkg}/main.py + [project.scripts]"
+    why: "FastAPI 作者；类型即参数。PyPI 月下载约 3 亿量级"
+    not: new-harness
+  - id: click
+    status: observed
+    lang: python
+    why: "Typer 底层；存量最大的 Python CLI 库"
+  - id: cobra
+    status: observed
+    lang: go
+    why: "kubectl / docker / gh / hugo。Go CLI 事实标准"
+  - id: clap
+    status: owned
+    lang: rust
+    repo: https://github.com/clap-rs/clap
+    why: "ripgrep/bat/fd；Rust CLI 事实标准"
+  - id: commander
+    status: owned
+    lang: typescript
+    why: "Node CLI 默认；已有 Node 工具链时不要为了 CLI 换语言"
+  - id: oclif
+    status: observed
+    lang: typescript
+    why: "带子命令插件的重型 Node CLI（Heroku/Salesforce 路线）"
+
+tui:
+  - id: textual
+    status: owned
+    lang: python
+    why: "Python TUI 最成熟"
+  - id: ratatui
+    status: observed
+    lang: rust
+  - id: bubbletea
+    status: observed
+    lang: go
+    why: "Charm 栈"
+  - id: ink
+    status: observed
+    lang: typescript
+    why: "React 写终端；Claude Code 一类产品用过这条路"
+
+http_service:
+  - id: fastapi
+    status: owned
+    lang: python
+    docs: https://fastapi.tiangolo.com/tutorial/bigger-applications/
+    drawing: "app/main.py + routers/ + uvicorn"
+    maps_to_intent: http-service
+    why: "SO 2025 故事框架；+5pt。工厂先做最小 service，官方全栈模板太重"
+    official_heavy_template: https://github.com/fastapi/full-stack-fastapi-template
+  - id: flask
+    status: observed
+    lang: python
+    why: "用量仍高，新线不优先于 FastAPI"
+  - id: django
+    status: observed
+    lang: python
+    why: "batteries-included Web；数据/后台重的产品"
+    scaffold: django-admin-startproject
+  - id: nestjs
+    status: owned
+    lang: typescript
+    docs: https://docs.nestjs.com/first-steps
+    scaffold: "nest new"
+    why: "TS 企业 API / 微服务最成熟的一套"
+  - id: express
+    status: observed
+    lang: javascript
+    why: "SO 仍核心；新产线更宜 Nest 或 Hono"
+  - id: hono
+    status: owned
+    lang: typescript
+    why: "边缘/Workers 轻量 HTTP；可与 MCP TS v2 适配器并列观察"
+  - id: spring-boot
+    status: observed
+    lang: java
+    why: "Java 后端调查稳居第一；start.spring.io"
+  - id: ktor
+    status: observed
+    lang: kotlin
+    why: "Kotlin 轻量服务；Spring 之后的第二选择"
+  - id: aspnet-core
+    status: owned
+    lang: csharp
+    why: "SO web 技术前列；dotnet new webapi"
+  - id: axum
+    status: owned
+    lang: rust
+    why: "Tokio 官方生态，Rust HTTP 首选"
+  - id: actix-web
+    status: observed
+    lang: rust
+    why: "性能向备选，不与 Axum 并行两条产线"
+  - id: chi
+    status: observed
+    lang: go
+    why: "标准库风格 Go HTTP；Gin/Echo/Fiber 里偏净的一条"
+  - id: gin
+    status: observed
+    lang: go
+    why: "Go Web 用量最大之一"
+  - id: fiber
+    status: observed
+    lang: go
+  - id: laravel
+    status: observed
+    lang: php
+    why: "PHP Web 成熟轮子；种类覆盖用，不进近阶段"
+  - id: rails
+    status: deferred
+    lang: ruby
+
+web_ui:
+  - id: react
+    status: owned
+    lang: typescript
+    why: "SO 44.7%。SPA 默认车身"
+    scaffold: create-vite
+  - id: vue
+    status: owned
+    scaffold: create-vue
+  - id: svelte
+    status: owned
+    why: "钦佩度高、客户单量较小；作 Vite 模板选项"
+  - id: solid
+    status: observed
+  - id: angular
+    status: observed
+    why: "企业存量；新厂线不优先于 React/Vue"
+  - id: nextjs
+    status: owned
+    scaffold: create-next-app
+    why: "SSR/全栈元框架默认。官方脚手架已能带 AGENTS.md"
+  - id: nuxt
+    status: observed
+    scaffold: create-nuxt
+  - id: sveltekit
+    status: observed
+  - id: astro
+    status: owned
+    scaffold: create-astro
+    why: "内容站 / 多框架岛。静态站首选之一"
+  - id: remix-react-router
+    status: observed
+    note: "Remix 并入 React Router 7 路线，记观察不并列为第四元框架"
+  - id: qwik
+    status: observed
+    note: "create-vite 已有模板，作选项"
+  - id: htmx
+    status: observed
+    note: "服务端 HTML 增强；常挂在 Django/Laravel/Go 上，不是独立语言根"
+
+desktop:
+  - id: tauri
+    status: observed
+    why: "2026 轻量桌面首选：系统 WebView + Rust，安装包个位数 MB"
+    factory_self: forbidden
+    user_project: preferred
+  - id: wpf
+    status: owned
+    why: "Windows 桌面成熟；机床也用 WPF，用户产线必须另钉、另升级"
+    warning: "两套宇宙，禁止混依赖"
+  - id: winui
+    status: observed
+    why: "微软公开主线 WinUI；新 Windows 原生选项"
+  - id: avalonia
+    status: owned
+    why: "跨平台 C# 桌面，WPF 手感"
+  - id: maui
+    status: observed
+    why: "C# 跨设备；桌面成熟度次于 Avalonia/WPF"
+  - id: flutter-desktop
+    status: observed
+    why: "已有 Flutter 移动线时可延伸"
+  - id: qt
+    status: observed
+    why: "工业/医疗/嵌入式 GUI"
+  - id: swiftui
+    status: observed
+    why: "macOS 原生"
+  - id: wails
+    status: observed
+    why: "Go + 系统 WebView，Tauri 的 Go 对照"
+  - id: electron
+    status: observed
+    why: "生态最大、体积最大。用户项目可观察；机床外壳禁止"
+    factory_self: forbidden
+    user_project: last-resort
+
+mobile:
+  - id: flutter
+    status: observed
+    scaffold: flutter-create
+    why: "跨平台份额调查常居第一；像素一致 + Impeller"
+  - id: expo
+    status: observed
+    why: "2026 RN 默认框架（EAS、expo-router）。JS 团队最快出货"
+  - id: react-native
+    status: observed
+    note: "新架构默认；无 Expo 的裸 RN 只作进阶"
+  - id: kotlin-multiplatform
+    status: observed
+    why: "共享逻辑 + 原生 UI。企业/金融向"
+  - id: jetpack-compose
+    status: observed
+    why: "Android 原生 UI"
+  - id: swiftui-ios
+    status: observed
+    why: "iOS 原生"
+  - id: ionic-capacitor
+    status: deferred
+    why: "WebView 移动。覆盖种类，不进首选三强"
+
+browser_extension:
+  - id: wxt
+    status: owned
+    docs: https://wxt.dev/guide/essentials/project-structure
+    drawing: "wxt.config.ts + entrypoints/"
+    why: "2026 新扩展默认：Vite、跨浏览器、维护活跃。WXT 官方对比里 Plasmo 维护偏停"
+    compare: https://wxt.dev/guide/resources/compare
+  - id: plasmo
+    status: candidate
+    why: "React DX 好；Parcel、维护变慢。不与 WXT 并行两条继任产线"
+  - id: extension-js
+    status: candidate
+    npm: extension
+    why: "零配置、输出仍像原生扩展。先比较再选，不并行"
+  - id: crxjs
+    status: candidate
+    why: "Vite 插件不是完整框架"
+  - id: hand-written-mv3
+    status: owned
+    note: "当前 browser-extension-js"
+
+mcp:
+  - id: mcp-python-sdk-v2
+    status: owned
+    repo: https://github.com/modelcontextprotocol/python-sdk
+    docs: https://py.sdk.modelcontextprotocol.io/
+    tier: 1
+    drawing: "MCPServer + @tool/@resource/@prompt；uv add mcp"
+    next_profile: python-mcp-server
+    not: factory-host
+  - id: mcp-typescript-sdk-v2
+    status: owned
+    repo: https://github.com/modelcontextprotocol/typescript-sdk
+    tier: 1
+    drawing: "@modelcontextprotocol/server + serveStdio + zod"
+  - id: mcp-csharp-sdk
+    status: observed
+    repo: https://github.com/modelcontextprotocol/csharp-sdk
+    tier: 1
+    note: "与微软协作"
+  - id: mcp-go-sdk
+    status: observed
+    repo: https://github.com/modelcontextprotocol/go-sdk
+    tier: 1
+  - id: mcp-rust-sdk
+    status: observed
+    repo: https://github.com/modelcontextprotocol/rust-sdk
+    tier: "1-or-2-per-official-table"
+    note: "官方 SDK 页分档以 modelcontextprotocol.io/docs/sdk 为准"
+  - id: mcp-java-sdk
+    status: observed
+    tier: 2
+  - id: mcp-kotlin-sdk
+    status: observed
+    tier: 3
+  - id: mcp-inspector
+    status: observed
+    slot_note: "开发器，不是生成物车身；uv run mcp dev 同类"
+
+data_ml:
+  - id: jupyter
+    status: owned
+    maps_to: notebook
+  - id: cookiecutter-data-science
+    status: observed
+    repo: https://github.com/drivendataorg/cookiecutter-data-science
+    why: "数据科学项目结构事实标准（CCDS v2）"
+  - id: kedro
+    status: observed
+    why: "可复现数据管道框架"
+  - id: dbt-core
+    status: owned
+    why: "分析变换层标准"
+  - id: dagster
+    status: observed
+    why: "资产中心编排，和 dbt 一等集成"
+  - id: prefect
+    status: observed
+    why: "Python 原生编排"
+  - id: airflow
+    status: observed
+    why: "存量最大的调度。新线不优先于 Dagster/Prefect"
+  - id: pytorch
+    status: observed
+    maps_to: ml-training
+  - id: lightning
+    status: observed
+  - id: scikit-learn
+    status: observed
+
+iac:
+  - id: opentofu
+    status: owned
+    why: "Terraform 开源分叉，MPL。工厂优先开源物料。F09 已上车（opentofu-tf 图纸）"
+  - id: pulumi
+    status: observed
+    why: "用已经会的语言写基础设施；pulumi new"
+  - id: terraform
+    status: observed
+    note: "BSL。只观察，不把 BSL 工具当默认语言根物料"
+  - id: aws-cdk
+    status: observed
+    note: "AWS 单云"
+  - id: crossplane
+    status: deferred
+  - id: docker-compose
+    status: owned
+    note: "常作 overlay"
+
+game:
+  - id: godot
+    status: observed
+    why: "开源游戏引擎最成熟；官方 demo/template 仓"
+    repo: https://github.com/godotengine/godot
+  - id: bevy
+    status: observed
+    why: "Rust ECS 游戏引擎；cargo 生态"
+  - id: unity
+    status: observed
+    note: "闭源主流。只记种类，不进开源优先产线"
+  - id: raylib
+    status: observed
+    note: "教学/小品游戏 C 库"
+
+embedded_wasm:
+  - id: platformio
+    status: observed
+  - id: zephyr
+    status: observed
+  - id: rust-embedded
+    status: observed
+  - id: wasm-pack
+    status: observed
+  - id: napi-rs
+    status: observed
+  - id: pyo3
+    status: owned
+
+bots_and_misc:
+  - id: discord-py
+    status: owned
+  - id: discord-js
+    status: observed
+  - id: slack-bolt
+    status: observed
+  - id: scrapy
+    status: owned
+  - id: crawlee
+    status: observed
+
+generated_agent_libs:
+  # 用户项目可以依赖；绝对不能变成工厂大脑
+  - id: pydantic-ai
+    status: observed
+    repo: https://github.com/pydantic/pydantic-ai
+    not: factory-harness
+  - id: openai-agents-python
+    status: observed
+    repo: https://github.com/openai/openai-agents-python
+    not: factory-harness
+  - id: langchain
+    status: out_of_universe
+    where: "作为 Core / 工厂循环"
+    as_generated_body: deferred
+    note: "用户项目若点名可以用，默认不推荐；进内核永远禁止"
+
+orm_and_data_access:
+  - id: sqlalchemy
+    status: observed
+  - id: prisma
+    status: observed
+    why: "TS 数据层常见默认"
+  - id: drizzle
+    status: observed
+    why: "TS SQL-first，2026 常见替代"
+  - id: entity-framework
+    status: observed
+  - id: gorm
+    status: observed
+  - id: diesel
+    status: observed
+  - id: sqlx
+    status: observed

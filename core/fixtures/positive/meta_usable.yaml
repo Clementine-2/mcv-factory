@@ -1,0 +1,6 @@
+schema_version: "0.1"
+unresolved:
+  - path: "/targets"
+    reason: "Deployment environment not specified, but local generation can proceed safely."
+    blocking: false
+    resolution_required: false

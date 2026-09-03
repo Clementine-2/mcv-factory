@@ -1,0 +1,4 @@
+schema_version: "0.1"
+project:
+  purpose: "Invalid fixture with no work products."
+work_products: []

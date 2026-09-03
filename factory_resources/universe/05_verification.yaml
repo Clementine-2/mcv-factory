@@ -1,0 +1,66 @@
+# 量具。命令所有权在可信代码。Registry 只能选 suite id。
+schema: project-factory-warehouse/2
+slot: verification_tool
+
+owned:
+  - id: unittest
+    lang: python
+    note: "当前 Python 门。能毕业，偏旧"
+  - id: node-test
+    lang: javascript
+    note: "当前 node-library 门"
+  - id: verification-spine
+    note: "Gate → Evidence → Claim。厂规"
+
+  - id: cargo-test
+    lang: rust
+    note: "已用于 rust-library/cli/http-service 产线验证"
+  - id: xunit
+    lang: csharp
+    note: "已用于 csharp-library/desktop/http-service 产线验证"
+observed:
+  - id: pytest
+    lang: python
+    why: "现代 Python 默认测试器。适合挂在阶段 B 当加法，不单独开空阶段"
+  - id: ruff
+    lang: python
+    why: "lint+format 一把；和 uv 同一作者生态"
+  - id: mypy
+    lang: python
+    alt: ty
+    note: "类型检查候选"
+  - id: vitest
+    lang: typescript
+    why: "Vite 生态单测默认"
+  - id: playwright
+    lang: typescript
+    docs: https://playwright.dev/docs/intro
+    scaffold: "npm init playwright@latest"
+    maps_to: [browser-extension-runtime, web-e2e, scraper]
+    why: "把现在 UNVERIFIED 的浏览器运行时 claim 补成证据的候选"
+  - id: playwright-python
+    lang: python
+    docs: https://playwright.dev/python/docs/ci
+  - id: biome
+    lang: typescript
+    repo: https://github.com/biomejs/biome
+    why: "JS/TS lint+format 现代默认之一；create-next-app 已可选用"
+  - id: eslint
+    status_note: "存量最大。新 TS 线可 Biome 优先"
+  - id: clippy
+    lang: rust
+  - id: go-test
+    lang: go
+  - id: junit
+    lang: java
+  - id: coverage-py
+    lang: python
+  - id: cypress
+    status_note: "E2E 备选，不与 Playwright 并行两条默认"
+
+overlays_not_authority:
+  - id: github-actions
+    slot: overlay
+    note: "公开 CI 证据可选；本地门仍是权威"
+  - id: pre-commit
+    slot: overlay

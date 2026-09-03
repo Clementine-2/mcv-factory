@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-factory.local/schemas/blueprint.schema.json",
+  "title": "Project Blueprint Schema V0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project", "work_products"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["purpose"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "purpose": {"type": "string", "minLength": 1}
+      }
+    },
+    "work_products": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/work_product"}
+    },
+    "targets": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/target"}
+    },
+    "technology": {"$ref": "#/$defs/technology"},
+    "lifecycle": {"$ref": "#/$defs/lifecycle"},
+    "scope": {"$ref": "#/$defs/scope"},
+    "constraints": {"$ref": "#/$defs/constraints"},
+    "components": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/component"}
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z0-9][a-z0-9._-]*$"},
+      "additionalProperties": {"type": "object"}
+    }
+  },
+  "$defs": {
+    "non_empty_string_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "work_product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "value": {"type": "string", "minLength": 1}
+      }
+    },
+    "technology": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "required": {"$ref": "#/$defs/non_empty_string_array"},
+        "preferred": {"$ref": "#/$defs/non_empty_string_array"},
+        "prohibited": {"$ref": "#/$defs/non_empty_string_array"}
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "stage": {"type": "string", "minLength": 1},
+        "horizon": {"type": "string", "minLength": 1}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scale_hint"],
+      "properties": {
+        "scale_hint": {"type": "string", "minLength": 1}
+      }
+    },
+    "quality_attribute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attribute", "level"],
+      "properties": {
+        "attribute": {"type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "level": {"type": "string", "minLength": 1}
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "hard": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "quality": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/quality_attribute"}
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "purpose", "work_products"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "purpose": {"type": "string", "minLength": 1},
+        "work_products": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/work_product"}
+        },
+        "targets": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/target"}
+        },
+        "technology": {"$ref": "#/$defs/technology"},
+        "constraints": {"$ref": "#/$defs/constraints"}
+      }
+    }
+  }
+}

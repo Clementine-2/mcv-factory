@@ -1,0 +1,19 @@
+schema_version: "0.1"
+project:
+  purpose: "Expose tools, resources and prompts to an external Agent over MCP."
+work_products:
+  - kind: "mcp-server"
+technology:
+  required:
+    - "python"
+targets:
+  - kind: "runtime"
+    value: "local"
+lifecycle:
+  stage: "prototype"
+  horizon: "short-lived"
+scope:
+  scale_hint: "tiny"
+constraints:
+  hard:
+    - "The generated project is an MCP server, not an MCP host."

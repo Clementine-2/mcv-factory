@@ -1,0 +1,54 @@
+{
+  "agent_context_extension": false,
+  "commands": [
+    [
+      "specify",
+      "init",
+      "--here",
+      "--integration",
+      "codex",
+      "--script",
+      "py"
+    ],
+    [
+      "specify",
+      "integration",
+      "install",
+      "claude",
+      "--script",
+      "py"
+    ],
+    [
+      "specify",
+      "integration",
+      "status"
+    ]
+  ],
+  "context_ownership": "project-factory",
+  "default_harness": "codex",
+  "limitations": [
+    "The plan is derived from the Spec Kit v1.0.1 public integration contract.",
+    "The Factory does not claim the real Spec Kit CLI executed unless execution evidence is present.",
+    "The Spec Kit agent-context extension is intentionally not installed because Project Factory owns AGENTS.md/CLAUDE.md."
+  ],
+  "provider": {
+    "adapter_version": "0.1",
+    "id": "spec-kit",
+    "upstream_source_modified": false,
+    "upstream_version": "1.0.1"
+  },
+  "schema_version": "0.1",
+  "status": "PLANNED_NOT_INSTALLED",
+  "target_harnesses": [
+    "codex",
+    "claude"
+  ],
+  "upstream_contract": {
+    "checked_at": "2026-08-30",
+    "claude_skills_dir": ".claude/skills",
+    "codex_skills_dir": ".agents/skills",
+    "ref": "v1.0.1",
+    "release": "https://github.com/github/spec-kit/releases/tag/v1.0.1",
+    "repository": "https://github.com/github/spec-kit"
+  }
+}

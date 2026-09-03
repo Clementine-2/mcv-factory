@@ -1,0 +1,34 @@
+---
+name: factory-discipline
+description: Factory overlay rules for this generated project. Use when editing Factory-owned files, running verification, or applying a Factory upgrade.
+---
+
+# Factory discipline
+
+Project `{{ project_name }}` is a Factory-generated `{{ profile_id }}` scaffold.
+Overlay template version: `{{ factory_version }}`.
+
+Factory owns overlay files. You own source.
+
+## Factory-owned (do not edit by hand)
+
+- `AGENTS.md` / `CLAUDE.md` / `.project/contract/agent-contract.md`
+- `project.lock.json` and `.project/FACTORY_OVERLAY_MANIFEST.sha256`
+- `.project/overlay/VERIFICATION_SPINE.md`
+- `.copier-answers.factory-overlay.yml`
+- this skill
+
+## You own
+
+- `src/`, `tests/`, and language-root files (`pyproject.toml`, `package.json`)
+
+## Verification
+
+Gate → Evidence → Claim. Status is `VERIFIED` / `PARTIAL` / `UNVERIFIED` / `FAILED`.
+A passing command is not a claim. Do not rewrite test commands to make a gate pass.
+
+## Overlay refresh
+
+Factory overlay refresh overwrites Factory-owned files from the current Factory template.
+It does not replace uv/npm and does not rewrite your source.
+Treat it as an explicit migration, not an automatic dependency bump.

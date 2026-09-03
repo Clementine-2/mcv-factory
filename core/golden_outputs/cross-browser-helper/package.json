@@ -1,0 +1,22 @@
+{
+  "description": "做一个 JavaScript 浏览器扩展，必须支持 Chrome 和 Firefox，先建立可靠项目基地。",
+  "files": [
+    "manifest.json",
+    "popup.html",
+    "src",
+    "scripts",
+    "tests",
+    "README.md",
+    "AGENTS.md",
+    ".project",
+    "project.lock.json"
+  ],
+  "name": "cross-browser-helper",
+  "private": true,
+  "scripts": {
+    "check:manifest": "node ./scripts/check-manifest.js",
+    "test": "node --test"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

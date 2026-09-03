@@ -1,0 +1,20 @@
+schema_version: "0.1"
+hosts:
+  - id: aionui
+    adapter_version: "0.1"
+    kind: interactive-gui
+    protocol: acp
+    target_harnesses: [codex, claude]
+    default: false
+    upstream_contract:
+      source: "AionUI ACP Setup / Multi-Agent Mode contract snapshot"
+      reference: "https://github.com/iOfficeAI/AionUi/wiki/ACP-Setup"
+      checked_at: "2026-08-30"
+      contract_snapshot: "2026-08-06"
+    boundaries:
+      owns_extensions: false
+      owns_verification: false
+      owns_runner: false
+      owns_harness_runtime: false
+      owns_project_lock: false
+    notes: "Plan-only Host adapter. AionUI detects existing external CLI agents and connects via ACP or a Host-side compatibility adapter; Project Factory does not install or launch AionUI."

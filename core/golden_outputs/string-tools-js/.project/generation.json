@@ -1,0 +1,122 @@
+{
+  "execution_decision": {
+    "context": {
+      "intent": {
+        "autonomy": "interactive",
+        "change_scope": "project",
+        "kind": "bootstrap",
+        "risk": "normal"
+      },
+      "repository": {
+        "clean_worktree": null,
+        "existing_project": false,
+        "test_state": "unknown"
+      }
+    },
+    "decision": {
+      "agent_topology": "single-main-agent",
+      "checkpoint_policy": "milestone",
+      "evidence_required": true,
+      "formula_id": "baseline-engineering",
+      "formula_version": "0.1",
+      "isolation": "none",
+      "materialization": "minimal",
+      "parallelism": 1,
+      "reviewer_required": false,
+      "runner_required": false,
+      "verification_depth": "baseline"
+    },
+    "formulas": [
+      {
+        "adapter": "baseline-engineering-v1",
+        "id": "baseline-engineering",
+        "version": "0.1"
+      }
+    ],
+    "policies": [
+      {
+        "id": "safe-defaults",
+        "rules": {
+          "allow_multi_agent": false,
+          "allow_runner": true,
+          "max_parallelism": 1,
+          "require_evidence": true
+        },
+        "version": "0.1"
+      }
+    ],
+    "trace": [
+      "formula: no large-project structure requires more than minimal materialization",
+      "formula: current intent does not justify elevated verification"
+    ]
+  },
+  "factory_boundary": "bootstrap-only; domain feature intentionally not implemented",
+  "factory_upgrade_contract": {
+    "automatic_apply": false,
+    "dry_run_required": true,
+    "factory_owned_files_only": true,
+    "version": "0.3"
+  },
+  "generated_at_utc": "2026-08-29T20:09:39.034761+00:00",
+  "resolution": {
+    "capabilities": [
+      "project_scaffolding"
+    ],
+    "extensions": [],
+    "harnesses": [
+      "codex",
+      "claude"
+    ],
+    "hosts": [
+      "aionui"
+    ],
+    "process_integration": "spec-kit",
+    "process_mode": "plan",
+    "profile": {
+      "id": "node-library",
+      "version": "0.1"
+    },
+    "providers": {
+      "project_scaffolding": {
+        "compatibility_state": "SUPPORTED",
+        "id": "npm",
+        "integration": "public-cli",
+        "upstream_source_modified": false,
+        "version": "10.9.2"
+      }
+    },
+    "runner": null,
+    "runner_harness": null
+  },
+  "scaffolder": {
+    "capability": "project_scaffolding",
+    "command_result": {
+      "command": [
+        "npm",
+        "init",
+        "--yes"
+      ],
+      "cwd": ".",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Wrote to <PROJECT_ROOT>/package.json:\n\n{\n  \"name\": \"string-tools\",\n  \"version\": \"1.0.0\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n  },\n  \"keywords\": [],\n  \"author\": \"\",\n  \"license\": \"ISC\",\n  \"description\": \"\"\n}\n\n\n\n"
+    },
+    "provider": "npm",
+    "version": "10.9.2"
+  },
+  "semantic_intake": {
+    "adapter": {
+      "id": "deterministic-baseline",
+      "trust_class": "deterministic-baseline",
+      "version": "0.2"
+    },
+    "guard": {
+      "readiness_status": "USABLE",
+      "schema_status": "STRUCTURALLY_VALID",
+      "secret_redactions": 0,
+      "status": "PASS"
+    },
+    "source_requirement_sha256": "443379d1f1fa5db7629fe31a9aad8bfb5540853f55a2a6b19cdbde9d65999aa2",
+    "support": []
+  }
+}

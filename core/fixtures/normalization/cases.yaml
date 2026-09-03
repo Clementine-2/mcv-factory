@@ -1,0 +1,77 @@
+cases:
+  - id: tiny_python_cli
+    text: "做一个不超过100行代码的 Python 命令行工具，批量转换 JSON，不能覆盖原始文件。"
+    readiness: USABLE
+    work_products: [cli]
+    required_technology: [python]
+    forbidden_root_keys: [runner, harness, provider, profile]
+
+  - id: browser_extension
+    text: "做一个 Chrome 和 Firefox 都能用的 TypeScript 浏览器扩展，调用大模型 API，先做 MVP，以后长期维护，隐私要求高。"
+    readiness: USABLE
+    work_products: [browser-extension]
+    required_technology: [typescript]
+    forbidden_work_products: [model, service]
+
+  - id: web_api
+    text: "做一个长期维护的 Web 应用和 HTTP API，前端 TypeScript，后端 Python，对安全性和稳定性要求高。"
+    readiness: USABLE
+    work_products: [web-ui, service]
+    required_technology: [typescript, python]
+
+  - id: research
+    text: "做一个机器学习实验项目，使用 Python 和 Jupyter Notebook，最重要的是可复现并保留实验结果。"
+    readiness: USABLE
+    work_products: [notebook, experiment, research-result]
+    required_technology: [python]
+    forbidden_work_products: [model]
+
+  - id: large_system
+    text: "做一个会持续很多年的大型系统，包括桌面应用、后端服务和核心库。桌面侧 TypeScript，核心 Rust，部分后端 Python，要求跨平台、稳定并向后兼容。"
+    readiness: USABLE
+    work_products: [desktop-app, service, library]
+    required_technology: [typescript, rust, python]
+
+  - id: python_http_service
+    text: "做一个 Python 后端服务，提供 HTTP API。"
+    readiness: USABLE
+    work_products: [service]
+    required_technology: [python]
+    forbidden_root_keys: [runner, harness, provider, profile]
+
+  - id: typescript_wxt_extension
+    text: "做一个 TypeScript 浏览器扩展，必须支持 Chrome 和 Firefox。"
+    readiness: USABLE
+    work_products: [browser-extension]
+    required_technology: [typescript]
+    forbidden_work_products: [service, model]
+
+  - id: python_mcp_server
+    text: "做一个 Python MCP 服务器，向外部 Agent 暴露工具。"
+    readiness: USABLE
+    work_products: [mcp-server]
+    required_technology: [python]
+    forbidden_root_keys: [runner, harness, provider, profile]
+    forbidden_work_products: [cli, library, service]
+
+  - id: ambiguous_mobile
+    text: "做一个手机应用。"
+    readiness: NEEDS_RESOLUTION
+    work_products: [mobile-app]
+
+  - id: ambiguous_app
+    text: "做一个 App。"
+    readiness: NEEDS_RESOLUTION
+    work_products: [application]
+
+  - id: unspecified_project
+    text: "我想做一个新项目。"
+    readiness: NEEDS_RESOLUTION
+    work_products: [unspecified]
+
+  - id: provider_names_do_not_leak
+    text: "用 Codex 和 Dagu 开发一个 Python CLI。"
+    readiness: USABLE
+    work_products: [cli]
+    required_technology: [python]
+    forbidden_root_keys: [codex, dagu, runner, harness, provider]

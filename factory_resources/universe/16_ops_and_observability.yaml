@@ -1,0 +1,27 @@
+schema: project-factory-warehouse/2
+slot: ops_capability
+stage: A.1
+
+items:
+  - id: logging
+    status: observed
+  - id: metrics
+    status: observed
+  - id: tracing
+    status: observed
+    example_providers: [opentelemetry]
+  - id: health-check
+    status: observed
+    note: "HTTP /health；Windows Service 心跳"
+  - id: crash-reporting
+    status: observed
+  - id: config-via-env
+    status: observed
+  - id: graceful-shutdown
+    status: observed
+    note: "机床自己的关闭证据是另一套；用户服务也需要这个能力"
+  - id: readiness-liveness
+    status: observed
+  - id: log-redaction
+    status: observed
+    note: "和 security.secret-redaction 成对"

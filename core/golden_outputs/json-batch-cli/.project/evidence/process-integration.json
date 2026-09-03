@@ -1,0 +1,26 @@
+{
+  "claims": [
+    {
+      "id": "spec-kit-command-plan",
+      "limitation": "Command construction is verified against the pinned public contract; real CLI execution is not implied.",
+      "scope": ".project/process/spec-kit-plan.json",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "spec-kit-runtime-install",
+      "limitation": "No real Spec Kit runtime evidence is present in plan-only mode.",
+      "scope": "spec-kit@1.0.1",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "plan_path": ".project/process/spec-kit-plan.json",
+  "provider": {
+    "adapter_version": "0.1",
+    "id": "spec-kit",
+    "upstream_source_modified": false,
+    "upstream_version": "1.0.1"
+  },
+  "runtime_verified": false,
+  "schema_version": "0.1",
+  "status": "PLANNED_NOT_INSTALLED"
+}
