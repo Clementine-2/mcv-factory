@@ -1,5 +1,11 @@
 # MCV Factory (基地车工厂)
 
+**Languages:** [English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-Hant.md)
+
+> ⚠️ **Under active development** — the UI and interfaces may change without
+> notice. Not yet recommended for production use.
+> （正在积极开发中：界面与接口可能随时调整，暂不建议用于生产。）
+
 > A Windows desktop "project factory" that turns a high-level requirement into a
 > verified, evidence-backed software project. It pairs a Fluent/WPF front end
 > with an isolated Python "Factory Core" that generates, verifies and recovers
