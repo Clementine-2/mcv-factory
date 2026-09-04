@@ -39,10 +39,10 @@ public partial class HomePage : Page
             var state = JsonView.String(status, "status", "UNKNOWN");
             StatusHeadline.Text = state switch
             {
-                "READY" => "已就绪，可以开始",
-                "READY_WITH_WARNINGS" => "可以开始工作",
-                "BLOCKED" => "需要先处理一个问题",
-                _ => "状态需要确认",
+                "READY" => App.L("Ms_Ready"),
+                "READY_WITH_WARNINGS" => App.L("Ms_ReadyWarn"),
+                "BLOCKED" => App.L("Ms_Blocked"),
+                _ => App.L("Ms_Unknown"),
             };
             if (status.TryGetProperty("ready_profiles", out var profiles) && profiles.ValueKind == JsonValueKind.Array)
             {
@@ -53,9 +53,9 @@ public partial class HomePage : Page
                 if (labels.Count > 4)
                 {
                     var remaining = labels.Count - 3;
-                    _collapsedProfilesText = string.Join("  ·  ", labels.Take(3)) + $"  ·  等 {remaining} 个";
+                    _collapsedProfilesText = string.Join("  ·  ", labels.Take(3)) + "  ·  " + string.Format(App.L("Ms_More"), remaining);
                     ToggleProfilesButton.Visibility = Visibility.Visible;
-                    ToggleProfilesButton.Content = "展开";
+                    ToggleProfilesButton.Content = App.L("Ms_Expand");
                     ReadyProfiles.Text = _collapsedProfilesText;
                     ReadyProfiles.MaxHeight = 48;
                     _profilesExpanded = false;
@@ -68,24 +68,24 @@ public partial class HomePage : Page
                     ReadyProfiles.Text = _allProfilesText;
                     ReadyProfiles.MaxHeight = double.PositiveInfinity;
                 }
-                ReadyProfilesHint.Text = count > 0 ? $"已就绪 {count} 种，不支持的类型会明确说明原因。" : "不支持的类型会明确说明原因，不会假装生成成功。";
+                ReadyProfilesHint.Text = count > 0 ? string.Format(App.L("Ms_ReadyCount"), count) : App.L("Ms_NoProfiles");
             }
             else
-                ReadyProfiles.Text = "暂未发现可用项目类型";
+                ReadyProfiles.Text = App.L("Ms_NoProfiles");
 
             var warnings = status.TryGetProperty("warnings", out var ws) && ws.ValueKind == JsonValueKind.Array ? ws.GetArrayLength() : 0;
             var failures = status.TryGetProperty("hard_failures", out var fs) && fs.ValueKind == JsonValueKind.Array ? fs.GetArrayLength() : 0;
             StatusDetail.Text = failures > 0
-                ? $"有 {failures} 个阻断项。打开“工具”查看具体原因。"
+                ? string.Format(App.L("Ms_BlockedDetail"), failures)
                 : warnings > 0
-                    ? $"核心生成能力可用；另有 {warnings} 项可选集成或兼容性提示，不影响当前工作。"
-                    : "核心生成与验证能力正常。";
+                    ? string.Format(App.L("Ms_WarnDetail"), warnings)
+                    : App.L("Ms_OkDetail");
             // G2: when there are blocking failures, offer a direct jump to 工具 so the user isn't stuck.
             StatusActionButton.Visibility = failures > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
         catch (Exception ex)
         {
-            StatusHeadline.Text = "无法读取运行状态";
+            StatusHeadline.Text = App.L("Ms_StatusError");
             StatusDetail.Text = ex.Message;
             StatusActionButton.Visibility = Visibility.Collapsed;
         }
@@ -149,9 +149,9 @@ public partial class HomePage : Page
         var tag = (sender as FrameworkElement)?.Tag?.ToString();
         var text = tag switch
         {
-            "python-cli" => "做一个 Python CLI 工具。请优先保证安全、可测试、错误信息清晰，并保留以后扩展功能的空间。",
-            "python-library" => "做一个可复用的 Python Library。需要清晰 API、自动化测试、wheel 和 sdist 构建，并方便长期维护。",
-            "browser-extension" => "做一个浏览器扩展。先搭建可靠、可维护、可验证的基础项目结构，后续我再补充具体功能。",
+            "python-cli" => App.L("Ms_TplCli"),
+            "python-library" => App.L("Ms_TplLib"),
+            "browser-extension" => App.L("Ms_TplExt"),
             _ => "",
         };
         _createPage.StartFresh(text);

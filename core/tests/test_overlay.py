@@ -100,6 +100,10 @@ class OverlayPluginTests(unittest.TestCase):
             for relative in OVERLAY_MANAGED_PATHS:
                 self.assertIn(relative, lock["managed_files"])
 
+    @unittest.skipUnless(
+        (ROOT / "history" / "p7_golden_outputs" / "json-batch-cli.zip").is_file(),
+        "legacy p7 fixture requires uv (built by tests/conftest.py on session start)",
+    )
     def test_legacy_p7_upgrade_adds_overlay_without_touching_src(self) -> None:
         import zipfile
 

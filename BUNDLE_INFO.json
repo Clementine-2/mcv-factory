@@ -1,0 +1,29 @@
+{
+  "schema": "project-factory-windows-fluent-source-bundle/1",
+  "factory_core": {
+    "version": "0.14.30",
+    "artifact": "wheel/project_factory_blueprint_kernel-0.14.30-py3-none-any.whl"
+  },
+  "user_shell": {
+    "ux": "UX5.1",
+    "architecture": "WPF/.NET frontend + isolated Python Core backend",
+    "framework": ".NET 9 WPF (net9.0-windows)",
+    "design_system": "WPF-UI 4.3.0",
+    "window": "FluentWindow",
+    "backdrop": "Mica",
+    "navigation": "NavigationView"
+  },
+  "installer": {
+    "engine": "NSIS 3.12 (Modern UI 2)",
+    "install_dir": "$LOCALAPPDATA\\Programs\\ProjectFactory",
+    "elevation": "per-user (no admin required)"
+  },
+  "pinned_tools": {
+    "npm": "npm1092",
+    "uv": "uv010"
+  },
+  "python_runtime": {
+    "host_requirement": "64-bit Python 3.11+",
+    "core_venv": "isolated under %LOCALAPPDATA%\\Programs\\ProjectFactory\\.pf_runtime"
+  }
+}

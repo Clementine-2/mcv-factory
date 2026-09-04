@@ -71,13 +71,63 @@ def _render_tsconfig() -> str:
 """
 
 
+def _render_counter() -> str:
+    return """// 示例功能：纯函数风格的计数器状态机，可被组件复用并在 Node 中直接测试。
+export interface CounterState {
+  count: number;
+}
+
+export function createCounter(initial: number = 0): CounterState {
+  return { count: initial };
+}
+
+export function increment(state: CounterState): CounterState {
+  return { count: state.count + 1 };
+}
+
+export function decrement(state: CounterState): CounterState {
+  return { count: state.count - 1 };
+}
+
+export function formatCounter(state: CounterState): string {
+  return `Count: ${state.count}`;
+}
+"""
+
+
+def _render_counter_component() -> str:
+    return (
+        "import { useState } from 'react';\n"
+        "import type { ReactElement } from 'react';\n"
+        "import { createCounter, decrement, formatCounter, increment } from './counterModel';\n"
+        "import type { CounterState } from './counterModel';\n\n"
+        "// 示例页面组件：可交互计数器，按钮点击驱动 ./counterModel 里的纯函数。\n"
+        "export function Counter({ initial = 0 }: { initial?: number }): ReactElement {\n"
+        "  const [state, setState] = useState<CounterState>(() => createCounter(initial));\n"
+        "  return (\n"
+        "    <section>\n"
+        '      <p id="counter">{formatCounter(state)}</p>\n'
+        '      <button type="button" onClick={() => setState(decrement(state))}>-</button>\n'
+        '      <button type="button" onClick={() => setState(increment(state))}>+</button>\n'
+        "    </section>\n"
+        "  );\n"
+        "}\n"
+    )
+
+
 def _render_app() -> str:
     return (
+        "import { Counter } from './Counter';\n\n"
         "export function scaffoldStatus(): string {\n"
         '  return "web ui scaffold ready";\n'
         "}\n\n"
         "export function App() {\n"
-        "  return <main>{scaffoldStatus()}</main>;\n"
+        "  return (\n"
+        "    <main>\n"
+        "      <p>{scaffoldStatus()}</p>\n"
+        "      <Counter />\n"
+        "    </main>\n"
+        "  );\n"
         "}\n"
     )
 
@@ -95,6 +145,28 @@ def _render_main() -> str:
 
 def _render_env_dts() -> str:
     return '/// <reference types="vite/client" />\n'
+
+
+def _render_counter_test() -> str:
+    return (
+        'import test from "node:test";\n'
+        'import assert from "node:assert/strict";\n'
+        'import { createCounter, decrement, formatCounter, increment } from "../src/counterModel.ts";\n\n'
+        'test("counter component starts at the initial value", () => {\n'
+        '  assert.deepEqual(createCounter(), { count: 0 });\n'
+        '  assert.deepEqual(createCounter(7), { count: 7 });\n'
+        "});\n\n"
+        'test("clicking plus then minus restores the count", () => {\n'
+        "  let state = createCounter(3);\n"
+        "  state = increment(state);\n"
+        '  assert.equal(state.count, 4);\n'
+        "  state = decrement(state);\n"
+        '  assert.equal(state.count, 3);\n'
+        "});\n\n"
+        'test("counter renders its label through formatCounter", () => {\n'
+        '  assert.equal(formatCounter(createCounter(9)), "Count: 9");\n'
+        "});\n"
+    )
 
 
 def _render_smoke_test() -> str:
@@ -134,7 +206,7 @@ def scaffold_npm_vite_react(
             "dev": "vite",
             "build": "vite build",
             "preview": "vite preview",
-            "test": "node --test tests/smoke.test.js",
+            "test": "node --test \"tests/*.test.js\"",
         },
         "dependencies": {
             "react": REACT_PIN,
@@ -154,11 +226,14 @@ def scaffold_npm_vite_react(
     source = project_root / "src"
     source.mkdir(parents=True, exist_ok=True)
     (source / "App.tsx").write_text(_render_app(), encoding="utf-8")
+    (source / "Counter.tsx").write_text(_render_counter_component(), encoding="utf-8")
+    (source / "counterModel.ts").write_text(_render_counter(), encoding="utf-8")
     (source / "main.tsx").write_text(_render_main(), encoding="utf-8")
     (source / "vite-env.d.ts").write_text(_render_env_dts(), encoding="utf-8")
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "counter.test.js").write_text(_render_counter_test(), encoding="utf-8")
     attach_playwright(package, project_root)
     _write_json(project_root / "package.json", package)
     run_command(

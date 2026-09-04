@@ -22,12 +22,13 @@ def _render_main(package_name: str, purpose: str) -> str:
 
 from fastapi import FastAPI
 
-from {package_name}.routers import health
+from {package_name}.routers import health, items
 
 PURPOSE = {purpose!r}
 
 app = FastAPI(title={package_name!r}, description=PURPOSE)
 app.include_router(health.router)
+app.include_router(items.router)
 
 
 def main() -> None:
@@ -55,8 +56,30 @@ def health() -> dict[str, str]:
 '''
 
 
+def _render_items() -> str:
+    return '''from __future__ import annotations
+
+from fastapi import APIRouter, Query
+
+router = APIRouter()
+
+# 示例数据：内存中的商品列表，用于演示 GET /items 的限额能力。
+ITEMS = [
+    {"id": 1, "name": "alpha"},
+    {"id": 2, "name": "beta"},
+    {"id": 3, "name": "gamma"},
+]
+
+
+@router.get("/items")
+def list_items(limit: int = Query(10, ge=0)) -> dict[str, object]:
+    """真实可运行的示例 endpoint：返回最多 limit 条商品。"""
+    return {"items": ITEMS[:limit], "total": len(ITEMS)}
+'''
+
+
 def _render_routers_init() -> str:
-    return "from . import health\n"
+    return "from . import health, items\n"
 
 
 def _render_pkg_init() -> str:
@@ -79,6 +102,45 @@ class HealthSmokeTest(unittest.TestCase):
         response = client.get("/health")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {{"status": "ok"}})
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from fastapi.testclient import TestClient
+
+from {package_name}.main import app
+
+
+class ItemsTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.client = TestClient(app)
+
+    def test_items_returns_all_by_default(self) -> None:
+        response = self.client.get("/items")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["total"], 3)
+        self.assertEqual(len(data["items"]), 3)
+
+    def test_items_respects_limit(self) -> None:
+        response = self.client.get("/items?limit=2")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data["items"]), 2)
+        self.assertEqual(data["items"][0]["name"], "alpha")
+
+    def test_items_limit_zero_returns_empty(self) -> None:
+        response = self.client.get("/items?limit=0")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["items"], [])
 
 
 if __name__ == "__main__":
@@ -133,9 +195,11 @@ def scaffold_uv_fastapi_service(
     (package_dir / "__init__.py").write_text(_render_pkg_init(), encoding="utf-8")
     (routers / "__init__.py").write_text(_render_routers_init(), encoding="utf-8")
     (routers / "health.py").write_text(_render_health(), encoding="utf-8")
+    (routers / "items.py").write_text(_render_items(), encoding="utf-8")
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_unittest(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     # F03: optional uvicorn config drawing, not a live port claim
     (project_root / "uvicorn.py").write_text(_render_uvicorn_config(project_name), encoding="utf-8")
     return ScaffoldResult(

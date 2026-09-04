@@ -30,16 +30,22 @@ def scaffold_status() -> str:
 
 def handler(event: dict[str, Any], context: object) -> dict[str, Any]:
     return {"statusCode": 200, "body": scaffold_status()}
+
+
+def process_event(event: dict[str, Any]) -> dict[str, Any]:
+    """真实可运行的 Lambda 示例：把输入文本转大写并返回 JSON 响应。"""
+    body = event.get("body") or ""
+    return {"statusCode": 200, "body": body.upper()}
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.handler import handler, scaffold_status
+from {package_name}.handler import handler, process_event, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["handler", "scaffold_status", "__version__"]
+__all__ = ["handler", "process_event", "scaffold_status", "__version__"]
 '''
 
 
@@ -59,6 +65,29 @@ class SmokeTest(unittest.TestCase):
         result = handler({{}}, None)
         self.assertEqual(result["statusCode"], 200)
         self.assertEqual(result["body"], "lambda scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.handler import process_event
+
+
+class DemoTest(unittest.TestCase):
+    def test_process_event_uppercases_body(self) -> None:
+        result = process_event({{"body": "ping"}})
+        self.assertEqual(result["statusCode"], 200)
+        self.assertEqual(result["body"], "PING")
+
+    def test_process_event_missing_body(self) -> None:
+        self.assertEqual(process_event({{}})["body"], "")
 
 
 if __name__ == "__main__":
@@ -101,6 +130,7 @@ def scaffold_uv_lambda(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

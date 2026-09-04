@@ -386,6 +386,7 @@ def _render_readme(
     profile: ProfileSelection,
     commands: list[list[str]],
     verification: dict[str, Any] | None = None,
+    layout: dict[str, str] | None = None,
 ) -> str:
     command_blocks = "\n".join(f"```bash\n{' '.join(command)}\n```" for command in commands)
     # E01: evidence summary table
@@ -414,7 +415,16 @@ def _render_readme(
         evidence_table = header + "\n" + "\n".join(rows)
     else:
         evidence_table = "| Claim | Status | Evidence |\n|---|---|---|\n| (no claims) | " + status + " | see `.project/evidence/generation-verification.json` |"
-    return f'''# {project_name}\n\n{blueprint["project"]["purpose"]}\n\n## Status\n\nFactory-generated `{profile.profile_id}` project scaffold. Verification is evidence-scoped; see `.project/evidence/generation-verification.json`. Domain-specific functionality is intentionally not implemented by the Factory.\n\n## Verification\n\n{command_blocks}\n\n## Evidence Summary\n\nOverall: **{status}**\n\n{evidence_table}\n\n> `VERIFIED` = evidence supports claim, `UNVERIFIED` = not yet run or requires external runtime, `FAILED` = gate failed, `BLANK` = empty project.\n\n## Agent development\n\nRead `WORKFLOW.md` for the step-by-step coding runbook, and the generated native harness context file(s). Every harness context is generated from `.project/contract/agent-contract.md`. Provenance is stored in `project.lock.json` and `.project/`.\n'''
+    # Quick start + project structure make the README a complete on-ramp.
+    quick_start = ""
+    if commands:
+        first = " && ".join(" ".join(command) for command in commands)
+        quick_start = f"\n## Quick start\n\n```bash\n{first}\n```\n"
+    structure = ""
+    if layout:
+        lines = "\n".join(f"- `{key}`: `{value}`" for key, value in sorted(layout.items()))
+        structure = f"\n## Project structure\n\n{lines}\n\nGenerated files: `.gitignore`, `LICENSE`, `CHANGELOG.md`, `CONTRIBUTING.md`, `.github/workflows/ci.yml`.\n"
+    return f'''# {project_name}\n\n{blueprint["project"]["purpose"]}\n\n## Status\n\nFactory-generated `{profile.profile_id}` project scaffold. Verification is evidence-scoped; see `.project/evidence/generation-verification.json`. Domain-specific functionality is intentionally not implemented by the Factory.\n{quick_start}{structure}\n## Verification\n\n{command_blocks}\n\n## Evidence Summary\n\nOverall: **{status}**\n\n{evidence_table}\n\n> `VERIFIED` = evidence supports claim, `UNVERIFIED` = not yet run or requires external runtime, `FAILED` = gate failed, `BLANK` = empty project.\n\n## Agent development\n\nRead `WORKFLOW.md` for the step-by-step coding runbook, and the generated native harness context file(s). Every harness context is generated from `.project/contract/agent-contract.md`. Provenance is stored in `project.lock.json` and `.project/`.\n'''
 
 
 
@@ -720,14 +730,8 @@ def generate_project(
                     semantic.blueprint["project"]["purpose"],
                     extension_runtime=extension_runtime,
                 )
-                # C04: optional Postgres compose drawing for http-service (docker up UNVERIFIED)
-                if options.with_compose and profile.profile_id in {
-                    "python-http-service",
-                    "csharp-http-service",
-                    "typescript-http-nest",
-                    "typescript-http-hono",
-                    "rust-http-service",
-                }:
+                # C04: optional Postgres compose drawing for http-service profiles (docker up UNVERIFIED)
+                if options.with_compose and registry.profiles[profile.profile_id].compose_overlay:
                     compose_path = project_root / "compose.yaml"
                     compose_path.write_text(
                         _render_compose_http_overlay(project_name, profile.profile_id), encoding="utf-8"
@@ -977,7 +981,7 @@ def generate_project(
         # E01: README with evidence summary (after verification so it can show VERIFIED/UNVERIFIED)
         if options.readme:
             (project_root / "README.md").write_text(
-                _render_readme(project_name, semantic.blueprint, profile, display_commands, verification), encoding="utf-8"
+                _render_readme(project_name, semantic.blueprint, profile, display_commands, verification, layout=layout), encoding="utf-8"
             )
         # Q4-①: always-on coding runbook so the project is caught by an agent out of the box.
         if options.scaffold:
@@ -1073,9 +1077,11 @@ def _generate_split(
         providers: dict[str, ProviderSelection] = {}
         lock_packages: list[dict[str, Any]] = []
         extra_ids: list[str] = []
+        compose_capable_package = False
         for pkg in plan.packages:
             spec = registry.profiles[pkg.profile_id]
             extra_ids.append(spec.id)
+            compose_capable_package = compose_capable_package or spec.compose_overlay
             runtimes = resolve_providers(spec, registry)
             provider = _provider_selection(runtimes["project_scaffolding"])
             providers[pkg.directory] = provider
@@ -1110,11 +1116,8 @@ def _generate_split(
         layout = {f"{pkg.directory}/{key}": f"{pkg.directory}/{value}" for pkg in plan.packages for key, value in layouts.get(pkg.directory, {}).items()}
         layout["api"] = "api/"
         layout["web"] = "web/"
-        # C04: optional compose for split when api is http-service
-        if options.with_compose and any(
-            pid in {"python-http-service", "csharp-http-service", "typescript-http-nest", "typescript-http-hono", "rust-http-service"}
-            for pid in extra_ids
-        ):
+        # C04: optional compose for split when one of the packages is http-service
+        if options.with_compose and compose_capable_package:
             (project_root / "compose.yaml").write_text(_render_compose_split_overlay(project_name), encoding="utf-8")
             layout["compose"] = "compose.yaml"
         display_commands: list[list[str]] = []
@@ -1202,7 +1205,7 @@ def _generate_split(
         # E01: README with evidence summary for split
         if options.readme:
             (project_root / "README.md").write_text(
-                _render_readme(project_name, semantic.blueprint, profile, display_commands, verification), encoding="utf-8"
+                _render_readme(project_name, semantic.blueprint, profile, display_commands, verification, layout=layout), encoding="utf-8"
             )
         # Q4-①: always-on coding runbook (split packages each have their own profile; use the split profile id).
         if options.scaffold:

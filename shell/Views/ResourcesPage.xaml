@@ -21,23 +21,23 @@
       </Grid.RowDefinitions>
       <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
         <StackPanel Margin="0,0,16,0">
-          <TextBlock Text="资源" Style="{StaticResource PageEyebrow}" />
-          <TextBlock Text="内置工具、项目类型、功能模块、核心组件。" Style="{StaticResource PageTitle}" Margin="0,9,0,6" />
-          <TextBlock Text="工厂用得到的资源都在这里管。新增进仓库的模块会出现在新建项目的「框架」下拉框里。" Style="{StaticResource PageLead}" />
+          <TextBlock Text="{DynamicResource Resources_t126}" Style="{StaticResource PageEyebrow}" />
+          <TextBlock Text="{DynamicResource Resources_t127}" Style="{StaticResource PageTitle}" Margin="0,9,0,6" />
+          <TextBlock Text="{DynamicResource Resources_t128}" Style="{StaticResource PageLead}" />
         </StackPanel>
-        <ui:Button x:Name="RefreshAllButton" Content="刷新全部" Appearance="Primary" Margin="0,18,0,0" VerticalAlignment="Top" Click="Refresh_Click" />
+        <ui:Button x:Name="RefreshAllButton" Content="{DynamicResource Resources_RefreshAllButton129}" Appearance="Primary" Margin="0,18,0,0" VerticalAlignment="Top" Click="Refresh_Click" />
       </StackPanel>
 
       <ui:Card Grid.Row="2" Padding="24">
         <StackPanel>
-          <TextBlock Text="内置工具版本" FontSize="17" FontWeight="SemiBold" />
-          <TextBlock Text="生成时优先用工厂自带的 uv 0.10.0 / npm 10.9.2，不会去用系统里的 npm 11。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,12" />
+          <TextBlock Text="{DynamicResource Resources_RefreshAllButton130}" FontSize="17" FontWeight="SemiBold" />
+          <TextBlock Text="{DynamicResource Resources_RefreshAllButton131}" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,12" />
           <TextBox x:Name="ToolSearch" Height="32" Padding="10,6" Margin="0,0,0,8" TextChanged="ToolSearch_TextChanged" />
           <ListView x:Name="ToolList" Style="{StaticResource FluentListBox}" MinHeight="90" MaxHeight="160" SelectionMode="Single">
             <ListView.View>
               <GridView>
-                <GridViewColumn Header="名称" DisplayMemberBinding="{Binding Label}" Width="320" />
-                <GridViewColumn Header="路径" DisplayMemberBinding="{Binding Path}" Width="260" />
+                <GridViewColumn Header="{DynamicResource Resources_ToolList132}" DisplayMemberBinding="{Binding Label}" Width="320" />
+                <GridViewColumn Header="{DynamicResource Resources_ToolList133}" DisplayMemberBinding="{Binding Path}" Width="260" />
               </GridView>
             </ListView.View>
           </ListView>
@@ -46,14 +46,14 @@
       </ui:Card>
       <ui:Card Grid.Row="4" Padding="24">
         <StackPanel>
-          <TextBlock Text="可生成的项目类型" FontSize="17" FontWeight="SemiBold" />
-          <TextBlock Text="当前已支持的项目类型，也会在新建页的推荐和勾选中出现。用上面的框筛选。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,12" />
+          <TextBlock Text="{DynamicResource Resources_ToolStatus134}" FontSize="17" FontWeight="SemiBold" />
+          <TextBlock Text="{DynamicResource Resources_ToolStatus135}" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,12" />
           <TextBox x:Name="FactoryLineSearch" Height="32" Padding="10,6" Margin="0,0,0,8" TextChanged="FactoryLineSearch_TextChanged" />
           <ListView x:Name="FactoryLineList" Style="{StaticResource FluentListBox}" MinHeight="140" MaxHeight="220" SelectionMode="Single">
             <ListView.View>
               <GridView>
-                <GridViewColumn Header="名称" DisplayMemberBinding="{Binding Label}" Width="420" />
-                <GridViewColumn Header="来源" DisplayMemberBinding="{Binding Path}" Width="220" />
+                <GridViewColumn Header="{DynamicResource Resources_ToolList132}" DisplayMemberBinding="{Binding Label}" Width="420" />
+                <GridViewColumn Header="{DynamicResource Resources_FactoryLineList136}" DisplayMemberBinding="{Binding Path}" Width="220" />
               </GridView>
             </ListView.View>
           </ListView>
@@ -62,8 +62,8 @@
       </ui:Card>
       <ui:Card Grid.Row="6" Padding="24">
         <StackPanel>
-          <TextBlock Text="开源功能模块" FontSize="17" FontWeight="SemiBold" />
-          <TextBlock Text="相同模块的不同版本叠在一起。可增删改查。目录项不能删；预载/导入的版本可以。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,12" />
+          <TextBlock Text="{DynamicResource Resources_FactoryLineStatus137}" FontSize="17" FontWeight="SemiBold" />
+          <TextBlock Text="{DynamicResource Resources_FactoryLineStatus138}" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,12" />
           <TreeView x:Name="ModuleTree" Style="{StaticResource FluentTreeView}" MinHeight="180" MaxHeight="280" SelectedItemChanged="ModuleTree_Selected">
             <TreeView.ItemTemplate>
               <HierarchicalDataTemplate DataType="{x:Type local:ResourceGroup}" ItemsSource="{Binding Versions}">
@@ -76,76 +76,76 @@
               </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
           </TreeView>
-          <TextBlock x:Name="ModuleSelectedTitle" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,10,0,4" Text="当前未选中任何模块版本；下面的表单在选中后才可编辑。" />
+          <TextBlock x:Name="ModuleSelectedTitle" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,10,0,4" Text="{DynamicResource Resources_ModuleSelectedTitle139}" />
           <Grid Margin="0,8,0,0">
             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/></Grid.ColumnDefinitions>
             <StackPanel>
-              <TextBlock Text="名称" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Resources_ModuleSelectedTitle140}" Style="{StaticResource FieldLabel}" />
               <TextBox x:Name="ModuleNameBox" Padding="8" IsEnabled="False" />
             </StackPanel>
             <StackPanel Grid.Column="2">
-              <TextBlock Text="版本" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Resources_ModuleNameBox141}" Style="{StaticResource FieldLabel}" />
               <TextBox x:Name="ModuleVersionBox" Padding="8" IsEnabled="False" />
             </StackPanel>
           </Grid>
-          <TextBlock Text="用途" Style="{StaticResource FieldLabel}" Margin="0,8,0,0" />
+          <TextBlock Text="{DynamicResource Resources_ModuleVersionBox142}" Style="{StaticResource FieldLabel}" Margin="0,8,0,0" />
           <TextBox x:Name="ModulePurposeBox" Padding="8" TextWrapping="Wrap" IsEnabled="False" />
-          <TextBlock Text="URL" Style="{StaticResource FieldLabel}" Margin="0,8,0,0" />
-          <TextBox x:Name="ModuleUrlBox" Padding="8" Text="https://" IsEnabled="False" />
+          <TextBlock Text="{DynamicResource Resources_ModulePurposeBox143}" Style="{StaticResource FieldLabel}" Margin="0,8,0,0" />
+          <TextBox x:Name="ModuleUrlBox" Padding="8" Text="{DynamicResource Resources_ModuleUrlBox144}" IsEnabled="False" />
           <WrapPanel Margin="0,12,0,0">
-            <ui:Button x:Name="PreloadModuleButton" Content="预载此版本" Appearance="Primary" Margin="0,0,8,8" Click="PreloadModule_Click" IsEnabled="False" />
-            <ui:Button x:Name="SaveModuleButton" Content="保存修改" Appearance="Secondary" Margin="0,0,8,8" Click="SaveModule_Click" IsEnabled="False" />
-            <ui:Button x:Name="DeleteModuleButton" Content="删除此版本" Appearance="Secondary" Margin="0,0,8,8" Click="DeleteModule_Click" IsEnabled="False" />
-            <ui:Button Content="从 URL 新增版本" Appearance="Secondary" Margin="0,0,8,8" Click="DownloadModule_Click" />
-            <ui:Button Content="导入文件…" Appearance="Secondary" Margin="0,0,8,8" Click="ImportModule_Click" />
+            <ui:Button x:Name="PreloadModuleButton" Content="{DynamicResource Resources_PreloadModuleButton145}" Appearance="Primary" Margin="0,0,8,8" Click="PreloadModule_Click" IsEnabled="False" />
+            <ui:Button x:Name="SaveModuleButton" Content="{DynamicResource Resources_SaveModuleButton146}" Appearance="Secondary" Margin="0,0,8,8" Click="SaveModule_Click" IsEnabled="False" />
+            <ui:Button x:Name="DeleteModuleButton" Content="{DynamicResource Resources_DeleteModuleButton147}" Appearance="Secondary" Margin="0,0,8,8" Click="DeleteModule_Click" IsEnabled="False" />
+            <ui:Button Content="{DynamicResource Resources_DeleteModuleButton148}" Appearance="Secondary" Margin="0,0,8,8" Click="DownloadModule_Click" />
+            <ui:Button Content="{DynamicResource Resources_DeleteModuleButton149}" Appearance="Secondary" Margin="0,0,8,8" Click="ImportModule_Click" />
           </WrapPanel>
           <TextBlock x:Name="ModuleStatus" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,10,0,0" />
         </StackPanel>
       </ui:Card>
       <ui:Card Grid.Row="8" Padding="24">
         <StackPanel>
-          <TextBlock Text="核心组件" FontSize="17" FontWeight="SemiBold" />
-          <TextBlock x:Name="ActiveVersionText" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,6,0,12" Text="当前内核：…" />
-          <CheckBox x:Name="AutoUpdateBox" Content="允许自动检查更新（仍不会自动晋升为 supported）" Checked="AutoUpdateChanged" Unchecked="AutoUpdateChanged" Margin="0,0,0,12" />
+          <TextBlock Text="{DynamicResource Resources_ModuleStatus150}" FontSize="17" FontWeight="SemiBold" />
+          <TextBlock x:Name="ActiveVersionText" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,6,0,12" Text="{DynamicResource Resources_ActiveVersionText151}" />
+          <CheckBox x:Name="AutoUpdateBox" Content="{DynamicResource Resources_AutoUpdateBox152}" Checked="AutoUpdateChanged" Unchecked="AutoUpdateChanged" Margin="0,0,0,12" />
           <TextBox x:Name="WheelSearch" Height="32" Padding="10,6" Margin="0,0,0,8" TextChanged="WheelSearch_TextChanged" />
           <ListView x:Name="WheelList" Style="{StaticResource FluentListBox}" MinHeight="140" MaxHeight="220" SelectionMode="Single">
             <ListView.View>
               <GridView>
-                <GridViewColumn Header="名称" DisplayMemberBinding="{Binding Label}" Width="320" />
-                <GridViewColumn Header="路径" DisplayMemberBinding="{Binding Path}" Width="300" />
+                <GridViewColumn Header="{DynamicResource Resources_ToolList132}" DisplayMemberBinding="{Binding Label}" Width="320" />
+                <GridViewColumn Header="{DynamicResource Resources_ToolList133}" DisplayMemberBinding="{Binding Path}" Width="300" />
               </GridView>
             </ListView.View>
           </ListView>
           <WrapPanel Margin="0,12,0,0">
-            <ui:Button Content="应用到本机（热更新）" Appearance="Primary" Margin="0,0,8,8" Click="ApplyWheel_Click" />
-            <ui:Button Content="热更新并重启窗口" Appearance="Primary" Margin="0,0,8,8" Click="ApplyAndRelaunch_Click" />
-            <ui:Button Content="启动工厂" Appearance="Secondary" Margin="0,0,8,8" Click="LaunchFactory_Click" />
-            <ui:Button Content="导入本地文件…" Appearance="Secondary" Margin="0,0,8,8" Click="ImportWheel_Click" />
-            <ui:Button Content="从 URL 下载" Appearance="Secondary" Margin="0,0,8,8" Click="DownloadWheel_Click" />
-            <ui:Button Content="删除仓库中的选中项" Appearance="Secondary" Margin="0,0,8,8" Click="DeleteWheel_Click" />
+            <ui:Button Content="{DynamicResource Resources_t153}" Appearance="Primary" Margin="0,0,8,8" Click="ApplyWheel_Click" />
+            <ui:Button Content="{DynamicResource Resources_t154}" Appearance="Primary" Margin="0,0,8,8" Click="ApplyAndRelaunch_Click" />
+            <ui:Button Content="{DynamicResource Resources_t155}" Appearance="Secondary" Margin="0,0,8,8" Click="LaunchFactory_Click" />
+            <ui:Button Content="{DynamicResource Resources_t156}" Appearance="Secondary" Margin="0,0,8,8" Click="ImportWheel_Click" />
+            <ui:Button Content="{DynamicResource Resources_t157}" Appearance="Secondary" Margin="0,0,8,8" Click="DownloadWheel_Click" />
+            <ui:Button Content="{DynamicResource Resources_t158}" Appearance="Secondary" Margin="0,0,8,8" Click="DeleteWheel_Click" />
           </WrapPanel>
-          <TextBox x:Name="DownloadUrlBox" Padding="10,8" Margin="0,8,0,0" Text="https://" />
+          <TextBox x:Name="DownloadUrlBox" Padding="10,8" Margin="0,8,0,0" Text="{DynamicResource Resources_ModuleUrlBox144}" />
           <TextBlock x:Name="WheelStatus" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,10,0,0" />
         </StackPanel>
       </ui:Card>
 
       <ui:Card Grid.Row="10" Padding="24">
         <StackPanel>
-          <TextBlock Text="用户资源" FontSize="17" FontWeight="SemiBold" />
-          <TextBlock Text="导入 YAML/JSON 或 Python 插件，详见下方路径。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,14" />
+          <TextBlock Text="{DynamicResource Resources_WheelStatus159}" FontSize="17" FontWeight="SemiBold" />
+          <TextBlock Text="{DynamicResource Resources_WheelStatus160}" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,6,0,14" />
           <TextBox x:Name="ResourceSearch" Height="32" Padding="10,6" Margin="0,0,0,8" TextChanged="ResourceSearch_TextChanged" />
           <ListView x:Name="ResourceList" Style="{StaticResource FluentListBox}" MinHeight="120" MaxHeight="180" SelectionMode="Single">
             <ListView.View>
               <GridView>
-                <GridViewColumn Header="名称" DisplayMemberBinding="{Binding Label}" Width="360" />
-                <GridViewColumn Header="路径" DisplayMemberBinding="{Binding Path}" Width="300" />
+                <GridViewColumn Header="{DynamicResource Resources_ToolList132}" DisplayMemberBinding="{Binding Label}" Width="360" />
+                <GridViewColumn Header="{DynamicResource Resources_ToolList133}" DisplayMemberBinding="{Binding Path}" Width="300" />
               </GridView>
             </ListView.View>
           </ListView>
           <WrapPanel Margin="0,12,0,0">
-            <ui:Button Content="导入资源文件…" Appearance="Primary" Margin="0,0,8,8" Click="ImportResource_Click" />
-            <ui:Button Content="删除选中文件" Appearance="Secondary" Margin="0,0,8,8" Click="DeleteResource_Click" />
-            <ui:Button Content="打开资源目录" Appearance="Secondary" Margin="0,0,8,8" Click="OpenResourceDir_Click" />
+            <ui:Button Content="{DynamicResource Resources_t161}" Appearance="Primary" Margin="0,0,8,8" Click="ImportResource_Click" />
+            <ui:Button Content="{DynamicResource Resources_t162}" Appearance="Secondary" Margin="0,0,8,8" Click="DeleteResource_Click" />
+            <ui:Button Content="{DynamicResource Resources_t163}" Appearance="Secondary" Margin="0,0,8,8" Click="OpenResourceDir_Click" />
           </WrapPanel>
           <TextBlock x:Name="ResourceStatus" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,10,0,0" />
         </StackPanel>

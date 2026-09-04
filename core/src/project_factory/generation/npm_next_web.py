@@ -76,8 +76,50 @@ def _render_tsconfig() -> str:
 """
 
 
+def _render_hello_route() -> str:
+    return """// 示例 API 路由：GET /api/hello?name=X 返回 JSON。
+// Next.js 路由文件只允许导出 HTTP 方法处理器，因此 buildHello 保持模块私有，
+// 由导出的 GET 处理器调用；测试直接断言 GET 的行为。
+interface HelloMessage {
+  message: string;
+}
+
+function buildHello(name: string): HelloMessage {
+  const who = name.trim() || 'world';
+  return { message: `Hello, ${who}!` };
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const url = new URL(request.url);
+  const name = url.searchParams.get('name') ?? 'world';
+  return Response.json(buildHello(name));
+}
+"""
+
+
 def _render_next_env() -> str:
     return '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n'
+
+
+def _render_hello_test() -> str:
+    return (
+        'import test from "node:test";\n'
+        'import assert from "node:assert/strict";\n'
+        'import { GET } from "../app/api/hello/route.ts";\n\n'
+        'test("GET /api/hello returns JSON for a named query param", async () => {\n'
+        '  const response = await GET(new Request("http://localhost/api/hello?name=Ada"));\n'
+        "  assert.equal(response.status, 200);\n"
+        '  assert.deepEqual(await response.json(), { message: "Hello, Ada!" });\n'
+        "});\n\n"
+        'test("GET /api/hello defaults the name to world", async () => {\n'
+        '  const response = await GET(new Request("http://localhost/api/hello"));\n'
+        '  assert.deepEqual(await response.json(), { message: "Hello, world!" });\n'
+        "});\n\n"
+        'test("GET /api/hello trims whitespace around the name", async () => {\n'
+        '  const response = await GET(new Request("http://localhost/api/hello?name=++"));\n'
+        '  assert.deepEqual(await response.json(), { message: "Hello, world!" });\n'
+        "});\n"
+    )
 
 
 def _render_smoke_test() -> str:
@@ -88,6 +130,7 @@ def _render_smoke_test() -> str:
         'test("next drawing files exist", () => {\n'
         '  assert.equal(fs.existsSync("app/page.tsx"), true);\n'
         '  assert.equal(fs.existsSync("app/layout.tsx"), true);\n'
+        '  assert.equal(fs.existsSync("app/api/hello/route.ts"), true);\n'
         "  const pkg = JSON.parse(fs.readFileSync(\"package.json\", \"utf8\"));\n"
         f'  assert.equal(pkg.dependencies.next, "{NEXT_PIN}");\n'
         f'  assert.equal(pkg.dependencies.react, "{REACT_PIN}");\n'
@@ -116,7 +159,7 @@ def scaffold_npm_next_web(
             "dev": "next dev",
             "build": "next build",
             "start": "next start",
-            "test": "node --test tests/smoke.test.js",
+            "test": "node --test \"tests/*.test.js\"",
         },
         "dependencies": {
             "next": NEXT_PIN,
@@ -138,9 +181,13 @@ def scaffold_npm_next_web(
     app.mkdir(parents=True, exist_ok=True)
     (app / "layout.tsx").write_text(_render_layout(), encoding="utf-8")
     (app / "page.tsx").write_text(_render_page(), encoding="utf-8")
+    api_hello = app / "api" / "hello"
+    api_hello.mkdir(parents=True, exist_ok=True)
+    (api_hello / "route.ts").write_text(_render_hello_route(), encoding="utf-8")
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "hello.test.js").write_text(_render_hello_test(), encoding="utf-8")
     run_command(
         [provider.executable, "install", "--no-fund", "--no-audit"],
         project_root,

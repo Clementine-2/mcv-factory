@@ -57,9 +57,15 @@ fn scaffold_status() -> String {{
     "{module} scaffold ready".to_string()
 }}
 
+#[pyfunction]
+fn greet(name: &str) -> String {{
+    format!("Hello, {{}}!", name)
+}}
+
 #[pymodule]
 fn {module}(m: &Bound<'_, PyModule>) -> PyResult<()> {{
     m.add_function(wrap_pyfunction!(scaffold_status, m)?)?;
+    m.add_function(wrap_pyfunction!(greet, m)?)?;
     Ok(())
 }}
 '''
@@ -103,7 +109,7 @@ def scaffold_maturin_pyo3(
     lib_rs = _render_lib(module)
     (project_root / "src" / "lib.rs").write_text(
         lib_rs
-        + "\n#[cfg(test)]\nmod tests {\n    #[test]\n    fn status_text() {\n        assert!(super::scaffold_status().contains(\"scaffold ready\"));\n    }\n}\n",
+        + "\n#[cfg(test)]\nmod tests {\n    #[test]\n    fn status_text() {\n        assert!(super::scaffold_status().contains(\"scaffold ready\"));\n    }\n    #[test]\n    fn greet_text() {\n        assert_eq!(super::greet(\"world\"), \"Hello, world!\");\n    }\n}\n",
         encoding="utf-8",
     )
     return ScaffoldResult(

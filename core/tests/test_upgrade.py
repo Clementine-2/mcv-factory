@@ -15,7 +15,17 @@ from project_factory.ownership import verify_factory_overlay_manifest
 from project_factory.upgrade import UpgradeError, apply_upgrade, plan_upgrade, rollback_upgrade
 
 
+# Legacy (lock schema 0.5) project used by the migration integration tests.
+# Materialized at test-session start from the committed golden output by
+# tests/conftest.py (history/ is gitignored; it is derived data, not source).
 P7_GOLDEN = ROOT / "history" / "p7_golden_outputs" / "json-batch-cli.zip"
+
+# The fixture is derived data, rebuilt by tests/conftest.py only when the
+# scaffolding provider (uv) is installed. Tests that migrate it skip otherwise.
+REQUIRES_P7 = unittest.skipUnless(
+    P7_GOLDEN.is_file(),
+    "legacy p7 fixture requires uv (built by tests/conftest.py on session start)",
+)
 
 
 def sha256(path: Path) -> str:
@@ -41,6 +51,7 @@ def tree_bytes(root: Path) -> dict[str, bytes]:
 
 
 class P8UpgradeTests(unittest.TestCase):
+    @REQUIRES_P7
     def test_dry_run_p7_project_is_read_only_and_ready(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -61,6 +72,7 @@ class P8UpgradeTests(unittest.TestCase):
             contract_change = next(c for c in plan.changes if c.path == ".project/contract/agent-contract.md")
             self.assertIn("Factory upgrade discipline", contract_change.diff_preview or "")
 
+    @REQUIRES_P7
     def test_business_source_change_does_not_block_overlay_upgrade(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -70,6 +82,7 @@ class P8UpgradeTests(unittest.TestCase):
             self.assertEqual(plan.status, "READY")
             self.assertFalse(any(c.path.startswith("src/") for c in plan.changes))
 
+    @REQUIRES_P7
     def test_modified_factory_owned_contract_blocks_upgrade(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -79,6 +92,7 @@ class P8UpgradeTests(unittest.TestCase):
             self.assertEqual(plan.status, "BLOCKED")
             self.assertTrue(any("AGENTS.md" in item for item in plan.blocked_reasons))
 
+    @REQUIRES_P7
     def test_blueprint_provenance_change_blocks_upgrade(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -91,6 +105,7 @@ class P8UpgradeTests(unittest.TestCase):
             self.assertEqual(plan.status, "BLOCKED")
             self.assertTrue(any("Blueprint" in item for item in plan.blocked_reasons))
 
+    @REQUIRES_P7
     def test_apply_requires_exact_dry_run_confirmation(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -100,6 +115,7 @@ class P8UpgradeTests(unittest.TestCase):
             self.assertEqual(before, tree_bytes(root))
             self.assertFalse((root.parent / ".project-factory-rollback").exists())
 
+    @REQUIRES_P7
     def test_stale_plan_is_detected_by_confirmation_hash(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -111,6 +127,7 @@ class P8UpgradeTests(unittest.TestCase):
             with self.assertRaises(UpgradeError):
                 apply_upgrade(root, confirm_plan_sha256=plan.plan_sha256)
 
+    @REQUIRES_P7
     def test_apply_creates_rollback_point_updates_only_overlay_and_verifies(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -146,6 +163,7 @@ class P8UpgradeTests(unittest.TestCase):
             self.assertTrue((root / ".copier-answers.factory-overlay.yml").is_file())
             self.assertEqual(source_before, source.read_bytes())
 
+    @REQUIRES_P7
     def test_rollback_restores_exact_preupgrade_project_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))
@@ -161,6 +179,7 @@ class P8UpgradeTests(unittest.TestCase):
             self.assertEqual(rolled["status"], "ROLLED_BACK")
             self.assertEqual(before, tree_bytes(root))
 
+    @REQUIRES_P7
     def test_rollback_refuses_to_overwrite_post_upgrade_edits(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = extract_p7(Path(td))

@@ -10,8 +10,154 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'composer.json': '{\n  "name": "vendor/__PKG__",\n  "description": "__PURPOSE__",\n  "require": {},\n  "bin": ["bin/__PKG__.php"]\n}\n', 'bin/__PKG__.php': '#!/usr/bin/env php\n<?php\n// PURPOSE: __PURPOSE__\nfunction scaffold_status(): string {\n    return "__PKG__ scaffold ready";\n}\n\necho "Project scaffold ready. Implement domain behavior through the coding-agent workflow.\\n";\n'}
-FILES_LIB = {'composer.json': '{\n  "name": "vendor/__PKG__",\n  "description": "__PURPOSE__",\n  "require": {}\n}\n', 'src/__PKG__.php': '<?php\n// PURPOSE: __PURPOSE__\nnamespace Vendor\\__PKG__;\n\nfunction scaffold_status(): string {\n    return "__PKG__ library scaffold ready";\n}\n'}
+FILES_CLI = {
+    'composer.json': '''{
+  "name": "vendor/__PKG__",
+  "description": "__PURPOSE__",
+  "require": {},
+  "autoload": {
+    "files": ["src/__PKG__.php"]
+  },
+  "bin": ["bin/__PKG__.php"],
+  "scripts": {
+    "test": "php tests/run_tests.php"
+  }
+}
+''',
+    'src/__PKG__.php': '''<?php
+// PURPOSE: __PURPOSE__
+namespace Vendor\\__PKG__;
+
+/** 报告库的引导状态。 */
+function scaffold_status(): string {
+    return "__PKG__ scaffold ready";
+}
+
+/** 拼接问候语，作为示例功能供 CLI 与测试共用。 */
+function greet(string $name): string {
+    return "Hello, " . $name . "!";
+}
+
+/** 返回两个整数的和，作为示例功能供 CLI 与测试共用。 */
+function add(int $left, int $right): int {
+    return $left + $right;
+}
+''',
+    'bin/__PKG__.php': '''#!/usr/bin/env php
+<?php
+// PURPOSE: __PURPOSE__
+require_once __DIR__ . '/../src/__PKG__.php';
+
+use function Vendor\\__PKG__\\add;
+use function Vendor\\__PKG__\\greet;
+
+$args = array_slice($argv, 1);
+// 子命令示例：php bin/__PKG__.php greet <name>
+if (count($args) === 2 && $args[0] === 'greet') {
+    echo greet($args[1]), "\\n";
+    exit(0);
+}
+// 子命令示例：php bin/__PKG__.php add <left> <right>
+if (count($args) === 3 && $args[0] === 'add') {
+    echo add((int) $args[1], (int) $args[2]), "\\n";
+    exit(0);
+}
+echo "Project scaffold ready. Implement domain behavior through the coding-agent workflow.\\n";
+''',
+    'tests/run_tests.php': '''<?php
+// 针对示例功能编写简单断言脚本：任一断言失败即退出非零状态。
+require_once __DIR__ . '/../src/__PKG__.php';
+
+use function Vendor\\__PKG__\\add;
+use function Vendor\\__PKG__\\greet;
+use function Vendor\\__PKG__\\scaffold_status;
+
+$failures = 0;
+function check(string $label, bool $cond): void {
+    global $failures;
+    if (!$cond) {
+        fwrite(STDERR, "FAIL: {$label}\\n");
+        $failures++;
+    }
+}
+
+check('scaffold-status', scaffold_status() === '__PKG__ scaffold ready');
+check('greet', greet('world') === 'Hello, world!');
+check('greet-empty', greet('') === 'Hello, !');
+check('add-positive', add(2, 3) === 5);
+check('add-negative', add(-1, 1) === 0);
+
+if ($failures === 0) {
+    echo "ALL TESTS PASSED\\n";
+    exit(0);
+}
+fwrite(STDERR, "{$failures} test(s) failed\\n");
+exit(1);
+''',
+}
+FILES_LIB = {
+    'composer.json': '''{
+  "name": "vendor/__PKG__",
+  "description": "__PURPOSE__",
+  "require": {},
+  "autoload": {
+    "files": ["src/__PKG__.php"]
+  },
+  "scripts": {
+    "test": "php tests/run_tests.php"
+  }
+}
+''',
+    'src/__PKG__.php': '''<?php
+// PURPOSE: __PURPOSE__
+namespace Vendor\\__PKG__;
+
+/** 报告库的引导状态。 */
+function scaffold_status(): string {
+    return "__PKG__ library scaffold ready";
+}
+
+/** 拼接问候语，作为示例功能供测试断言。 */
+function greet(string $name): string {
+    return "Hello, " . $name . "!";
+}
+
+/** 返回两个整数的和，作为示例功能供测试断言。 */
+function add(int $left, int $right): int {
+    return $left + $right;
+}
+''',
+    'tests/run_tests.php': '''<?php
+// 针对示例功能编写简单断言脚本：任一断言失败即退出非零状态。
+require_once __DIR__ . '/../src/__PKG__.php';
+
+use function Vendor\\__PKG__\\add;
+use function Vendor\\__PKG__\\greet;
+use function Vendor\\__PKG__\\scaffold_status;
+
+$failures = 0;
+function check(string $label, bool $cond): void {
+    global $failures;
+    if (!$cond) {
+        fwrite(STDERR, "FAIL: {$label}\\n");
+        $failures++;
+    }
+}
+
+check('scaffold-status', scaffold_status() === '__PKG__ library scaffold ready');
+check('greet', greet('world') === 'Hello, world!');
+check('greet-empty', greet('') === 'Hello, !');
+check('add-positive', add(2, 3) === 5);
+check('add-negative', add(-1, 1) === 0);
+
+if ($failures === 0) {
+    echo "ALL TESTS PASSED\\n";
+    exit(0);
+}
+fwrite(STDERR, "{$failures} test(s) failed\\n");
+exit(1);
+''',
+}
 INIT_CLI = None
 INIT_LIB = None
 
@@ -38,17 +184,20 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。路径中的 __PKG__ 占位符同样替换。
+    for rel, content in files.items():
+        rel_filled = rel.replace("__PKG__", pkg)
+        p = project_root / rel_filled
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},
-        layout={"source": "src/" if files else ".", "packaging": "manifest"},
+        layout={"source": "src/" if files else ".", "packaging": "composer.json"},
     )
 
 

@@ -34,6 +34,18 @@ def echo_purpose() -> str:
     return PURPOSE
 
 
+@mcp.tool()
+def echo(text: str) -> str:
+    """示例 tool：原样返回输入文本。"""
+    return text
+
+
+@mcp.tool()
+def greet(name: str) -> str:
+    """示例 tool：返回问候语。"""
+    return f"Hello, {{name}}!"
+
+
 @mcp.resource("scaffold://status")
 def scaffold_status() -> str:
     """Static scaffold status for hosts that read resources."""
@@ -94,6 +106,42 @@ class McpServerSmokeTest(unittest.TestCase):
             async with Client(mcp, raise_exceptions=True) as client:
                 caps = client.server_capabilities.model_dump(exclude_none=True)
                 self.assertIn("tools", caps)
+
+        asyncio.run(_run())
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import asyncio
+import unittest
+
+from mcp import Client
+
+from {package_name}.server import mcp
+
+
+class DemoTest(unittest.TestCase):
+    def test_echo_tool(self) -> None:
+        async def _run() -> None:
+            async with Client(mcp, raise_exceptions=True) as client:
+                result = await client.call_tool("echo", {{"text": "ping"}})
+                self.assertFalse(getattr(result, "is_error", False))
+                self.assertEqual(str(result.content[0].text), "ping")
+
+        asyncio.run(_run())
+
+    def test_greet_tool(self) -> None:
+        async def _run() -> None:
+            async with Client(mcp, raise_exceptions=True) as client:
+                result = await client.call_tool("greet", {{"name": "world"}})
+                self.assertFalse(getattr(result, "is_error", False))
+                self.assertEqual(str(result.content[0].text), "Hello, world!")
 
         asyncio.run(_run())
 
@@ -174,6 +222,7 @@ def scaffold_uv_mcp_server(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_unittest(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     scripts = project_root / "scripts"
     scripts.mkdir(parents=True, exist_ok=True)
     (scripts / "verify_real_host.py").write_text(_render_real_host_script(package_name), encoding="utf-8")

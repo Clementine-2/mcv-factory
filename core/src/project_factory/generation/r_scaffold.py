@@ -10,8 +10,150 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'DESCRIPTION': 'Package: __PKG__\nTitle: __PURPOSE__\nVersion: 0.1.0\nDescription: Bootstrap scaffold for an R command-line tool.\nLicense: MIT + file LICENSE\n', 'R/__PKG__.R': '# PURPOSE: __PURPOSE__\nscaffold_status <- function() paste0("__PKG__ scaffold ready")\n', 'exec/__PKG__': '#!/usr/bin/env Rscript\nargs <- commandArgs(trailingOnly = TRUE)\nif ("--version" %in% args) { cat("0.1.0\\n"); quit() }\ncat("Project scaffold ready. Implement domain behavior through the coding-agent workflow.\\n")\n'}
-FILES_LIB = {'DESCRIPTION': 'Package: __PKG__\nTitle: __PURPOSE__\nVersion: 0.1.0\nDescription: Bootstrap scaffold for an R library.\nLicense: MIT + file LICENSE\n', 'R/__PKG__.R': '# PURPOSE: __PURPOSE__\nscaffold_status <- function() paste0("__PKG__ library scaffold ready")\n'}
+FILES_CLI = {
+    'DESCRIPTION': 'Package: __PKG__\nTitle: __PURPOSE__\nVersion: 0.1.0\nDescription: Bootstrap scaffold for an R command-line tool.\nLicense: MIT + file LICENSE\n',
+    'R/__PKG__.R': '''# PURPOSE: __PURPOSE__
+
+# scaffold_status 报告库的引导状态。
+scaffold_status <- function() paste0("__PKG__ scaffold ready")
+
+# greet 拼接问候语，作为示例功能供 CLI 与测试共用。
+greet <- function(name) paste0("Hello, ", name, "!")
+
+# add 返回两个整数的和，作为示例功能供 CLI 与测试共用。
+add <- function(left, right) left + right
+''',
+    'exec/__PKG__': '''#!/usr/bin/env Rscript
+# PURPOSE: __PURPOSE__
+# 假设从项目根目录运行：Rscript exec/__PKG__ greet world
+args <- commandArgs(trailingOnly = TRUE)
+source("R/__PKG__.R")
+if (length(args) == 2 && args[1] == "greet") {
+  cat(greet(args[2]), "\\n")
+  quit()
+}
+if (length(args) == 3 && args[1] == "add") {
+  cat(add(as.numeric(args[2]), as.numeric(args[3])), "\\n")
+  quit()
+}
+if ("--version" %in% args) { cat("0.1.0\\n"); quit() }
+cat("Project scaffold ready. Implement domain behavior through the coding-agent workflow.\\n")
+''',
+    'tests/run_tests.R': '''#!/usr/bin/env Rscript
+# 针对示例功能编写 R 脚本断言：任一断言失败即以非零状态退出。
+source("R/__PKG__.R")
+
+failures <- 0L
+check <- function(label, cond) {
+  if (!isTRUE(cond)) {
+    cat("FAIL:", label, "\\n")
+    failures <<- failures + 1L
+  }
+}
+
+check("scaffold_status", scaffold_status() == "__PKG__ scaffold ready")
+check("greet", greet("world") == "Hello, world!")
+check("greet-empty", greet("") == "Hello, !")
+check("add-positive", add(2, 3) == 5)
+check("add-negative", add(-1, 1) == 0)
+
+if (failures == 0L) {
+  cat("ALL TESTS PASSED\\n")
+  quit(status = 0L)
+}
+quit(status = 1L)
+''',
+    'tests/testthat.R': '''library(testthat)
+library(__PKG__)
+
+test_check("__PKG__")
+''',
+    'tests/testthat/test-__PKG__.R': '''# 针对示例功能编写 testthat 测试，直接断言行为。
+test_that("scaffold_status is ready", {
+  expect_equal(scaffold_status(), "__PKG__ scaffold ready")
+})
+
+test_that("greet joins name", {
+  expect_equal(greet("world"), "Hello, world!")
+})
+
+test_that("greet empty name", {
+  expect_equal(greet(""), "Hello, !")
+})
+
+test_that("add positive numbers", {
+  expect_equal(add(2, 3), 5)
+})
+
+test_that("add negative numbers", {
+  expect_equal(add(-1, 1), 0)
+})
+''',
+}
+FILES_LIB = {
+    'DESCRIPTION': 'Package: __PKG__\nTitle: __PURPOSE__\nVersion: 0.1.0\nDescription: Bootstrap scaffold for an R library.\nLicense: MIT + file LICENSE\n',
+    'R/__PKG__.R': '''# PURPOSE: __PURPOSE__
+
+# scaffold_status 报告库的引导状态。
+scaffold_status <- function() paste0("__PKG__ library scaffold ready")
+
+# greet 拼接问候语，作为示例功能供测试断言。
+greet <- function(name) paste0("Hello, ", name, "!")
+
+# add 返回两个整数的和，作为示例功能供测试断言。
+add <- function(left, right) left + right
+''',
+    'tests/run_tests.R': '''#!/usr/bin/env Rscript
+# 针对示例功能编写 R 脚本断言：任一断言失败即以非零状态退出。
+source("R/__PKG__.R")
+
+failures <- 0L
+check <- function(label, cond) {
+  if (!isTRUE(cond)) {
+    cat("FAIL:", label, "\\n")
+    failures <<- failures + 1L
+  }
+}
+
+check("scaffold_status", scaffold_status() == "__PKG__ library scaffold ready")
+check("greet", greet("world") == "Hello, world!")
+check("greet-empty", greet("") == "Hello, !")
+check("add-positive", add(2, 3) == 5)
+check("add-negative", add(-1, 1) == 0)
+
+if (failures == 0L) {
+  cat("ALL TESTS PASSED\\n")
+  quit(status = 0L)
+}
+quit(status = 1L)
+''',
+    'tests/testthat.R': '''library(testthat)
+library(__PKG__)
+
+test_check("__PKG__")
+''',
+    'tests/testthat/test-__PKG__.R': '''# 针对示例功能编写 testthat 测试，直接断言行为。
+test_that("scaffold_status is ready", {
+  expect_equal(scaffold_status(), "__PKG__ library scaffold ready")
+})
+
+test_that("greet joins name", {
+  expect_equal(greet("world"), "Hello, world!")
+})
+
+test_that("greet empty name", {
+  expect_equal(greet(""), "Hello, !")
+})
+
+test_that("add positive numbers", {
+  expect_equal(add(2, 3), 5)
+})
+
+test_that("add negative numbers", {
+  expect_equal(add(-1, 1), 0)
+})
+''',
+}
 INIT_CLI = None
 INIT_LIB = None
 
@@ -38,17 +180,20 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。路径中的 __PKG__ 占位符同样替换。
+    for rel, content in files.items():
+        rel_filled = rel.replace("__PKG__", pkg)
+        p = project_root / rel_filled
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},
-        layout={"source": "src/" if files else ".", "packaging": "manifest"},
+        layout={"source": "R/" if files else ".", "packaging": "DESCRIPTION"},
     )
 
 

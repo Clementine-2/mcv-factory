@@ -54,6 +54,13 @@ history/
 artifacts/
 evidence_summary/
 
+# ---- Installer bundle staging (derived, rebuildable) ----
+core/.tools/
+installer/publish/
+installer/dist/
+installer/logs/
+wheel/
+
 # ---- OS / editor ----
 .DS_Store
 Thumbs.db

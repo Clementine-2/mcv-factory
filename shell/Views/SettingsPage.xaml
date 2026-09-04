@@ -19,15 +19,15 @@
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
       <StackPanel>
-        <TextBlock Text="设置" Style="{StaticResource PageEyebrow}" />
-        <TextBlock Text="按你的习惯工作。" Style="{StaticResource PageTitle}" Margin="0,9,0,8" />
-        <TextBlock Text="这里只放长期偏好。工程内部参数仍由需求确认和 Core 门禁控制。" Style="{StaticResource PageLead}" />
+        <TextBlock Text="{DynamicResource Settings_t164}" Style="{StaticResource PageEyebrow}" />
+        <TextBlock Text="{DynamicResource Settings_t165}" Style="{StaticResource PageTitle}" Margin="0,9,0,8" />
+        <TextBlock Text="{DynamicResource Settings_t166}" Style="{StaticResource PageLead}" />
       </StackPanel>
 
       <ui:Card Grid.Row="2" Padding="24" ClipToBounds="True">
         <StackPanel>
-          <TextBlock Text="外观" FontSize="17" FontWeight="SemiBold" />
-          <TextBlock Text="主题、字体、字号和背景都可以改。" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,6,0,18" />
+          <TextBlock Text="{DynamicResource Settings_t167}" FontSize="17" FontWeight="SemiBold" />
+          <TextBlock Text="{DynamicResource Settings_t168}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,6,0,18" />
 
           <Grid>
             <Grid.ColumnDefinitions>
@@ -46,83 +46,93 @@
             </Grid.RowDefinitions>
 
             <StackPanel>
-              <TextBlock Text="主题" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_t169}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="ThemeBox" SelectionChanged="AppearanceChanged">
-                <ComboBoxItem Content="跟随系统" Tag="System" />
-                <ComboBoxItem Content="浅色" Tag="Light" />
-                <ComboBoxItem Content="深色" Tag="Dark" />
-                <ComboBoxItem Content="午夜" Tag="Midnight" />
-                <ComboBoxItem Content="暖阳" Tag="Warm" />
-                <ComboBoxItem Content="高对比" Tag="Contrast" />
+                <ComboBoxItem Content="{DynamicResource Settings_ThemeBox170}" Tag="System" />
+                <ComboBoxItem Content="{DynamicResource Settings_ThemeBox171}" Tag="Light" />
+                <ComboBoxItem Content="{DynamicResource Settings_ThemeBox172}" Tag="Dark" />
+                <ComboBoxItem Content="{DynamicResource Settings_ThemeBox173}" Tag="Midnight" />
+                <ComboBoxItem Content="{DynamicResource Settings_ThemeBox174}" Tag="Warm" />
+                <ComboBoxItem Content="{DynamicResource Settings_ThemeBox175}" Tag="Contrast" />
               </ComboBox>
             </StackPanel>
             <StackPanel Grid.Column="2">
-              <TextBlock Text="强调色" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_t176}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="AccentBox" SelectionChanged="AppearanceChanged">
-                <ComboBoxItem Content="跟随主题" Tag="Default" />
-                <ComboBoxItem Content="蓝" Tag="Blue" />
-                <ComboBoxItem Content="青绿" Tag="Teal" />
-                <ComboBoxItem Content="绿" Tag="Green" />
-                <ComboBoxItem Content="紫" Tag="Purple" />
-                <ComboBoxItem Content="橙" Tag="Orange" />
-                <ComboBoxItem Content="红" Tag="Red" />
+                <ComboBoxItem Content="{DynamicResource Settings_AccentBox177}" Tag="Default" />
+                <ComboBoxItem Content="{DynamicResource Settings_AccentBox178}" Tag="Blue" />
+                <ComboBoxItem Content="{DynamicResource Settings_AccentBox179}" Tag="Teal" />
+                <ComboBoxItem Content="{DynamicResource Settings_AccentBox180}" Tag="Green" />
+                <ComboBoxItem Content="{DynamicResource Settings_AccentBox181}" Tag="Purple" />
+                <ComboBoxItem Content="{DynamicResource Settings_AccentBox182}" Tag="Orange" />
+                <ComboBoxItem Content="{DynamicResource Settings_AccentBox183}" Tag="Red" />
               </ComboBox>
             </StackPanel>
 
             <StackPanel Grid.Row="2">
-              <TextBlock Text="窗口材质" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_t184}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="BackdropBox" SelectionChanged="AppearanceChanged">
-                <ComboBoxItem Content="Mica" Tag="Mica" />
-                <ComboBoxItem Content="亚克力" Tag="Acrylic" />
-                <ComboBoxItem Content="Tabbed" Tag="Tabbed" />
-                <ComboBoxItem Content="纯色" Tag="None" />
+                <ComboBoxItem Content="{DynamicResource Settings_BackdropBox185}" Tag="Mica" />
+                <ComboBoxItem Content="{DynamicResource Settings_BackdropBox186}" Tag="Acrylic" />
+                <ComboBoxItem Content="{DynamicResource Settings_BackdropBox187}" Tag="Tabbed" />
+                <ComboBoxItem Content="{DynamicResource Settings_BackdropBox188}" Tag="None" />
               </ComboBox>
             </StackPanel>
             <StackPanel Grid.Row="2" Grid.Column="2">
-              <TextBlock Text="窗口圆角" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_t189}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="CornerBox" SelectionChanged="AppearanceChanged">
-                <ComboBoxItem Content="圆角" Tag="Round" />
-                <ComboBoxItem Content="小圆角" Tag="Small" />
-                <ComboBoxItem Content="直角" Tag="Square" />
+                <ComboBoxItem Content="{DynamicResource Settings_CornerBox190}" Tag="Round" />
+                <ComboBoxItem Content="{DynamicResource Settings_CornerBox191}" Tag="Small" />
+                <ComboBoxItem Content="{DynamicResource Settings_CornerBox192}" Tag="Square" />
               </ComboBox>
             </StackPanel>
 
             <StackPanel Grid.Row="4">
-              <TextBlock Text="字体" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_t193}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="FontBox" SelectionChanged="AppearanceChanged">
-                <ComboBoxItem Content="微软雅黑 UI（推荐）" Tag="Microsoft YaHei UI" />
-                <ComboBoxItem Content="微软雅黑" Tag="Microsoft YaHei" />
-                <ComboBoxItem Content="Segoe UI" Tag="Segoe UI" />
-                <ComboBoxItem Content="Segoe UI Variable" Tag="Segoe UI Variable Text" />
-                <ComboBoxItem Content="等线" Tag="DengXian" />
-                <ComboBoxItem Content="黑体" Tag="SimHei" />
-                <ComboBoxItem Content="宋体" Tag="SimSun" />
-                <ComboBoxItem Content="楷体" Tag="KaiTi" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontBox194}" Tag="Microsoft YaHei UI" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontBox195}" Tag="Microsoft YaHei" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontBox196}" Tag="Segoe UI" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontBox197}" Tag="Segoe UI Variable Text" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontBox198}" Tag="DengXian" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontBox199}" Tag="SimHei" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontBox200}" Tag="SimSun" />
+                <ComboBoxItem Content="{DynamicResource Settings_t201}" Tag="KaiTi" />
               </ComboBox>
             </StackPanel>
             <StackPanel Grid.Row="4" Grid.Column="2">
-              <TextBlock Text="字号" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_t202}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="FontSizeBox" SelectionChanged="AppearanceChanged">
-                <ComboBoxItem Content="较小" Tag="Small" />
-                <ComboBoxItem Content="默认" Tag="Default" />
-                <ComboBoxItem Content="较大" Tag="Large" />
-                <ComboBoxItem Content="更大" Tag="XLarge" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontSizeBox203}" Tag="Small" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontSizeBox204}" Tag="Default" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontSizeBox205}" Tag="Large" />
+                <ComboBoxItem Content="{DynamicResource Settings_FontSizeBox206}" Tag="XLarge" />
+              </ComboBox>
+            </StackPanel>
+
+            <StackPanel Grid.Row="6" Grid.ColumnSpan="3">
+              <TextBlock Text="{DynamicResource Settings_Language}" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_LanguageHint}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+              <ComboBox x:Name="LanguageBox" SelectionChanged="LanguageChanged">
+                <ComboBoxItem Content="{DynamicResource Lang_zhCN}" Tag="zh-CN" />
+                <ComboBoxItem Content="{DynamicResource Lang_zhHant}" Tag="zh-Hant" />
+                <ComboBoxItem Content="{DynamicResource Lang_en}" Tag="en-US" />
               </ComboBox>
             </StackPanel>
 
           </Grid>
 
           <StackPanel Margin="0,22,0,0">
-            <TextBlock Text="自定义背景图" Style="{StaticResource FieldLabel}" />
-            <TextBlock x:Name="BackgroundPathText" Text="未选择" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+            <TextBlock Text="{DynamicResource Settings_t207}" Style="{StaticResource FieldLabel}" />
+            <TextBlock x:Name="BackgroundPathText" Text="{DynamicResource Settings_BackgroundPathText208}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
             <WrapPanel Margin="0,10,0,0">
               <ComboBox x:Name="BackgroundOpacityBox" MinWidth="110" Margin="0,0,8,8" SelectionChanged="AppearanceChanged">
-                <ComboBoxItem Content="淡" Tag="Low" />
-                <ComboBoxItem Content="中" Tag="Medium" />
-                <ComboBoxItem Content="浓" Tag="High" />
+                <ComboBoxItem Content="{DynamicResource Settings_BackgroundOpacityBox209}" Tag="Low" />
+                <ComboBoxItem Content="{DynamicResource Settings_BackgroundOpacityBox210}" Tag="Medium" />
+                <ComboBoxItem Content="{DynamicResource Settings_BackgroundOpacityBox211}" Tag="High" />
               </ComboBox>
-              <ui:Button Content="选择…" Appearance="Secondary" Click="ChooseBackground_Click" Margin="0,0,8,8" />
-              <ui:Button Content="清除" Appearance="Secondary" Click="ClearBackground_Click" Margin="0,0,8,8" />
+              <ui:Button Content="{DynamicResource Settings_BackgroundOpacityBox212}" Appearance="Secondary" Click="ChooseBackground_Click" Margin="0,0,8,8" />
+              <ui:Button Content="{DynamicResource Settings_BackgroundOpacityBox213}" Appearance="Secondary" Click="ClearBackground_Click" Margin="0,0,8,8" />
             </WrapPanel>
           </StackPanel>
         </StackPanel>
@@ -132,11 +142,11 @@
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
           <StackPanel Margin="0,0,28,0">
-            <TextBlock Text="默认项目目录" FontSize="17" FontWeight="SemiBold" />
+            <TextBlock Text="{DynamicResource Settings_t214}" FontSize="17" FontWeight="SemiBold" />
             <TextBlock x:Name="OutputDirectoryText" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,8,0,0" />
-            <TextBlock Text="项目资产与程序安装目录分离；卸载 Project Factory 不会碰这里。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,7,0,0" />
+            <TextBlock Text="{DynamicResource Settings_OutputDirectoryText215}" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,7,0,0" />
           </StackPanel>
-          <ui:Button Grid.Column="1" Content="更改…" Appearance="Secondary" VerticalAlignment="Center" Click="ChangeOutput_Click" />
+          <ui:Button Grid.Column="1" Content="{DynamicResource Settings_OutputDirectoryText216}" Appearance="Secondary" VerticalAlignment="Center" Click="ChangeOutput_Click" />
         </Grid>
       </ui:Card>
 
@@ -145,34 +155,34 @@
           <Grid>
             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
             <StackPanel Margin="0,0,28,0">
-              <TextBlock Text="AI 需求助手" FontSize="17" FontWeight="SemiBold" />
-              <TextBlock Text="可选。AI 只辅助理解自然语言，不直接拥有生成权；关闭后 Factory 仍能完整工作。" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,6,0,0" />
+              <TextBlock Text="{DynamicResource Settings_t217}" FontSize="17" FontWeight="SemiBold" />
+              <TextBlock Text="{DynamicResource Settings_t218}" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,6,0,0" />
             </StackPanel>
-            <CheckBox x:Name="AiEnabledBox" Grid.Column="1" Content="启用" VerticalAlignment="Center" Checked="AiChanged" Unchecked="AiChanged" />
+            <CheckBox x:Name="AiEnabledBox" Grid.Column="1" Content="{DynamicResource Settings_AiEnabledBox219}" VerticalAlignment="Center" Checked="AiChanged" Unchecked="AiChanged" />
           </Grid>
 
           <Grid x:Name="AiDetails" Margin="0,22,0,0">
             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="14"/><ColumnDefinition/></Grid.ColumnDefinitions>
             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
             <StackPanel Grid.Column="0">
-              <TextBlock Text="服务商预设" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_AiDetails220}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="AiPresetBox" SelectionChanged="AiPresetChanged" />
             </StackPanel>
             <StackPanel Grid.Column="2">
-              <TextBlock Text="模型" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_AiPresetBox221}" Style="{StaticResource FieldLabel}" />
               <ComboBox x:Name="AiModelBox" IsEditable="True" Padding="8" LostFocus="AiField_LostFocus" />
             </StackPanel>
             <StackPanel Grid.Row="2" Grid.ColumnSpan="3">
-              <TextBlock Text="OpenAI 兼容端点" Style="{StaticResource FieldLabel}" />
+              <TextBlock Text="{DynamicResource Settings_AiModelBox222}" Style="{StaticResource FieldLabel}" />
               <TextBox x:Name="AiEndpointBox" Padding="10,8" LostFocus="AiField_LostFocus" />
-              <TextBlock Text="API key 环境变量" Style="{StaticResource FieldLabel}" Margin="0,12,0,0" />
+              <TextBlock Text="{DynamicResource Settings_AiEndpointBox223}" Style="{StaticResource FieldLabel}" Margin="0,12,0,0" />
               <TextBox x:Name="AiKeyEnvBox" Padding="10,8" MaxWidth="360" HorizontalAlignment="Left" LostFocus="AiField_LostFocus" />
               <WrapPanel Margin="0,12,0,0">
-                <ui:Button Content="测试连通" Appearance="Secondary" Click="AiProbe_Click" Margin="0,0,8,8" />
-                <ui:Button Content="读取本机 Ollama 模型" Appearance="Secondary" Click="LoadOllamaModels_Click" Margin="0,0,8,8" />
+                <ui:Button Content="{DynamicResource Settings_AiKeyEnvBox224}" Appearance="Secondary" Click="AiProbe_Click" Margin="0,0,8,8" />
+                <ui:Button Content="{DynamicResource Settings_AiKeyEnvBox225}" Appearance="Secondary" Click="LoadOllamaModels_Click" Margin="0,0,8,8" />
                 <TextBlock x:Name="AiProbeText" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" TextWrapping="Wrap" />
               </WrapPanel>
-              <TextBlock Text="只保存环境变量名，不保存 key。Ollama 不写死 llama3.1：只读取本机已经 ollama pull 过的模型，不会替你下载。默认推荐 SpaceXAI（api.x.ai）。AI 只整理需求，生成权在你确认和验证门。" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,7,0,0" />
+              <TextBlock Text="{DynamicResource Settings_AiProbeText226}" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" Margin="0,7,0,0" />
             </StackPanel>
           </Grid>
         </StackPanel>

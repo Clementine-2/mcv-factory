@@ -10,8 +10,160 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'CMakeLists.txt': 'cmake_minimum_required(VERSION 3.28)\nproject(__PKG__ CXX)\nadd_executable(__PKG__ src/main.cpp)\nenable_testing()\n', 'src/main.cpp': '// PURPOSE: __PURPOSE__\n#include <iostream>\n\nint main() {\n  std::cout << "Project scaffold ready. Implement domain behavior through the coding-agent workflow." << std::endl;\n  return 0;\n}\n'}
-FILES_LIB = {'CMakeLists.txt': 'cmake_minimum_required(VERSION 3.28)\nproject(__PKG__ CXX)\nadd_library(__PKG__ src/lib.cpp)\n', 'src/lib.cpp': '// PURPOSE: __PURPOSE__\n#include "__PKG__.h"\n\nconst char* scaffoldStatus() { return "__PKG__ scaffold ready"; }\n', 'src/__PKG__.h': '#ifndef __PKG___H\n#define __PKG___H\nconst char* scaffoldStatus();\n#endif\n'}
+FILES_CLI = {
+    'CMakeLists.txt': '''cmake_minimum_required(VERSION 3.28)
+project(__PKG__ CXX)
+enable_testing()
+
+# 示例逻辑放在静态库中，CLI 与测试都能复用并断言行为。
+add_library(__PKG___core STATIC src/lib.cpp)
+target_include_directories(__PKG___core PUBLIC src)
+
+add_executable(__PKG__ src/main.cpp)
+target_link_libraries(__PKG__ PRIVATE __PKG___core)
+
+add_executable(__PKG___tests tests/test_lib.cpp)
+target_link_libraries(__PKG___tests PRIVATE __PKG___core)
+add_test(NAME __PKG___tests COMMAND __PKG___tests)
+''',
+    'src/main.cpp': '''// PURPOSE: __PURPOSE__
+#include "__PKG___lib.hpp"
+
+#include <iostream>
+#include <string>
+
+int main(int argc, char* argv[]) {
+  // 子命令示例：./__PKG__ greet <name>
+  if (argc == 3 && std::string(argv[1]) == "greet") {
+    std::cout << greet(argv[2]) << std::endl;
+    return 0;
+  }
+  // 子命令示例：./__PKG__ add <left> <right>
+  if (argc == 4 && std::string(argv[1]) == "add") {
+    int left = std::stoi(argv[2]);
+    int right = std::stoi(argv[3]);
+    std::cout << add(left, right) << std::endl;
+    return 0;
+  }
+  std::cout << "Project scaffold ready. Implement domain behavior through the coding-agent workflow." << std::endl;
+  return 0;
+}
+''',
+    'src/lib.hpp': '''#ifndef __PKG___LIB_HPP
+#define __PKG___LIB_HPP
+
+#include <string>
+
+// 示例功能声明：可在 main 与测试中复用。
+std::string greet(const std::string& name);
+int add(int left, int right);
+
+#endif
+''',
+    'src/lib.cpp': '''// PURPOSE: __PURPOSE__
+#include "__PKG___lib.hpp"
+
+#include <string>
+
+std::string greet(const std::string& name) {
+  return "Hello, " + name + "!";
+}
+
+int add(int left, int right) {
+  return left + right;
+}
+''',
+    'tests/test_lib.cpp': '''// 针对示例功能编写简单断言测试：任一断言失败即返回非零退出码，供 ctest 判定。
+#include "__PKG___lib.hpp"
+
+#include <cstdlib>
+#include <iostream>
+#include <string>
+
+int main() {
+  bool ok = true;
+  auto check = [&ok](bool cond, const std::string& msg) {
+    if (!cond) {
+      std::cerr << "FAIL: " << msg << std::endl;
+      ok = false;
+    }
+  };
+  check(greet("world") == "Hello, world!", "greet with name");
+  check(greet("") == "Hello, !", "greet empty name");
+  check(add(2, 3) == 5, "add(2, 3)");
+  check(add(-1, 1) == 0, "add(-1, 1)");
+  if (ok) {
+    std::cout << "ALL TESTS PASSED" << std::endl;
+  }
+  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+''',
+}
+FILES_LIB = {
+    'CMakeLists.txt': '''cmake_minimum_required(VERSION 3.28)
+project(__PKG__ CXX)
+enable_testing()
+
+add_library(__PKG__ src/lib.cpp)
+target_include_directories(__PKG__ PUBLIC src)
+
+add_executable(__PKG___tests tests/test_lib.cpp)
+target_link_libraries(__PKG___tests PRIVATE __PKG__)
+add_test(NAME __PKG___tests COMMAND __PKG___tests)
+''',
+    'src/__PKG__.h': '''#ifndef __PKG___H
+#define __PKG___H
+
+#include <string>
+
+const char* scaffoldStatus();
+std::string greet(const std::string& name);
+int add(int left, int right);
+
+#endif
+''',
+    'src/lib.cpp': '''// PURPOSE: __PURPOSE__
+#include "__PKG__.h"
+
+#include <string>
+
+const char* scaffoldStatus() { return "__PKG__ scaffold ready"; }
+
+std::string greet(const std::string& name) {
+  return "Hello, " + name + "!";
+}
+
+int add(int left, int right) {
+  return left + right;
+}
+''',
+    'tests/test_lib.cpp': '''// 针对示例功能编写简单断言测试：任一断言失败即返回非零退出码，供 ctest 判定。
+#include "__PKG__.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <string>
+
+int main() {
+  bool ok = true;
+  auto check = [&ok](bool cond, const std::string& msg) {
+    if (!cond) {
+      std::cerr << "FAIL: " << msg << std::endl;
+      ok = false;
+    }
+  };
+  check(std::string(scaffoldStatus()) == "__PKG__ scaffold ready", "scaffoldStatus()");
+  check(greet("world") == "Hello, world!", "greet with name");
+  check(greet("") == "Hello, !", "greet empty name");
+  check(add(2, 3) == 5, "add(2, 3)");
+  check(add(-1, 1) == 0, "add(-1, 1)");
+  if (ok) {
+    std::cout << "ALL TESTS PASSED" << std::endl;
+  }
+  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+''',
+}
 INIT_CLI = ['-S', '.', '-B', 'build']
 INIT_LIB = ['-S', '.', '-B', 'build']
 
@@ -38,17 +190,20 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证 CMakeLists.txt 等清单先就位、且即使初始化命令缺省文件也总是被写出。路径中的 __PKG__ 占位符同样替换。
+    for rel, content in files.items():
+        rel_filled = rel.replace("__PKG__", pkg)
+        p = project_root / rel_filled
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},
-        layout={"source": "src/" if files else ".", "packaging": "manifest"},
+        layout={"source": "src/" if files else ".", "packaging": "CMakeLists.txt"},
     )
 
 

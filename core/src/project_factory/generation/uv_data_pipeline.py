@@ -22,6 +22,8 @@ from ..recipes import (
 def _render_pipeline() -> str:
     return '''from __future__ import annotations
 
+import csv
+import io
 import json
 from pathlib import Path
 from typing import Any
@@ -40,6 +42,24 @@ def transform(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+def transform_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """真实示例：把行里的数值字段类型化，并计算 total = price * quantity。"""
+    out = []
+    for row in rows:
+        item = dict(row)
+        item["price"] = float(item["price"])
+        item["quantity"] = int(item["quantity"])
+        item["total"] = item["price"] * item["quantity"]
+        out.append(item)
+    return out
+
+
+def transform_csv(csv_text: str) -> list[dict[str, Any]]:
+    """真实示例：把 CSV 文本解析成行并做类型化转换。"""
+    reader = csv.DictReader(io.StringIO(csv_text))
+    return transform_rows([{key: value for key, value in row.items()} for row in reader])
+
+
 def run(input_path: Path, output_path: Path) -> Path:
     payload = json.loads(input_path.read_text(encoding="utf-8"))
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -51,10 +71,10 @@ def run(input_path: Path, output_path: Path) -> Path:
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.pipeline import run, scaffold_status, transform
+from {package_name}.pipeline import run, scaffold_status, transform, transform_csv, transform_rows
 
 __version__ = "0.1.0"
-__all__ = ["run", "scaffold_status", "transform", "__version__"]
+__all__ = ["run", "scaffold_status", "transform", "transform_csv", "transform_rows", "__version__"]
 '''
 
 
@@ -84,6 +104,37 @@ class SmokeTest(unittest.TestCase):
             payload = json.loads(dest.read_text(encoding="utf-8"))
             self.assertEqual(payload[0]["id"], 1)
             self.assertEqual(payload[0]["status"], "data pipeline scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.pipeline import transform_csv, transform_rows
+
+
+class DemoTest(unittest.TestCase):
+    def test_transform_rows_types_and_totals(self) -> None:
+        rows = transform_rows([
+            {{"price": "2.5", "quantity": "4"}},
+            {{"price": "1.0", "quantity": "10"}},
+        ])
+        self.assertEqual(rows[0]["price"], 2.5)
+        self.assertEqual(rows[0]["quantity"], 4)
+        self.assertEqual(rows[0]["total"], 10.0)
+        self.assertEqual(rows[1]["total"], 10.0)
+
+    def test_transform_csv_parses_header(self) -> None:
+        rows = transform_csv("price,quantity\\n2.5,4\\n1.0,10\\n")
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["total"], 10.0)
+        self.assertEqual(rows[1]["total"], 10.0)
 
 
 if __name__ == "__main__":
@@ -129,6 +180,7 @@ def scaffold_uv_data_pipeline(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

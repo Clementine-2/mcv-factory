@@ -10,10 +10,10 @@ ShowUninstDetails show
 !include "FileFunc.nsh"
 !include "nsDialogs.nsh"
 
-!define PRODUCT_NAME "Project Factory"
+!define PRODUCT_NAME "基地车生产厂"
 !define PRODUCT_VERSION "0.14.30"
 !define PRODUCT_UX "UX5.1 Fluent"
-!define PRODUCT_PUBLISHER "Project Factory"
+!define PRODUCT_PUBLISHER "Base Vehicle Factory"
 !define PRODUCT_REGKEY "Software\ProjectFactory"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\ProjectFactory"
 
@@ -21,20 +21,20 @@ Name "${PRODUCT_NAME} ${PRODUCT_VERSION} · ${PRODUCT_UX}"
 OutFile "dist\ProjectFactory-Setup-${PRODUCT_VERSION}-UX5.1.exe"
 InstallDir "$LOCALAPPDATA\Programs\ProjectFactory"
 InstallDirRegKey HKCU "${PRODUCT_REGKEY}" "InstallDir"
-BrandingText "Project Factory · Fluent / WPF UI / NSIS"
+BrandingText "基地车生产厂 · Fluent / WPF UI / NSIS"
 
-!define MUI_ICON "..\shell\ProjectFactory.Workbench\Assets\app.ico"
-!define MUI_UNICON "..\shell\ProjectFactory.Workbench\Assets\app.ico"
+!define MUI_ICON "..\shell\Assets\app.ico"
+!define MUI_UNICON "..\shell\Assets\app.ico"
 !define MUI_ABORTWARNING
 !define MUI_LANGDLL_REGISTRY_ROOT "HKCU"
 !define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_REGKEY}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "InstallerLanguage"
-!define MUI_WELCOMEPAGE_TITLE "安装 Project Factory"
-!define MUI_WELCOMEPAGE_TEXT "这将安装 Project Factory ${PRODUCT_VERSION} · ${PRODUCT_UX}。$\r$\n$\r$\n正式界面采用 .NET 10 + WPF UI 的 Windows 11 Fluent/Mica 桌面壳；Python 只作为隔离的业务 Core，不再负责绘制 GUI。$\r$\n$\r$\n默认按当前用户安装，不需要管理员权限。"
-!define MUI_FINISHPAGE_TITLE "Project Factory 已准备就绪"
+!define MUI_WELCOMEPAGE_TITLE "安装 基地车生产厂"
+!define MUI_WELCOMEPAGE_TEXT "这将安装 基地车生产厂 ${PRODUCT_VERSION} · ${PRODUCT_UX}。$\r$\n$\r$\n正式界面采用 .NET 10 + WPF UI 的 Windows 11 Fluent/Mica 桌面壳；Python 只作为隔离的业务 Core，不再负责绘制 GUI。$\r$\n$\r$\n默认按当前用户安装，不需要管理员权限。"
+!define MUI_FINISHPAGE_TITLE "基地车生产厂 已准备就绪"
 !define MUI_FINISHPAGE_TEXT "Fluent 桌面壳和 Python Core 运行时已经安装并验证。用户设置、历史、日志与项目资产不放在程序目录内，卸载默认保留。"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\app\ProjectFactory.exe"
-!define MUI_FINISHPAGE_RUN_TEXT "启动 Project Factory"
+!define MUI_FINISHPAGE_RUN_TEXT "启动 基地车生产厂"
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
 
 Var StartMenuFolder
@@ -52,7 +52,7 @@ Var DesktopShortcut
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 Page custom RuntimeOptionsCreate RuntimeOptionsLeave
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Project Factory"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "基地车生产厂"
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKCU
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${PRODUCT_REGKEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "StartMenuFolder"
@@ -106,7 +106,7 @@ Function LocatePython
     ${EndIf}
   ${EndIf}
 
-  MessageBox MB_ICONSTOP|MB_OK "未找到可用的 64 位 Python 3.11+。$\r$\n$\r$\nProject Factory 的业务 Core 使用隔离 Python 运行时，但需要一个标准 64 位 Python 3.11 或更新版本作为 venv 基础。UX5 不再要求 tkinter。"
+  MessageBox MB_ICONSTOP|MB_OK "未找到可用的 64 位 Python 3.11+。$\r$\n$\r$\n基地车生产厂 的业务 Core 使用隔离 Python 运行时，但需要一个标准 64 位 Python 3.11 或更新版本作为 venv 基础。UX5 不再要求 tkinter。"
   Abort
 FunctionEnd
 
@@ -202,7 +202,7 @@ Function RuntimeOptionsLeave
 FunctionEnd
 
 Function PrepareRuntime
-  DetailPrint "准备 Project Factory Python Core 隔离运行时..."
+  DetailPrint "准备 基地车生产厂 Python Core 隔离运行时..."
   DetailPrint "包源=$SourceKey；连接=$ConnectionKey"
 
   ${If} $ConnectionKey == "custom"
@@ -258,7 +258,7 @@ Function un.CloseInstalledProcesses
   ${EndIf}
 FunctionEnd
 
-Section "-Project Factory" SEC_CORE
+Section "-基地车生产厂" SEC_CORE
   SetShellVarContext current
   Call CloseInstalledProcesses
   SetOutPath "$INSTDIR"
@@ -294,9 +294,9 @@ Section "-Project Factory" SEC_CORE
   ; 被 registry.inspect_provider 的版本门禁整条杀掉。源位于 work/core/.tools
   ; （相对 installer 目录为 ..\..\core\.tools）。与 PythonBridgeClient 注入的 PATH 契约一致。
   SetOutPath "$INSTDIR\tools\npm1092"
-  File /r "..\..\core\.tools\npm1092\*.*"
+  File /r "..\core\.tools\npm1092\*.*"
   SetOutPath "$INSTDIR\tools\uv010"
-  File /r "..\..\core\.tools\uv010\*.*"
+  File /r "..\core\.tools\uv010\*.*"
 
   Call PrepareRuntime
 
@@ -316,13 +316,13 @@ Section "-Project Factory" SEC_CORE
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Project Factory.lnk" "$INSTDIR\app\ProjectFactory.exe"
+    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\基地车生产厂.lnk" "$INSTDIR\app\ProjectFactory.exe"
     CreateShortCut "$SMPROGRAMS\$StartMenuFolder\修复 Python Core 运行时.lnk" "$INSTDIR\RECOVERY_Runtime.bat"
-    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\卸载 Project Factory.lnk" "$INSTDIR\Uninstall.exe"
+    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\卸载 基地车生产厂.lnk" "$INSTDIR\Uninstall.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 
   ${If} $DesktopShortcut == "1"
-    CreateShortCut "$DESKTOP\Project Factory.lnk" "$INSTDIR\app\ProjectFactory.exe"
+    CreateShortCut "$DESKTOP\基地车生产厂.lnk" "$INSTDIR\app\ProjectFactory.exe"
   ${EndIf}
 SectionEnd
 
@@ -330,11 +330,11 @@ Section "Uninstall"
   SetShellVarContext current
   Call un.CloseInstalledProcesses
 
-  Delete "$DESKTOP\Project Factory.lnk"
-  Delete "$SMPROGRAMS\Project Factory\Project Factory.lnk"
-  Delete "$SMPROGRAMS\Project Factory\修复 Python Core 运行时.lnk"
-  Delete "$SMPROGRAMS\Project Factory\卸载 Project Factory.lnk"
-  RMDir "$SMPROGRAMS\Project Factory"
+  Delete "$DESKTOP\基地车生产厂.lnk"
+  Delete "$SMPROGRAMS\基地车生产厂\基地车生产厂.lnk"
+  Delete "$SMPROGRAMS\基地车生产厂\修复 Python Core 运行时.lnk"
+  Delete "$SMPROGRAMS\基地车生产厂\卸载 基地车生产厂.lnk"
+  RMDir "$SMPROGRAMS\基地车生产厂"
 
   ; Only installer-owned directories are recursively removed.
   RMDir /r "$INSTDIR\app"

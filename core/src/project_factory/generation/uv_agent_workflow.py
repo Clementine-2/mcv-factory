@@ -31,16 +31,26 @@ def scaffold_status() -> str:
 
 def run_workflow(payload: dict[str, Any]) -> dict[str, Any]:
     return {"status": scaffold_status(), "echo": dict(payload)}
+
+
+def plan(intent: str) -> list[str]:
+    """真实示例：把意图拆解为固定步骤序列。"""
+    return [f"understand:{intent}", "retrieve", "act", "verify"]
+
+
+def execute_plan(intent: str) -> dict[str, Any]:
+    """真实示例：执行规划并返回状态，供测试断言。"""
+    return {"intent": intent, "steps": plan(intent), "status": scaffold_status()}
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.workflow import run_workflow, scaffold_status
+from {package_name}.workflow import execute_plan, plan, run_workflow, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["run_workflow", "scaffold_status", "__version__"]
+__all__ = ["execute_plan", "plan", "run_workflow", "scaffold_status", "__version__"]
 '''
 
 
@@ -58,6 +68,31 @@ class SmokeTest(unittest.TestCase):
         self.assertEqual(result["status"], "agent workflow scaffold ready")
         self.assertEqual(result["echo"]["step"], "ping")
         self.assertEqual(scaffold_status(), "agent workflow scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.workflow import execute_plan, plan
+
+
+class DemoTest(unittest.TestCase):
+    def test_plan_builds_step_sequence(self) -> None:
+        steps = plan("ship")
+        self.assertEqual(steps[0], "understand:ship")
+        self.assertEqual(steps[-1], "verify")
+
+    def test_execute_plan_returns_status(self) -> None:
+        result = execute_plan("ship")
+        self.assertEqual(result["status"], "agent workflow scaffold ready")
+        self.assertEqual(len(result["steps"]), 4)
 
 
 if __name__ == "__main__":
@@ -100,6 +135,7 @@ def scaffold_uv_agent_workflow(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

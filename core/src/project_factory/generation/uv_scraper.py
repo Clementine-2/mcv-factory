@@ -23,7 +23,11 @@ BS4_PIN = "4.12.3"
 def _render_scraper() -> str:
     return '''from __future__ import annotations
 
+import re
+
 from bs4 import BeautifulSoup
+
+_TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 
 
 def scaffold_status() -> str:
@@ -36,16 +40,24 @@ def extract_status(html: str) -> str:
     if node is None or node.string is None:
         raise ValueError("missing #status")
     return node.string.strip()
+
+
+def extract_title(html: str) -> str | None:
+    """真实示例：用正则从 HTML 文本中提取 <title> 内容，不联网。"""
+    match = _TITLE_RE.search(html)
+    if match is None:
+        return None
+    return match.group(1).strip()
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.scraper import extract_status, scaffold_status
+from {package_name}.scraper import extract_status, extract_title, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["extract_status", "scaffold_status", "__version__"]
+__all__ = ["extract_status", "extract_title", "scaffold_status", "__version__"]
 '''
 
 
@@ -71,6 +83,32 @@ class SmokeTest(unittest.TestCase):
         html = (Path(__file__).resolve().parents[1] / "fixtures" / "page.html").read_text(encoding="utf-8")
         self.assertEqual(extract_status(html), "scraper scaffold ready")
         self.assertEqual(scaffold_status(), "scraper scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.scraper import extract_title
+
+
+class DemoTest(unittest.TestCase):
+    def test_extracts_title(self) -> None:
+        html = "<html><head><title> Hello World </title></head></html>"
+        self.assertEqual(extract_title(html), "Hello World")
+
+    def test_title_is_case_insensitive_and_multiline(self) -> None:
+        html = "<HTML><HEAD>\\n  <TITLE>multi\\nline</TITLE>\\n</HEAD></HTML>"
+        self.assertEqual(extract_title(html), "multi\\nline")
+
+    def test_missing_title_returns_none(self) -> None:
+        self.assertIsNone(extract_title("<html><body>no title</body></html>"))
 
 
 if __name__ == "__main__":
@@ -117,6 +155,7 @@ def scaffold_uv_scraper(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

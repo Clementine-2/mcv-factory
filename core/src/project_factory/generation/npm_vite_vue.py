@@ -76,13 +76,53 @@ def _render_env_dts() -> str:
     )
 
 
+def _render_counter() -> str:
+    return """// 示例功能：纯函数风格的计数器状态机，可被组件复用并在 Node 中直接测试。
+export interface CounterState {
+  count: number;
+}
+
+export function createCounter(initial: number = 0): CounterState {
+  return { count: initial };
+}
+
+export function increment(state: CounterState): CounterState {
+  return { count: state.count + 1 };
+}
+
+export function decrement(state: CounterState): CounterState {
+  return { count: state.count - 1 };
+}
+
+export function formatCounter(state: CounterState): string {
+  return `Count: ${state.count}`;
+}
+"""
+
+
 def _render_app() -> str:
     return (
-        "<script setup lang=\"ts\">\n"
+        '<script setup lang="ts">\n'
+        "import { ref } from 'vue';\n"
+        "import { createCounter, decrement, formatCounter, increment } from './counter';\n"
+        "import type { CounterState } from './counter';\n\n"
         'const status = "web ui scaffold ready";\n'
+        "// 示例页面组件：可交互计数器，按钮点击驱动 ./counter 里的纯函数。\n"
+        "const state = ref<CounterState>(createCounter());\n\n"
+        "function incrementCounter(): void {\n"
+        "  state.value = increment(state.value);\n"
+        "}\n\n"
+        "function decrementCounter(): void {\n"
+        "  state.value = decrement(state.value);\n"
+        "}\n"
         "</script>\n\n"
         "<template>\n"
-        "  <main>{{ status }}</main>\n"
+        "  <main>\n"
+        "    <p>{{ status }}</p>\n"
+        '    <p id="counter">{{ formatCounter(state) }}</p>\n'
+        '    <button type="button" @click="decrementCounter()">-</button>\n'
+        '    <button type="button" @click="incrementCounter()">+</button>\n'
+        "  </main>\n"
         "</template>\n"
     )
 
@@ -92,6 +132,28 @@ def _render_main() -> str:
         "import { createApp } from 'vue';\n"
         "import App from './App.vue';\n\n"
         "createApp(App).mount('#app');\n"
+    )
+
+
+def _render_counter_test() -> str:
+    return (
+        'import test from "node:test";\n'
+        'import assert from "node:assert/strict";\n'
+        'import { createCounter, decrement, formatCounter, increment } from "../src/counter.ts";\n\n'
+        'test("counter component starts at the initial value", () => {\n'
+        '  assert.deepEqual(createCounter(), { count: 0 });\n'
+        '  assert.deepEqual(createCounter(4), { count: 4 });\n'
+        "});\n\n"
+        'test("increment then decrement returns to start", () => {\n'
+        "  let state = createCounter(2);\n"
+        "  state = increment(state);\n"
+        '  assert.equal(state.count, 3);\n'
+        "  state = decrement(state);\n"
+        '  assert.equal(state.count, 2);\n'
+        "});\n\n"
+        'test("formatCounter renders the label", () => {\n'
+        '  assert.equal(formatCounter(createCounter(6)), "Count: 6");\n'
+        "});\n"
     )
 
 
@@ -132,7 +194,7 @@ def scaffold_npm_vite_vue(
             "dev": "vite",
             "build": "vite build",
             "preview": "vite preview",
-            "test": "node --test tests/smoke.test.js",
+            "test": "node --test \"tests/*.test.js\"",
         },
         "dependencies": {"vue": VUE_PIN},
         "devDependencies": {
@@ -147,11 +209,13 @@ def scaffold_npm_vite_vue(
     source = project_root / "src"
     source.mkdir(parents=True, exist_ok=True)
     (source / "App.vue").write_text(_render_app(), encoding="utf-8")
+    (source / "counter.ts").write_text(_render_counter(), encoding="utf-8")
     (source / "main.ts").write_text(_render_main(), encoding="utf-8")
     (source / "vite-env.d.ts").write_text(_render_env_dts(), encoding="utf-8")
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "counter.test.js").write_text(_render_counter_test(), encoding="utf-8")
     attach_playwright(package, project_root)
     _write_json(project_root / "package.json", package)
     run_command(

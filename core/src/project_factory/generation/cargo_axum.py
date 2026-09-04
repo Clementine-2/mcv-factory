@@ -27,12 +27,29 @@ pub struct Health {{
     pub service: &'static str,
 }}
 
+#[derive(Serialize)]
+pub struct Item {{
+    pub id: u32,
+    pub name: &'static str,
+}}
+
+/// 构建应用路由：/health 健康检查，/api/items 示例数据接口。
 pub fn app() -> Router {{
-    Router::new().route("/health", get(health))
+    Router::new()
+        .route("/health", get(health))
+        .route("/api/items", get(list_items))
 }}
 
 async fn health() -> Json<Health> {{
     Json(Health {{ status: "ok", service: "{ident}" }})
+}}
+
+/// 示例 handler：返回内存中的种子数据，不依赖外部存储。
+async fn list_items() -> Json<Vec<Item>> {{
+    Json(vec![
+        Item {{ id: 1, name: "示例项 A" }},
+        Item {{ id: 2, name: "示例项 B" }},
+    ])
 }}
 
 #[cfg(test)]
@@ -42,15 +59,48 @@ mod tests {{
     use axum::http::{{Request, StatusCode}};
     use tower::ServiceExt;
 
-    #[test]
-    fn health_returns_ok() {{
-        let response = futures_executor::block_on(async {{
+    fn get(path: &str) -> axum::response::Response {{
+        futures_executor::block_on(async {{
             app()
-                .oneshot(Request::builder().uri("/health").body(Body::empty()).unwrap())
+                .oneshot(Request::builder().uri(path).body(Body::empty()).unwrap())
+                .await
+                .unwrap()
+        }})
+    }}
+
+    fn body_text(response: axum::response::Response) -> String {{
+        let bytes = futures_executor::block_on(async {{
+            axum::body::to_bytes(response.into_body(), usize::MAX)
                 .await
                 .unwrap()
         }});
+        String::from_utf8(bytes.to_vec()).unwrap()
+    }}
+
+    #[test]
+    fn health_returns_ok() {{
+        assert_eq!(get("/health").status(), StatusCode::OK);
+    }}
+
+    #[test]
+    fn health_reports_service_name() {{
+        let body = body_text(get("/health"));
+        assert!(body.contains("{ident}"), "{{body}}");
+        assert!(body.contains("ok"), "{{body}}");
+    }}
+
+    #[test]
+    fn items_returns_seeded_list() {{
+        let response = get("/api/items");
         assert_eq!(response.status(), StatusCode::OK);
+        let body = body_text(response);
+        assert!(body.contains("示例项 A"), "{{body}}");
+        assert!(body.contains("示例项 B"), "{{body}}");
+    }}
+
+    #[test]
+    fn unknown_route_returns_not_found() {{
+        assert_eq!(get("/api/items/1").status(), StatusCode::NOT_FOUND);
     }}
 }}
 '''

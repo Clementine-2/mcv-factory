@@ -53,16 +53,24 @@ def load_contract(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("OpenAPI document must be a mapping")
     return payload
+
+
+def resolve_path(doc: dict[str, Any], path: str) -> dict[str, Any] | None:
+    """真实可运行的契约示例：解析 OpenAPI 文档中某个路径的操作定义。"""
+    paths = doc.get("paths")
+    if not isinstance(paths, dict):
+        return None
+    return paths.get(path)
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.contract import load_contract, scaffold_status
+from {package_name}.contract import load_contract, resolve_path, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["load_contract", "scaffold_status", "__version__"]
+__all__ = ["load_contract", "resolve_path", "scaffold_status", "__version__"]
 '''
 
 
@@ -82,6 +90,33 @@ class SmokeTest(unittest.TestCase):
         self.assertEqual(doc["openapi"].startswith("3."), True)
         self.assertIn("/health", doc["paths"])
         self.assertEqual(scaffold_status(), "schema contract scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+from pathlib import Path
+
+from {package_name}.contract import load_contract, resolve_path
+
+
+class DemoTest(unittest.TestCase):
+    def test_resolve_path_returns_operation(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        doc = load_contract(root / "openapi.yaml")
+        operation = resolve_path(doc, "/health")
+        self.assertIsNotNone(operation)
+        self.assertIn("get", operation)
+
+    def test_resolve_path_missing_returns_none(self) -> None:
+        doc = {{"paths": {{"/health": {{"get": {{}}}}}}}}
+        self.assertIsNone(resolve_path(doc, "/missing"))
 
 
 if __name__ == "__main__":
@@ -126,6 +161,7 @@ def scaffold_uv_schema_contract(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

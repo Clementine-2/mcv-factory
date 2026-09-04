@@ -22,6 +22,7 @@ def _render_rag() -> str:
     return '''from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -43,6 +44,18 @@ def retrieve(query: str, docs: dict[str, str]) -> str:
     return scaffold_status()
 
 
+def retrieve_top_k(query: str, docs: dict[str, str], k: int = 3) -> list[tuple[str, str]]:
+    """真实可运行的检索示例：按关键词命中数排序返回前 k 条 (id, text)。"""
+    query_tokens = set(token.casefold() for token in re.findall(r"\\w+", query))
+    scored = []
+    for doc_id, text in docs.items():
+        text_tokens = set(token.casefold() for token in re.findall(r"\\w+", text))
+        score = len(query_tokens & text_tokens)
+        scored.append((score, doc_id, text))
+    scored.sort(key=lambda item: (item[0], item[1]), reverse=True)
+    return [(doc_id, text) for _, doc_id, text in scored[:k]]
+
+
 def answer(query: str, docs_path: Path) -> str:
     return retrieve(query, load_docs(docs_path))
 '''
@@ -51,10 +64,10 @@ def answer(query: str, docs_path: Path) -> str:
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.rag import answer, scaffold_status
+from {package_name}.rag import answer, retrieve_top_k, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["answer", "scaffold_status", "__version__"]
+__all__ = ["answer", "retrieve_top_k", "scaffold_status", "__version__"]
 '''
 
 
@@ -72,6 +85,35 @@ class SmokeTest(unittest.TestCase):
         docs = Path(__file__).resolve().parents[1] / "fixtures" / "docs.json"
         self.assertEqual(answer("alpha", docs), "rag scaffold ready")
         self.assertEqual(scaffold_status(), "rag scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.rag import retrieve_top_k
+
+
+class DemoTest(unittest.TestCase):
+    def test_retrieve_top_k_ranks_by_keyword_overlap(self) -> None:
+        docs = {{
+            "a": "quick fox",
+            "b": "the lazy dog",
+            "c": "quick fox jumps high",
+        }}
+        top = retrieve_top_k("quick fox", docs, k=2)
+        self.assertEqual([doc_id for doc_id, _ in top], ["c", "a"])
+
+    def test_retrieve_top_k_empty_query_keeps_ordering(self) -> None:
+        docs = {{"a": "hello world", "b": "foo bar"}}
+        top = retrieve_top_k("", docs, k=1)
+        self.assertEqual(top[0][0], "b")
 
 
 if __name__ == "__main__":
@@ -147,6 +189,7 @@ def scaffold_uv_rag(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     scripts = project_root / "scripts"
     scripts.mkdir(parents=True, exist_ok=True)
     (scripts / "verify_real_retriever.py").write_text(_render_real_retriever_script(package_name), encoding="utf-8")

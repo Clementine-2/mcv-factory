@@ -53,11 +53,31 @@ def _render_model() -> str:
 def _render_init() -> str:
     return '''from __future__ import annotations
 
+from .transform import summarize
+
 __version__ = "0.1.0"
 
 
 def scaffold_status() -> str:
     return "analytics transform scaffold ready"
+'''
+
+
+def _render_transform() -> str:
+    return '''from __future__ import annotations
+
+from typing import Any
+
+
+def summarize(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """真实可运行的 dbt 分析示例：按 category 聚合数量与金额。"""
+    buckets: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        category = str(row["category"])
+        bucket = buckets.setdefault(category, {"category": category, "quantity": 0, "amount": 0.0})
+        bucket["quantity"] += int(row["quantity"])
+        bucket["amount"] += float(row["amount"])
+    return list(buckets.values())
 '''
 
 
@@ -76,6 +96,33 @@ class SmokeTest(unittest.TestCase):
         self.assertTrue((root / "dbt_project.yml").is_file())
         self.assertTrue((root / "models" / "scaffold.sql").is_file())
         self.assertEqual(scaffold_status(), "analytics transform scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.transform import summarize
+
+
+class DemoTest(unittest.TestCase):
+    def test_summarize_groups_by_category(self) -> None:
+        rows = [
+            {{"category": "a", "quantity": "2", "amount": "10.0"}},
+            {{"category": "a", "quantity": "3", "amount": "5.0"}},
+            {{"category": "b", "quantity": "1", "amount": "7.5"}},
+        ]
+        result = summarize(rows)
+        by_category = {{item["category"]: item for item in result}}
+        self.assertEqual(by_category["a"]["quantity"], 5)
+        self.assertEqual(by_category["a"]["amount"], 15.0)
+        self.assertEqual(by_category["b"]["amount"], 7.5)
 
 
 if __name__ == "__main__":
@@ -119,6 +166,7 @@ def scaffold_uv_dbt(
     package_dir = project_root / "src" / package_name
     package_dir.mkdir(parents=True, exist_ok=True)
     (package_dir / "__init__.py").write_text(_render_init(), encoding="utf-8")
+    (package_dir / "transform.py").write_text(_render_transform(), encoding="utf-8")
     (project_root / "dbt_project.yml").write_text(_render_project(project_name), encoding="utf-8")
     (project_root / "profiles.yml").write_text(_render_profiles(), encoding="utf-8")
     models = project_root / "models"
@@ -127,6 +175,7 @@ def scaffold_uv_dbt(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     return ScaffoldResult(
         command_result=scaffold,
         layout={

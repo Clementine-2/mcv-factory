@@ -48,11 +48,43 @@ public static class ScaffoldStatus
 def _render_text(ident: str) -> str:
     return f"""namespace {ident};
 
+/// <summary>
+/// 示例文本工具类：展示一个可复用、可测试的纯逻辑 API。
+/// </summary>
 public static class Text
 {{
+    /// <summary>去除首尾空白。</summary>
     public static string Normalize(string value)
     {{
         return value.Trim();
+    }}
+
+    /// <summary>反转字符顺序。</summary>
+    public static string Reverse(string value)
+    {{
+        var chars = value.ToCharArray();
+        Array.Reverse(chars);
+        return new string(chars);
+    }}
+
+    /// <summary>
+    /// 判断是否为回文（忽略大小写与首尾空白，空字符串不算回文）。
+    /// </summary>
+    public static bool IsPalindrome(string value)
+    {{
+        var normalized = Normalize(value).ToLowerInvariant();
+        return normalized.Length > 0 && normalized == Reverse(normalized);
+    }}
+
+    /// <summary>统计按空白分隔的单词数量。</summary>
+    public static int CountWords(string value)
+    {{
+        var normalized = Normalize(value);
+        if (normalized.Length == 0)
+        {{
+            return 0;
+        }}
+        return normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
     }}
 }}
 """
@@ -93,6 +125,29 @@ public class TextTests
     {{
         Assert.Equal("ok", Text.Normalize("  ok  "));
         Assert.Equal("{ident} scaffold ready", ScaffoldStatus.Ready);
+    }}
+
+    [Fact]
+    public void ReverseFlipsCharacterOrder()
+    {{
+        Assert.Equal("cba", Text.Reverse("abc"));
+        Assert.Equal("", Text.Reverse(""));
+    }}
+
+    [Fact]
+    public void IsPalindromeDetectsMirrorStrings()
+    {{
+        Assert.True(Text.IsPalindrome("abcba"));
+        Assert.True(Text.IsPalindrome("Racecar"));
+        Assert.False(Text.IsPalindrome("hello"));
+        Assert.False(Text.IsPalindrome(""));
+    }}
+
+    [Fact]
+    public void CountWordsCountsSpaceSeparatedTokens()
+    {{
+        Assert.Equal(3, Text.CountWords(" one  two three "));
+        Assert.Equal(0, Text.CountWords("   "));
     }}
 }}
 """

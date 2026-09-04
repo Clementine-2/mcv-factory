@@ -10,8 +10,141 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'build.gradle.kts': 'plugins {\n    application\n}\n\napplication {\n    mainClass.set("AppKt")\n}\n', 'src/main/kotlin/App.kt': '// PURPOSE: __PURPOSE__\nfun main() {\n    println("Project scaffold ready. Implement domain behavior through the coding-agent workflow.")\n}\n', 'settings.gradle.kts': 'rootProject.name = "__PKG__"\n'}
-FILES_LIB = {'build.gradle.kts': 'plugins {\n    `java-library`\n}\n', 'src/main/kotlin/Lib.kt': '// PURPOSE: __PURPOSE__\n\nfun scaffoldStatus(): String = "kotlin library scaffold ready"\n', 'settings.gradle.kts': 'rootProject.name = "__PKG__"\n'}
+FILES_CLI = {
+    'build.gradle.kts': '''plugins {
+    kotlin("jvm") version "1.9.24"
+    application
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+application {
+    mainClass.set("AppKt")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+''',
+    'src/main/kotlin/App.kt': '''// PURPOSE: __PURPOSE__
+
+// greet 拼接问候语，作为示例功能供 CLI 与测试共用。
+fun greet(name: String): String = "Hello, $name!"
+
+// add 返回两个整数的和，作为示例功能供 CLI 与测试共用。
+fun add(left: Int, right: Int): Int = left + right
+
+fun main(args: Array<String>) {
+    when {
+        args.size == 2 && args[0] == "greet" -> println(greet(args[1]))
+        args.size == 3 && args[0] == "add" -> {
+            val left = args[1].toIntOrNull()
+            val right = args[2].toIntOrNull()
+            if (left == null || right == null) {
+                println("add 需要两个整数参数")
+            } else {
+                println(add(left, right))
+            }
+        }
+        else -> println("Project scaffold ready. Implement domain behavior through the coding-agent workflow.")
+    }
+}
+''',
+    'src/test/kotlin/AppTest.kt': '''// 针对示例功能编写单元测试，直接断言行为。
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+class AppTest {
+
+    @Test
+    fun greetJoinsName() {
+        assertEquals("Hello, world!", greet("world"))
+    }
+
+    @Test
+    fun greetEmptyName() {
+        assertEquals("Hello, !", greet(""))
+    }
+
+    @Test
+    fun addPositive() {
+        assertEquals(5, add(2, 3))
+    }
+
+    @Test
+    fun addNegative() {
+        assertEquals(0, add(-1, 1))
+    }
+}
+''',
+    'settings.gradle.kts': 'rootProject.name = "__PKG__"\n',
+}
+FILES_LIB = {
+    'build.gradle.kts': '''plugins {
+    kotlin("jvm") version "1.9.24"
+    `java-library`
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+''',
+    'src/main/kotlin/Lib.kt': '''// PURPOSE: __PURPOSE__
+
+// scaffoldStatus 报告库的引导状态。
+fun scaffoldStatus(): String = "__PKG__ library scaffold ready"
+
+// greet 拼接问候语，作为示例功能供测试断言。
+fun greet(name: String): String = "Hello, $name!"
+
+// add 返回两个整数的和，作为示例功能供测试断言。
+fun add(left: Int, right: Int): Int = left + right
+''',
+    'src/test/kotlin/LibTest.kt': '''// 针对示例功能编写单元测试，直接断言行为。
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+class LibTest {
+
+    @Test
+    fun scaffoldStatusIsReady() {
+        assertEquals("__PKG__ library scaffold ready", scaffoldStatus())
+    }
+
+    @Test
+    fun greetJoinsName() {
+        assertEquals("Hello, world!", greet("world"))
+    }
+
+    @Test
+    fun addPositive() {
+        assertEquals(5, add(2, 3))
+    }
+
+    @Test
+    fun addNegative() {
+        assertEquals(0, add(-1, 1))
+    }
+}
+''',
+    'settings.gradle.kts': 'rootProject.name = "__PKG__"\n',
+}
 INIT_CLI = None
 INIT_LIB = None
 
@@ -38,13 +171,15 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。
+    for rel, content in files.items():
+        p = project_root / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},

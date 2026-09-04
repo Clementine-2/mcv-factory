@@ -41,6 +41,7 @@ def _render_servicer() -> str:
     return '''from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Sequence
 
 
 def scaffold_status() -> str:
@@ -57,6 +58,11 @@ class StatusReply:
     status: str
 
 
+def compute_total(values: Sequence[int]) -> int:
+    """真实可运行的 gRPC 业务示例：把一组数值求和。"""
+    return sum(values)
+
+
 class StatusServicer:
     def SayStatus(self, request: StatusRequest) -> StatusReply:
         return StatusReply(status=f"{scaffold_status()}:{request.name}")
@@ -66,10 +72,10 @@ class StatusServicer:
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.servicer import StatusReply, StatusRequest, StatusServicer, scaffold_status
+from {package_name}.servicer import StatusReply, StatusRequest, StatusServicer, compute_total, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["StatusReply", "StatusRequest", "StatusServicer", "scaffold_status", "__version__"]
+__all__ = ["StatusReply", "StatusRequest", "StatusServicer", "compute_total", "scaffold_status", "__version__"]
 '''
 
 
@@ -93,6 +99,27 @@ class SmokeTest(unittest.TestCase):
         reply = StatusServicer().SayStatus(StatusRequest(name="probe"))
         self.assertEqual(reply.status, "grpc scaffold ready:probe")
         self.assertEqual(scaffold_status(), "grpc scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.servicer import compute_total
+
+
+class DemoTest(unittest.TestCase):
+    def test_compute_total(self) -> None:
+        self.assertEqual(compute_total([1, 2, 3]), 6)
+
+    def test_compute_total_empty(self) -> None:
+        self.assertEqual(compute_total([]), 0)
 
 
 if __name__ == "__main__":
@@ -136,6 +163,7 @@ def scaffold_uv_grpc(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

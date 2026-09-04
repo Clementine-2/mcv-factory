@@ -10,8 +10,167 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'build.gradle': 'plugins {\n    id "application"\n}\n\nrepositories {\n    mavenCentral()\n}\n\napplication {\n    mainClass = "app.Main"\n}\n', 'src/main/java/app/Main.java': 'package app;\n\n/** PURPOSE: __PURPOSE__ */\npublic final class Main {\n    public static void main(String[] args) {\n        System.out.println("Project scaffold ready. Implement domain behavior through the coding-agent workflow.");\n    }\n}\n', 'settings.gradle': 'rootProject.name = "__PKG__"\n'}
-FILES_LIB = {'build.gradle': 'plugins {\n    id "java-library"\n}\n\nrepositories {\n    mavenCentral()\n}\n', 'src/main/java/app/Lib.java': 'package app;\n\n/** PURPOSE: __PURPOSE__ */\npublic final class Lib {\n    public static String scaffoldStatus() {\n        return "app library scaffold ready";\n    }\n}\n', 'settings.gradle': 'rootProject.name = "__PKG__"\n'}
+FILES_CLI = {
+    'build.gradle': '''plugins {
+    id "application"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+application {
+    mainClass = "app.Main"
+}
+
+test {
+    useJUnitPlatform()
+}
+''',
+    'src/main/java/app/Main.java': '''package app;
+
+/** PURPOSE: __PURPOSE__ */
+public final class Main {
+
+    /** greet 拼接问候语，作为示例功能供 CLI 与测试共用。 */
+    public static String greet(String name) {
+        return "Hello, " + name + "!";
+    }
+
+    /** add 返回两个整数的和，作为示例功能供 CLI 与测试共用。 */
+    public static int add(int left, int right) {
+        return left + right;
+    }
+
+    public static void main(String[] args) {
+        if (args.length == 2 && "greet".equals(args[0])) {
+            System.out.println(greet(args[1]));
+            return;
+        }
+        if (args.length == 3 && "add".equals(args[0])) {
+            try {
+                int left = Integer.parseInt(args[1]);
+                int right = Integer.parseInt(args[2]);
+                System.out.println(add(left, right));
+            } catch (NumberFormatException e) {
+                System.err.println("add 需要两个整数参数");
+                System.exit(1);
+            }
+            return;
+        }
+        System.out.println("Project scaffold ready. Implement domain behavior through the coding-agent workflow.");
+    }
+}
+''',
+    'src/test/java/app/MainTest.java': '''package app;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+/** 针对示例功能编写 JUnit 测试，直接断言行为。 */
+class MainTest {
+
+    @Test
+    void greetJoinsName() {
+        assertEquals("Hello, world!", Main.greet("world"));
+    }
+
+    @Test
+    void greetEmptyName() {
+        assertEquals("Hello, !", Main.greet(""));
+    }
+
+    @Test
+    void addPositive() {
+        assertEquals(5, Main.add(2, 3));
+    }
+
+    @Test
+    void addNegative() {
+        assertEquals(0, Main.add(-1, 1));
+    }
+}
+''',
+    'settings.gradle': 'rootProject.name = "__PKG__"\n',
+}
+FILES_LIB = {
+    'build.gradle': '''plugins {
+    id "java-library"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
+}
+''',
+    'src/main/java/app/Lib.java': '''package app;
+
+/** PURPOSE: __PURPOSE__ */
+public final class Lib {
+
+    private Lib() {
+    }
+
+    /** scaffoldStatus 报告库的引导状态。 */
+    public static String scaffoldStatus() {
+        return "app library scaffold ready";
+    }
+
+    /** greet 拼接问候语，作为示例功能供测试断言。 */
+    public static String greet(String name) {
+        return "Hello, " + name + "!";
+    }
+
+    /** add 返回两个整数的和，作为示例功能供测试断言。 */
+    public static int add(int left, int right) {
+        return left + right;
+    }
+}
+''',
+    'src/test/java/app/LibTest.java': '''package app;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+/** 针对示例功能编写 JUnit 测试，直接断言行为。 */
+class LibTest {
+
+    @Test
+    void scaffoldStatusIsReady() {
+        assertEquals("app library scaffold ready", Lib.scaffoldStatus());
+    }
+
+    @Test
+    void greetJoinsName() {
+        assertEquals("Hello, world!", Lib.greet("world"));
+    }
+
+    @Test
+    void addPositive() {
+        assertEquals(5, Lib.add(2, 3));
+    }
+
+    @Test
+    void addNegative() {
+        assertEquals(0, Lib.add(-1, 1));
+    }
+}
+''',
+    'settings.gradle': 'rootProject.name = "__PKG__"\n',
+}
 INIT_CLI = None
 INIT_LIB = None
 
@@ -38,13 +197,15 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。
+    for rel, content in files.items():
+        p = project_root / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},

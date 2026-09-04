@@ -41,16 +41,31 @@ def record_status() -> list[str]:
     with tracer.start_as_current_span("scaffold.status") as span:
         span.set_attribute("status", scaffold_status())
     return [item.name for item in exporter.get_finished_spans()]
+
+
+def record_event(name: str, attributes: dict[str, str]) -> list[dict[str, str]]:
+    """真实可运行的示例：记录一个带属性的 span 并返回快照。"""
+    exporter = InMemorySpanExporter()
+    provider = TracerProvider()
+    provider.add_span_processor(SimpleSpanProcessor(exporter))
+    tracer = provider.get_tracer("scaffold.demo")
+    with tracer.start_as_current_span(name) as span:
+        for key, value in attributes.items():
+            span.set_attribute(key, value)
+    return [
+        {"name": item.name, "attributes": dict(item.attributes)}
+        for item in exporter.get_finished_spans()
+    ]
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.probe import record_status, scaffold_status
+from {package_name}.probe import record_event, record_status, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["record_status", "scaffold_status", "__version__"]
+__all__ = ["record_event", "record_status", "scaffold_status", "__version__"]
 '''
 
 
@@ -67,6 +82,30 @@ class SmokeTest(unittest.TestCase):
         names = record_status()
         self.assertEqual(names, ["scaffold.status"])
         self.assertEqual(scaffold_status(), "observability probe scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.probe import record_event
+
+
+class DemoTest(unittest.TestCase):
+    def test_record_event_captures_name(self) -> None:
+        spans = record_event("demo.request", {{"method": "GET"}})
+        self.assertEqual(len(spans), 1)
+        self.assertEqual(spans[0]["name"], "demo.request")
+
+    def test_record_event_captures_attributes(self) -> None:
+        spans = record_event("demo.request", {{"method": "GET"}})
+        self.assertEqual(spans[0]["attributes"]["method"], "GET")
 
 
 if __name__ == "__main__":
@@ -119,6 +158,7 @@ def scaffold_uv_observability(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

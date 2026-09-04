@@ -31,6 +31,11 @@ def scaffold_status() -> str:
     return "tui scaffold ready"
 
 
+def build_banner(text: str, width: int = 40) -> str:
+    """真实可运行的 TUI 示例：生成居中的标题横幅文本。"""
+    return text.center(width)
+
+
 class ScaffoldApp(App):
     def compose(self) -> ComposeResult:
         yield Static(scaffold_status(), id="status")
@@ -48,10 +53,10 @@ if __name__ == "__main__":
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.app import ScaffoldApp, main, scaffold_status
+from {package_name}.app import ScaffoldApp, build_banner, main, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["ScaffoldApp", "main", "scaffold_status", "__version__"]
+__all__ = ["ScaffoldApp", "build_banner", "main", "scaffold_status", "__version__"]
 '''
 
 
@@ -71,6 +76,29 @@ class SmokeTest(unittest.TestCase):
         widgets = list(ScaffoldApp().compose())
         self.assertEqual(len(widgets), 1)
         self.assertEqual(str(widgets[0].renderable), "tui scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.app import build_banner, scaffold_status
+
+
+class DemoTest(unittest.TestCase):
+    def test_build_banner_centers_text(self) -> None:
+        banner = build_banner("tui scaffold ready", width=30)
+        self.assertEqual(banner, "tui scaffold ready".center(30))
+        self.assertEqual(len(banner), 30)
+
+    def test_build_banner_uses_default_width(self) -> None:
+        self.assertEqual(len(build_banner(scaffold_status())), 40)
 
 
 if __name__ == "__main__":
@@ -114,6 +142,7 @@ def scaffold_uv_textual(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

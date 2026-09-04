@@ -28,6 +28,7 @@ public sealed class ShellSettings
     public string UiZoomKey { get; set; } = "100";
     public string BackgroundImage { get; set; } = "";
     public string BackgroundOpacityKey { get; set; } = "Medium";
+    public string Language { get; set; } = "zh-CN";
     public string DefaultOutputDirectory { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ProjectFactory", "Projects");
     public bool AiEnabled { get; set; }
     public string AiEndpoint { get; set; } = "";
@@ -77,6 +78,8 @@ public sealed class ShellSettings
             UiZoomKey = saved.UiZoomKey ?? UiZoomKey;
             BackgroundImage = saved.BackgroundImage ?? "";
             BackgroundOpacityKey = saved.BackgroundOpacityKey ?? BackgroundOpacityKey;
+            if (saved.Language is { } lang && lang is "zh-CN" or "zh-Hant" or "en-US")
+                Language = lang;
             DefaultOutputDirectory = string.IsNullOrWhiteSpace(saved.DefaultOutputDirectory) ? DefaultOutputDirectory : saved.DefaultOutputDirectory;
             AiEnabled = saved.AiEnabled;
             AiEndpoint = saved.AiEndpoint ?? "";
@@ -107,6 +110,7 @@ public sealed class ShellSettings
             UiZoomKey = UiZoomKey,
             BackgroundImage = BackgroundImage,
             BackgroundOpacityKey = BackgroundOpacityKey,
+            Language = Language,
             DefaultOutputDirectory = DefaultOutputDirectory,
             AiEnabled = AiEnabled,
             AiEndpoint = AiEndpoint,
@@ -288,6 +292,7 @@ public sealed class ShellSettings
         public string? UiZoomKey { get; set; }
         public string? BackgroundImage { get; set; }
         public string? BackgroundOpacityKey { get; set; }
+        public string? Language { get; set; }
         public string? DefaultOutputDirectory { get; set; }
         public bool AiEnabled { get; set; }
         public string? AiEndpoint { get; set; }

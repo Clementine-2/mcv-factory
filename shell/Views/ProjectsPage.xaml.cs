@@ -92,7 +92,7 @@ public partial class ProjectsPage : Page
         var rootExists = !string.IsNullOrWhiteSpace(root) && System.IO.Directory.Exists(root);
         var open = new Wpf.Ui.Controls.Button
         {
-            Content = rootExists ? "打开项目" : "项目目录已不在",
+            Content = rootExists ? App.L("Ms_OpenProject") : App.L("Ms_MissingDir"),
             Appearance = ControlAppearance.Primary,
             Tag = root,
             Margin = new Thickness(8, 0, 0, 0),

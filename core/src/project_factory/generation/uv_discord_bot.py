@@ -32,6 +32,18 @@ def scaffold_status() -> str:
     return "bot scaffold ready"
 
 
+def reply_for(text: str) -> str:
+    """真实示例：按命令文本生成机器人回复（不联网、不依赖网关）。"""
+    stripped = text.strip()
+    lowered = stripped.casefold()
+    if lowered == "!ping":
+        return "pong"
+    if lowered == "!hello" or lowered.startswith("!hello "):
+        name = stripped.split(maxsplit=1)[1] if " " in stripped else "friend"
+        return f"Hello, {name}!"
+    return scaffold_status()
+
+
 def build_bot() -> commands.Bot:
     bot = commands.Bot(command_prefix="!", intents=discord.Intents.none())
 
@@ -50,10 +62,10 @@ def main() -> None:
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.bot import build_bot, scaffold_status
+from {package_name}.bot import build_bot, reply_for, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["build_bot", "scaffold_status", "__version__"]
+__all__ = ["build_bot", "reply_for", "scaffold_status", "__version__"]
 '''
 
 
@@ -71,6 +83,30 @@ class SmokeTest(unittest.TestCase):
         names = [command.name for command in bot.commands]
         self.assertIn("status", names)
         self.assertEqual(scaffold_status(), "bot scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.bot import reply_for
+
+
+class DemoTest(unittest.TestCase):
+    def test_ping_returns_pong(self) -> None:
+        self.assertEqual(reply_for("!ping"), "pong")
+
+    def test_hello_greets_named_user(self) -> None:
+        self.assertEqual(reply_for("!hello Ada"), "Hello, Ada!")
+
+    def test_unknown_command_returns_status(self) -> None:
+        self.assertEqual(reply_for("!nope"), "bot scaffold ready")
 
 
 if __name__ == "__main__":
@@ -134,6 +170,7 @@ def scaffold_uv_discord_bot(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

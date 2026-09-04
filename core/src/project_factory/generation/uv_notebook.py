@@ -74,7 +74,7 @@ def _render_execute(package_name: str) -> str:
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 NOTEBOOK_PATH = Path("notebooks/experiment.ipynb")
 PARAMS_PATH = Path("params.json")
@@ -93,6 +93,18 @@ def _load_notebook(path: Path) -> dict[str, Any]:
     if not isinstance(notebook.get("cells"), list):
         raise ValueError("Notebook is missing cells")
     return notebook
+
+
+def describe(values: Sequence[float]) -> dict[str, float]:
+    """真实可运行的分析示例：返回一组数值的 min/max/mean/count。"""
+    if not values:
+        return {{"min": 0.0, "max": 0.0, "mean": 0.0, "count": 0.0}}
+    return {{
+        "min": float(min(values)),
+        "max": float(max(values)),
+        "mean": sum(values) / len(values),
+        "count": float(len(values)),
+    }}
 
 
 def execute_notebook(project_root: Path | None = None) -> dict[str, Any]:
@@ -138,9 +150,9 @@ if __name__ == "__main__":
 def _render_init() -> str:
     return '''from __future__ import annotations
 
-from .execute import execute_notebook, main
+from .execute import describe, execute_notebook, main
 
-__all__ = ["execute_notebook", "main"]
+__all__ = ["describe", "execute_notebook", "main"]
 '''
 
 
@@ -168,6 +180,32 @@ class NotebookSmokeTest(unittest.TestCase):
         sources = (root / SOURCES_PATH).read_text(encoding="utf-8")
         self.assertIn("factory-scaffold", sources)
         self.assertTrue((root / ".project/evidence/notebook-execution.json").is_file())
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.execute import describe
+
+
+class DemoTest(unittest.TestCase):
+    def test_describe_computes_stats(self) -> None:
+        stats = describe([1.0, 2.0, 3.0])
+        self.assertEqual(stats["min"], 1.0)
+        self.assertEqual(stats["max"], 3.0)
+        self.assertEqual(stats["mean"], 2.0)
+        self.assertEqual(stats["count"], 3.0)
+
+    def test_describe_empty(self) -> None:
+        stats = describe([])
+        self.assertEqual(stats["count"], 0.0)
 
 
 if __name__ == "__main__":
@@ -237,6 +275,7 @@ def scaffold_uv_notebook(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_unittest(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     return ScaffoldResult(
         command_result=scaffold,
         layout={

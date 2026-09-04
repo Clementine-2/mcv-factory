@@ -21,13 +21,23 @@ VSCE_PIN = "3.2.2"
 VSCODE_TYPES_PIN = "1.96.0"
 
 
+def _render_hello() -> str:
+    return """// 示例纯逻辑：从 VS Code API 中独立出来，便于用 Node 直接做单元测试。
+export function buildMessage(name: string): string {
+  const who = name.trim() || 'world';
+  return `Hello, ${who}!`;
+}
+"""
+
+
 def _render_extension(command_id: str) -> str:
     return f"""import * as vscode from 'vscode';
+import {{ buildMessage }} from './hello';
 
 export function activate(context: vscode.ExtensionContext): void {{
   context.subscriptions.push(
-    vscode.commands.registerCommand({command_id!r}, () => {{
-      void vscode.window.showInformationMessage('vscode extension scaffold ready');
+    vscode.commands.registerCommand({command_id!r}, (name?: string) => {{
+      void vscode.window.showInformationMessage(buildMessage(name ?? 'world'));
     }}),
   );
 }}
@@ -51,6 +61,21 @@ def _render_tsconfig() -> str:
   "include": ["src"]
 }
 """
+
+
+def _render_hello_test() -> str:
+    return (
+        'const test = require("node:test");\n'
+        'const assert = require("node:assert/strict");\n'
+        'const { buildMessage } = require("../dist/hello.js");\n\n'
+        'test("buildMessage formats a personalized greeting", () => {\n'
+        '  assert.equal(buildMessage("Ada"), "Hello, Ada!");\n'
+        "});\n\n"
+        'test("buildMessage falls back to world for empty names", () => {\n'
+        '  assert.equal(buildMessage("   "), "Hello, world!");\n'
+        '  assert.equal(buildMessage(""), "Hello, world!");\n'
+        "});\n"
+    )
 
 
 def _render_smoke_test() -> str:
@@ -97,7 +122,7 @@ def scaffold_npm_vscode_extension(
         },
         "scripts": {
             "compile": "tsc -p .",
-            "test": "tsc -p . && node --test tests/smoke.test.js",
+            "test": "tsc -p . && node --test \"tests/*.test.js\"",
             "package": "vsce package --allow-missing-repository --no-dependencies",
         },
         "devDependencies": {
@@ -111,9 +136,11 @@ def scaffold_npm_vscode_extension(
     source = project_root / "src"
     source.mkdir(parents=True, exist_ok=True)
     (source / "extension.ts").write_text(_render_extension(command_id), encoding="utf-8")
+    (source / "hello.ts").write_text(_render_hello(), encoding="utf-8")
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "hello.test.js").write_text(_render_hello_test(), encoding="utf-8")
     (project_root / ".vscodeignore").write_text("src/**\ntests/**\nnode_modules/**\n", encoding="utf-8")
     (project_root / "LICENSE").write_text("MIT License\n\nCopyright (c) factory-scaffold\n", encoding="utf-8")
     run_command(

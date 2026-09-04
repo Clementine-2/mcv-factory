@@ -30,16 +30,27 @@ def scaffold_status() -> str:
 
 def predict(features: Sequence[float]) -> dict[str, float | str]:
     return {"score": float(sum(features)), "status": scaffold_status()}
+
+
+def normalize(features: Sequence[float]) -> list[float]:
+    """真实可运行的示例：min-max 归一化到 [0, 1]。"""
+    values = [float(item) for item in features]
+    if not values:
+        return []
+    low, high = min(values), max(values)
+    if low == high:
+        return [0.0] * len(values)
+    return [(item - low) / (high - low) for item in values]
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.serve import predict, scaffold_status
+from {package_name}.serve import normalize, predict, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["predict", "scaffold_status", "__version__"]
+__all__ = ["normalize", "predict", "scaffold_status", "__version__"]
 '''
 
 
@@ -57,6 +68,30 @@ class SmokeTest(unittest.TestCase):
         self.assertEqual(result["score"], 3.0)
         self.assertEqual(result["status"], "model serving scaffold ready")
         self.assertEqual(scaffold_status(), "model serving scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.serve import normalize
+
+
+class DemoTest(unittest.TestCase):
+    def test_normalize_maps_to_unit_interval(self) -> None:
+        self.assertEqual(normalize([1.0, 3.0, 5.0]), [0.0, 0.5, 1.0])
+
+    def test_normalize_constant_features(self) -> None:
+        self.assertEqual(normalize([4.0, 4.0]), [0.0, 0.0])
+
+    def test_normalize_empty(self) -> None:
+        self.assertEqual(normalize([]), [])
 
 
 if __name__ == "__main__":
@@ -99,6 +134,7 @@ def scaffold_uv_model_serving(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

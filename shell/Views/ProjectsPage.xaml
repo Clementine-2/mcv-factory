@@ -9,18 +9,18 @@
       <Grid>
         <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
         <StackPanel>
-          <TextBlock Text="项目" Style="{StaticResource PageEyebrow}" />
-          <TextBlock Text="最近做过的东西，都在这里。" Style="{StaticResource PageTitle}" Margin="0,9,0,8" />
-          <TextBlock Text="这里不是文件管理器，只保留你需要继续工作的项目入口和验证状态。" Style="{StaticResource PageLead}" />
+          <TextBlock Text="{DynamicResource Projects_RootScroll105}" Style="{StaticResource PageEyebrow}" />
+          <TextBlock Text="{DynamicResource Projects_RootScroll106}" Style="{StaticResource PageTitle}" Margin="0,9,0,8" />
+          <TextBlock Text="{DynamicResource Projects_t107}" Style="{StaticResource PageLead}" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="24,0,0,3">
           <ui:ProgressRing x:Name="HistoryProgress" Width="18" Height="18" IsIndeterminate="True" Visibility="Collapsed" Margin="0,0,10,0" />
-          <ui:Button Content="刷新" Appearance="Secondary" Click="Refresh_Click" />
+          <ui:Button Content="{DynamicResource Projects_HistoryProgress108}" Appearance="Secondary" Click="Refresh_Click" />
         </StackPanel>
       </Grid>
 
       <StackPanel Grid.Row="2">
-        <TextBlock x:Name="HistoryMessage" Text="正在读取项目历史…" FontSize="13" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Margin="0,0,0,12" />
+        <TextBlock x:Name="HistoryMessage" Text="{DynamicResource Projects_HistoryMessage109}" FontSize="13" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Margin="0,0,0,12" />
         <StackPanel x:Name="HistoryPanel" />
       </StackPanel>
     </Grid>

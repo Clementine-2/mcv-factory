@@ -20,6 +20,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      # The legacy upgrade/overlay tests materialize their fixture from the
+      # committed golden output and drive real verification gates with uv.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
       - name: Install Core
         run: pip install ./core
       - name: Install test runner
@@ -35,6 +39,6 @@ jobs:
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.400"
+          dotnet-version: "9.0.x"
       - name: Restore & Build
         run: dotnet build shell/ProjectFactory.Workbench.csproj -c Release

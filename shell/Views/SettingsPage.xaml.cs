@@ -74,12 +74,12 @@ public partial class SettingsPage : Page
             }
             if (AiModelBox.Items.Count == 0)
             {
-                AiProbeText.Text = "Ollama 在跑，但没有已装模型。请先 ollama pull，工厂不会替你下载。";
+                AiProbeText.Text = App.L("Ms_OllamaEmpty");
                 return;
             }
             AiModelBox.SelectedIndex = 0;
             SaveAiFields();
-            AiProbeText.Text = "读到 " + AiModelBox.Items.Count + " 个本机模型。已选 " + AiModelBox.Text + "。";
+            AiProbeText.Text = string.Format(App.L("Ms_OllamaCount"), AiModelBox.Items.Count, AiModelBox.Text);
         }
         catch (Exception ex)
         {
@@ -111,6 +111,15 @@ public partial class SettingsPage : Page
         }
     }
 
+    private void LanguageChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_initializing) return;
+        var lang = TagOf(LanguageBox, "zh-CN");
+        _settings.Language = lang;
+        _settings.Save();
+        App.SetLanguage(lang);
+    }
+
     private void AppearanceChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_initializing) return;
@@ -129,8 +138,8 @@ public partial class SettingsPage : Page
     {
         var picker = new OpenFileDialog
         {
-            Title = "选择背景图",
-            Filter = "图片|*.png;*.jpg;*.jpeg;*.bmp;*.webp|所有文件|*.*",
+            Title = App.L("Ms_PickBg"),
+            Filter = App.L("Ms_BgFilter"),
         };
         if (picker.ShowDialog() == true)
         {
@@ -144,14 +153,14 @@ public partial class SettingsPage : Page
     private void ClearBackground_Click(object sender, RoutedEventArgs e)
     {
         _settings.BackgroundImage = "";
-        BackgroundPathText.Text = "未选择";
+        BackgroundPathText.Text = App.L("Ms_NoImage");
         _settings.Save();
         _settings.Apply(Application.Current.MainWindow);
     }
 
     private void ChangeOutput_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFolderDialog { Title = "选择 Project Factory 默认项目目录", InitialDirectory = _settings.DefaultOutputDirectory };
+        var picker = new OpenFolderDialog { Title = App.L("Ms_PickOutDir"), InitialDirectory = _settings.DefaultOutputDirectory };
         if (picker.ShowDialog() == true)
         {
             _settings.DefaultOutputDirectory = picker.FolderName;

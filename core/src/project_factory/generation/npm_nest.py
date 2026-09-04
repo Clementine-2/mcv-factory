@@ -25,12 +25,24 @@ RXJS_PIN = "7.8.1"
 
 def _render_controller() -> str:
     return (
-        "import { Controller, Get } from '@nestjs/common';\n\n"
+        "import { Controller, Get, Param } from '@nestjs/common';\n\n"
+        "export interface HelloBody {\n"
+        "  message: string;\n"
+        "}\n\n"
+        "export function buildHello(name: string): HelloBody {\n"
+        "  const who = name.trim() || 'world';\n"
+        "  return { message: `Hello, ${who}!` };\n"
+        "}\n\n"
         "@Controller()\n"
         "export class HealthController {\n"
         "  @Get('health')\n"
         "  health(): { status: string; service: string } {\n"
         "    return { status: 'ok', service: 'http service scaffold ready' };\n"
+        "  }\n\n"
+        "  // 示例 endpoint：GET /hello/:name 返回 JSON 问候语。\n"
+        "  @Get('hello/:name')\n"
+        "  hello(@Param('name') name: string): HelloBody {\n"
+        "    return buildHello(name);\n"
         "  }\n"
         "}\n"
     )
@@ -78,6 +90,32 @@ def _render_tsconfig() -> str:
 """
 
 
+def _render_features_test() -> str:
+    return (
+        "require('reflect-metadata');\n"
+        'const test = require("node:test");\n'
+        'const assert = require("node:assert/strict");\n'
+        'const { Test } = require("@nestjs/testing");\n'
+        'const { HealthController, buildHello } = require("../dist/health.controller");\n\n'
+        'test("buildHello formats a personalized message", () => {\n'
+        '  assert.deepEqual(buildHello("Ada"), { message: "Hello, Ada!" });\n'
+        '  assert.deepEqual(buildHello("  "), { message: "Hello, world!" });\n'
+        "});\n\n"
+        'test("hello route returns the personalized message through DI", async () => {\n'
+        "  const moduleRef = await Test.createTestingModule({\n"
+        "    controllers: [HealthController],\n"
+        "  }).compile();\n"
+        "  try {\n"
+        "    const controller = moduleRef.get(HealthController);\n"
+        "    const body = controller.hello('Ada');\n"
+        '    assert.deepEqual(body, { message: "Hello, Ada!" });\n'
+        "  } finally {\n"
+        "    await moduleRef.close();\n"
+        "  }\n"
+        "});\n"
+    )
+
+
 def _render_smoke_test() -> str:
     return (
         "require('reflect-metadata');\n"
@@ -115,7 +153,7 @@ def scaffold_npm_nest(
         "version": "0.1.0",
         "description": purpose,
         "private": True,
-        "scripts": {"build": "tsc", "test": "tsc && node --test tests/smoke.test.js"},
+        "scripts": {"build": "tsc", "test": "tsc && node --test \"tests/*.test.js\""},
         "dependencies": {
             "@nestjs/common": NEST_PIN,
             "@nestjs/core": NEST_PIN,
@@ -139,6 +177,7 @@ def scaffold_npm_nest(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "features.test.js").write_text(_render_features_test(), encoding="utf-8")
     run_command([provider.executable, "install", "--no-fund", "--no-audit"], project_root, timeout=600)
     return ScaffoldResult(
         command_result=scaffold,

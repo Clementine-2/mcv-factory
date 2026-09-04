@@ -47,16 +47,24 @@ def load_compose(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("compose drawing must be a mapping")
     return payload
+
+
+def service_names(doc: dict[str, Any]) -> list[str]:
+    """真实可运行的示例：列出 compose 文档中的服务名。"""
+    services = doc.get("services")
+    if not isinstance(services, dict):
+        return []
+    return list(services.keys())
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.stack import load_compose, scaffold_status
+from {package_name}.stack import load_compose, scaffold_status, service_names
 
 __version__ = "0.1.0"
-__all__ = ["load_compose", "scaffold_status", "__version__"]
+__all__ = ["load_compose", "scaffold_status", "service_names", "__version__"]
 '''
 
 
@@ -75,6 +83,27 @@ class SmokeTest(unittest.TestCase):
         doc = load_compose(root / "compose.yaml")
         self.assertIn("scaffold", doc["services"])
         self.assertEqual(scaffold_status(), "container stack scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+from pathlib import Path
+
+from {package_name}.stack import load_compose, service_names
+
+
+class DemoTest(unittest.TestCase):
+    def test_service_names_from_compose(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        doc = load_compose(root / "compose.yaml")
+        self.assertEqual(service_names(doc), ["scaffold"])
 
 
 if __name__ == "__main__":
@@ -119,6 +148,7 @@ def scaffold_uv_compose_stack(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

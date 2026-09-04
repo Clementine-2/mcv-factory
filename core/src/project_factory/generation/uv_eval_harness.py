@@ -35,16 +35,36 @@ def accuracy(gold: Sequence[str], pred: Sequence[str]) -> float:
         raise ValueError("gold and pred must have the same length")
     hits = sum(1 for left, right in zip(gold, pred, strict=True) if left == right)
     return hits / len(gold)
+
+
+def f1(gold: Sequence[str], pred: Sequence[str]) -> float:
+    """真实可运行的评估指标：二分类 F1。"""
+    if len(gold) != len(pred):
+        raise ValueError("gold and pred must have the same length")
+    tp = fp = fn = 0
+    for g, p in zip(gold, pred, strict=True):
+        positive = g == "positive"
+        if positive and p == "positive":
+            tp += 1
+        elif not positive and p == "positive":
+            fp += 1
+        elif positive and p != "positive":
+            fn += 1
+    precision = tp / (tp + fp) if (tp + fp) else 0.0
+    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    if precision + recall == 0:
+        return 0.0
+    return 2 * precision * recall / (precision + recall)
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.harness import accuracy, scaffold_status
+from {package_name}.harness import accuracy, f1, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["accuracy", "scaffold_status", "__version__"]
+__all__ = ["accuracy", "f1", "scaffold_status", "__version__"]
 '''
 
 
@@ -65,6 +85,31 @@ class SmokeTest(unittest.TestCase):
         pred = json.loads((root / "fixtures" / "pred.json").read_text(encoding="utf-8"))
         self.assertEqual(accuracy(gold, pred), 1.0)
         self.assertEqual(scaffold_status(), "eval harness scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.harness import f1
+
+
+class DemoTest(unittest.TestCase):
+    def test_perfect_f1(self) -> None:
+        self.assertEqual(f1(["positive", "negative"], ["positive", "negative"]), 1.0)
+
+    def test_miss_all_positive_returns_zero(self) -> None:
+        self.assertEqual(f1(["positive"], ["negative"]), 0.0)
+
+    def test_length_mismatch_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            f1(["positive"], ["positive", "negative"])
 
 
 if __name__ == "__main__":
@@ -111,6 +156,7 @@ def scaffold_uv_eval_harness(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

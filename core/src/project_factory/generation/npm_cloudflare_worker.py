@@ -24,8 +24,27 @@ def _render_worker() -> str:
         "export function scaffoldStatus() {\n"
         '  return "worker scaffold ready";\n'
         "}\n\n"
+        "// 示例纯函数：拼接问候语，可被测试直接断言。\n"
+        "export function buildGreeting(name) {\n"
+        "  const who = name && name.trim() ? name.trim() : 'world';\n"
+        "  return `Hello, ${who}!`;\n"
+        "}\n\n"
         "export default {\n"
-        "  async fetch() {\n"
+        "  async fetch(request) {\n"
+        "    const url = new URL(request ? request.url : 'http://127.0.0.1/');\n"
+        "    // 示例 endpoint：GET /health 返回 JSON 状态。\n"
+        "    if (url.pathname === '/health') {\n"
+        "      return new Response(JSON.stringify({ status: 'ok', service: scaffoldStatus() }), {\n"
+        "        headers: { 'content-type': 'application/json' },\n"
+        "      });\n"
+        "    }\n"
+        "    // 示例 endpoint：GET /?name=X 返回问候语文本。\n"
+        "    const name = url.searchParams.get('name');\n"
+        "    if (name) {\n"
+        "      return new Response(buildGreeting(name), {\n"
+        "        headers: { 'content-type': 'text/plain; charset=utf-8' },\n"
+        "      });\n"
+        "    }\n"
         "    return new Response(scaffoldStatus());\n"
         "  },\n"
         "};\n"
@@ -38,6 +57,30 @@ def _render_wrangler(project_name: str) -> str:
         f"name = {name}\n"
         'main = "src/index.js"\n'
         'compatibility_date = "2025-03-20"\n'
+    )
+
+
+def _render_worker_test() -> str:
+    return (
+        'import test from "node:test";\n'
+        'import assert from "node:assert/strict";\n'
+        'import worker, { buildGreeting } from "../src/index.js";\n\n'
+        'test("health endpoint returns json status", async () => {\n'
+        '  const response = await worker.fetch(new Request("http://127.0.0.1/health"));\n'
+        "  assert.equal(response.status, 200);\n"
+        "  const body = await response.json();\n"
+        '  assert.equal(body.status, "ok");\n'
+        '  assert.equal(body.service, "worker scaffold ready");\n'
+        "});\n\n"
+        'test("root endpoint greets a named visitor", async () => {\n'
+        '  const response = await worker.fetch(new Request("http://127.0.0.1/?name=Ada"));\n'
+        '  assert.equal(await response.text(), "Hello, Ada!");\n'
+        "});\n\n"
+        'test("buildGreeting trims whitespace and defaults", () => {\n'
+        '  assert.equal(buildGreeting("  Ada  "), "Hello, Ada!");\n'
+        '  assert.equal(buildGreeting(""), "Hello, world!");\n'
+        '  assert.equal(buildGreeting(null), "Hello, world!");\n'
+        "});\n"
     )
 
 
@@ -76,7 +119,7 @@ def scaffold_npm_cloudflare_worker(
         "description": purpose,
         "private": True,
         "type": "module",
-        "scripts": {"test": "node --test tests/smoke.test.js"},
+        "scripts": {"test": "node --test \"tests/*.test.js\""},
     }
     _write_json(project_root / "package.json", package)
     (project_root / "wrangler.toml").write_text(_render_wrangler(project_name), encoding="utf-8")
@@ -86,6 +129,7 @@ def scaffold_npm_cloudflare_worker(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "worker.test.js").write_text(_render_worker_test(), encoding="utf-8")
     run_command([provider.executable, "install", "--no-fund", "--no-audit"], project_root, timeout=600)
     return ScaffoldResult(
         command_result=scaffold,

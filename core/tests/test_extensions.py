@@ -311,9 +311,16 @@ class ExtensionMigrationIntegrationTests(unittest.TestCase):
 
             plan = plan_upgrade(project, extension_set=state)
             self.assertEqual(plan.status, "READY")
+            # The plan declares the extension namespace migration AND the
+            # extension profile's factory-owned skill as targets.
             ext_changes = [item for item in plan.changes if "trusted-lab" in item.path]
-            self.assertEqual([item.path for item in ext_changes], [".project/extensions/trusted-lab/version.txt"])
-            self.assertTrue(all(item.path.startswith(".project/extensions/trusted-lab/") for item in ext_changes))
+            migration_changes = [item for item in ext_changes if item.path.startswith(".project/extensions/trusted-lab/")]
+            self.assertEqual(
+                [item.path for item in migration_changes],
+                [".project/extensions/trusted-lab/version.txt"],
+            )
+            self.assertTrue(all(item.path.startswith(".project/extensions/trusted-lab/") for item in migration_changes))
+            self.assertIn("skills/trusted-lab.python-cli/SKILL.md", {item.path for item in ext_changes})
 
             applied = apply_upgrade(project, confirm_plan_sha256=plan.plan_sha256, extension_set=state)
             self.assertEqual(version_file.read_text(encoding="utf-8"), "2.0.0\n")

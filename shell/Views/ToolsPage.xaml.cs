@@ -37,7 +37,7 @@ public partial class ToolsPage : Page
     private async Task RunAsync(Func<Task<JsonElement>> action)
     {
         ToolProgress.Visibility = Visibility.Visible;
-        ToolOutput.Text = "正在运行…";
+        ToolOutput.Text = App.L("Ms_Running");
         try
         {
             var result = await action();

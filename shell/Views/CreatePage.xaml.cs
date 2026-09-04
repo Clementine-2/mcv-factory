@@ -48,7 +48,7 @@ public partial class CreatePage : Page
     public void StartFresh(string? requirement = null)
     {
         RequirementTextBox.Text = requirement ?? "";
-        AnalyzeStatus.Text = "分析只会整理需求；不会在这一步生成文件。";
+        AnalyzeStatus.Text = App.L("Ms_C_AnalyzeStatus");
         _matrix = null;
         _selected.Clear();
         RefreshSelectedLabel();
@@ -127,7 +127,7 @@ public partial class CreatePage : Page
         }
         catch (Exception ex)
         {
-            AnalyzeStatus.Text = "目录加载失败，仍可手写需求：" + ex.Message;
+            AnalyzeStatus.Text = App.L("Ms_C_CatalogLoadFail") + ex.Message;
         }
     }
 
@@ -171,13 +171,13 @@ public partial class CreatePage : Page
                 // Empty purpose should not show "catalog" as source
                 if (string.IsNullOrWhiteSpace(purpose) && (source.Equals("catalog", StringComparison.OrdinalIgnoreCase) || source.Equals("catlog", StringComparison.OrdinalIgnoreCase)))
                     source = "";
-                var blurb = string.IsNullOrWhiteSpace(purpose) ? source : (string.IsNullOrWhiteSpace(source) ? purpose : purpose + "  来源：" + source);
+                var blurb = string.IsNullOrWhiteSpace(purpose) ? source : (string.IsNullOrWhiteSpace(source) ? purpose : purpose + "  " + App.L("Ms_C_Source") + source);
                 // T06：数据驱动可用性标注（来自内核 registry，不硬编码业务清单）
                 var available = item.TryGetProperty("available", out var av) ? av.ValueKind == JsonValueKind.True : true;
                 var reason = "";
                 if (!available)
                 {
-                    reason = item.TryGetProperty("reason", out var rr) ? (rr.ValueKind == JsonValueKind.String ? rr.GetString() ?? "" : "") : "暂不能生成。";
+                    reason = item.TryGetProperty("reason", out var rr) ? (rr.ValueKind == JsonValueKind.String ? rr.GetString() ?? "" : "") : App.L("Ms_C_CannotGen");
                     if (!string.IsNullOrWhiteSpace(reason))
                         blurb = blurb + (string.IsNullOrWhiteSpace(blurb) ? "" : "  ") + "⚠ " + reason;
                 }
@@ -234,7 +234,7 @@ public partial class CreatePage : Page
     }
 
     private static string BodyReason(string wp, string body) =>
-        $"「{wp}」目前没有「{body}」对应的产线（内核会报 No registered profile），请换一个车身或先改工作产品。";
+        string.Format(App.L("Ms_C_NoLine"), wp, body);
 
     /// <summary>
     /// T06：根据当前选中的工作产品，动态收敛车身下拉——只保留内核真能解出的车身，
@@ -255,7 +255,7 @@ public partial class CreatePage : Page
             var label = JsonView.String(item, "label", id);
             var purpose = SanitizePurpose(JsonView.String(item, "purpose"));
             var source = SanitizePurpose(JsonView.String(item, "source"));
-            var blurb = string.IsNullOrWhiteSpace(purpose) ? source : (string.IsNullOrWhiteSpace(source) ? purpose : purpose + "  来源：" + source);
+            var blurb = string.IsNullOrWhiteSpace(purpose) ? source : (string.IsNullOrWhiteSpace(source) ? purpose : purpose + "  " + App.L("Ms_C_Source") + source);
             var available = !hasWp || string.IsNullOrWhiteSpace(id) || compatible!.Contains(id, StringComparer.OrdinalIgnoreCase);
             var reason = "";
             if (!available)
@@ -290,7 +290,7 @@ public partial class CreatePage : Page
         var groups = new Dictionary<string, WrapPanel>();
         foreach (var item in arr.EnumerateArray())
         {
-            var group = JsonView.String(item, "group", "其它");
+            var group = JsonView.String(item, "group", App.L("Ms_C_Other"));
             if (!groups.TryGetValue(group, out var wrap))
             {
                 ModuleCheckHost.Children.Add(new TextBlock { Text = group, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 8, 0, 4) });
@@ -302,8 +302,8 @@ public partial class CreatePage : Page
             // T06：数据驱动可用性标注——无产线的模块禁用并附人话原因
             var available = item.TryGetProperty("available", out var av) ? av.ValueKind == JsonValueKind.True : true;
             var reason = item.TryGetProperty("reason", out var rr) ? (rr.ValueKind == JsonValueKind.String ? rr.GetString() ?? "" : "") : "";
-            var tip = JsonView.String(item, "purpose") + "\n来源：" + JsonView.String(item, "source")
-                      + (available ? "" : "\n⚠ " + (reason.Length > 0 ? reason : "暂不能生成。"));
+            var tip = JsonView.String(item, "purpose") + "\n" + App.L("Ms_C_Source") + JsonView.String(item, "source")
+                      + (available ? "" : "\n⚠ " + (reason.Length > 0 ? reason : App.L("Ms_C_CannotGen")));
             var box = new CheckBox
             {
                 Content = JsonView.String(item, "label", id),
@@ -428,14 +428,14 @@ public partial class CreatePage : Page
                 });
             }
         }
-        AiAssistStatus.Text = _settings.AiEnabled ? "AI 已启用。整理需求时会调用它；也可以点「改写当前描述」。" : "AI 默认关。打开后才能改写。";
+        AiAssistStatus.Text = _settings.AiEnabled ? App.L("Ms_C_AiEnabledDesc") : App.L("Ms_C_AiDisabledDesc");
     }
 
     private void CreateAiChanged(object sender, RoutedEventArgs e)
     {
         _settings.AiEnabled = AiEnableBox.IsChecked == true;
         _settings.Save();
-        AiAssistStatus.Text = _settings.AiEnabled ? "AI 已启用。" : "AI 已关闭。工厂仍然能整理需求。";
+        AiAssistStatus.Text = _settings.AiEnabled ? App.L("Ms_C_AiEnabled") : App.L("Ms_C_AiDisabled");
     }
 
     private void CreateAiPresetChanged(object sender, SelectionChangedEventArgs e)
@@ -449,13 +449,13 @@ public partial class CreatePage : Page
         _settings.AiKeyEnv = parts[2];
         _settings.Save();
         AiAssistStatus.Text = parts[0].Contains("11434")
-            ? "Ollama：不要手填模型名。点「读取本机 Ollama 模型」，只列出已经 pull 过的。"
-            : "已选用 " + (CreateAiPresetBox.SelectedItem as ComboBoxItem)?.Content + "。密钥环境变量：" + parts[2];
+            ? App.L("Ms_C_OllamaNoFill")
+            : string.Format(App.L("Ms_C_PresetSelected"), (CreateAiPresetBox.SelectedItem as ComboBoxItem)?.Content, parts[2]);
     }
 
     private async void LoadOllamaModels_Click(object sender, RoutedEventArgs e)
     {
-        AiAssistStatus.Text = "正在读取本机 Ollama 已装模型…";
+        AiAssistStatus.Text = App.L("Ms_C_OllamaLoading");
         try
         {
             var endpoint = string.IsNullOrWhiteSpace(_settings.AiEndpoint) ? "http://127.0.0.1:11434" : _settings.AiEndpoint;
@@ -465,15 +465,15 @@ public partial class CreatePage : Page
                 var names = models.EnumerateArray().Select(x => x.GetString() ?? "").Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
                 if (names.Count == 0)
                 {
-                    AiAssistStatus.Text = "Ollama 在跑，但一台模型都没有。先在终端执行 ollama pull，再点读取。工厂不会替你下载模型。";
+                    AiAssistStatus.Text = App.L("Ms_C_OllamaEmpty");
                     return;
                 }
-                CreateAiPresetBox.Items.Add(new ComboBoxItem { Content = "本机模型：" + string.Join("、", names), Tag = endpoint + "|" + names[0] + "|" });
+                CreateAiPresetBox.Items.Add(new ComboBoxItem { Content = App.L("Ms_C_LocalModels") + string.Join("、", names), Tag = endpoint + "|" + names[0] + "|" });
                 _settings.AiEndpoint = endpoint;
                 _settings.AiModel = names[0];
                 _settings.AiKeyEnv = "";
                 _settings.Save();
-                AiAssistStatus.Text = "读到：" + string.Join("、", names) + "。已选用 " + names[0] + "。";
+                AiAssistStatus.Text = string.Format(App.L("Ms_C_LoadedModels"), string.Join("、", names), names[0]);
             }
         }
         catch (Exception ex)
@@ -488,16 +488,16 @@ public partial class CreatePage : Page
     {
         if (!_settings.AiEnabled)
         {
-            AiAssistStatus.Text = "先勾选「启用 AI」，再选服务商。密钥在设置页填环境变量名。";
+            AiAssistStatus.Text = App.L("Ms_C_EnableAiFirst");
             return;
         }
         var requirement = RequirementTextBox.Text.Trim();
         if (requirement.Length < 4)
         {
-            AiAssistStatus.Text = "先写一句想法，或点几个模块。";
+            AiAssistStatus.Text = App.L("Ms_C_NeedIdea");
             return;
         }
-        AiAssistStatus.Text = "正在让 AI 改写描述…";
+        AiAssistStatus.Text = App.L("Ms_C_AiRewriting");
         try
         {
             var result = await _bridge.InvokeAsync("ai.assist", new { requirement, ai = _settings.AiPayload() });
@@ -506,11 +506,11 @@ public partial class CreatePage : Page
                 RequirementTextBox.Text = text;
             if (result.TryGetProperty("spec", out var spec) && spec.ValueKind == JsonValueKind.Object)
                 ApplyImportedSpec(spec);
-            AiAssistStatus.Text = "已按工厂模板改写。描述是给人看的；YAML 字段已填进第二步，点整理需求确认。";
+            AiAssistStatus.Text = App.L("Ms_C_AiRewritten");
         }
         catch (Exception ex)
         {
-            AiAssistStatus.Text = "AI 改写失败：" + ex.Message;
+            AiAssistStatus.Text = App.L("Ms_C_AiRewriteFail") + ex.Message;
             try
             {
                 // T07：AI 凭据缺失等同样走结构化、可复制的错误弹窗
@@ -525,16 +525,16 @@ public partial class CreatePage : Page
 
     private async void ExportEmptyTemplate_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new SaveFileDialog { Title = "导出空白模板（给网页 AI 填）", Filter = "YAML|*.yaml|JSON|*.json", FileName = "assembly-template.yaml" };
+        var picker = new SaveFileDialog { Title = App.L("Ms_C_ExportBlankTitle"), Filter = "YAML|*.yaml|JSON|*.json", FileName = "assembly-template.yaml" };
         if (picker.ShowDialog() != true) return;
         try
         {
             await _bridge.InvokeAsync("template.export", new { path = picker.FileName });
-            AnalyzeStatus.Text = "已导出空白模板：" + picker.FileName + "。拿去给网页 AI 填，再点导入。";
+            AnalyzeStatus.Text = string.Format(App.L("Ms_C_ExportedBlank"), picker.FileName);
         }
         catch (Exception ex)
         {
-            AnalyzeStatus.Text = "导出失败：" + ex.Message;
+            AnalyzeStatus.Text = App.L("Ms_C_ExportFail") + ex.Message;
         }
     }
 
@@ -551,7 +551,7 @@ public partial class CreatePage : Page
                 {
                     // F12: render blurb inline (was only in ToolTip) so the blueprint stops
                     // looking "thin" — title + one-line description on the card itself.
-                    Content = MakeBlueprintCard(JsonView.String(item, "title", "蓝图"), JsonView.String(item, "blurb", JsonView.String(item, "purpose", ""))),
+                    Content = MakeBlueprintCard(JsonView.String(item, "title", App.L("Ms_C_Blueprint")), JsonView.String(item, "blurb", JsonView.String(item, "purpose", ""))),
                     Appearance = ControlAppearance.Primary,
                     Margin = new Thickness(0, 0, 8, 8),
                     Padding = new Thickness(12, 8, 12, 8),
@@ -569,7 +569,7 @@ public partial class CreatePage : Page
             {
                 CatalogHost.Children.Add(new TextBlock
                 {
-                    Text = JsonView.String(category, "title", "其它"),
+                    Text = JsonView.String(category, "title", App.L("Ms_C_Other")),
                     FontWeight = FontWeights.SemiBold,
                     Margin = new Thickness(0, 10, 0, 2),
                 });
@@ -590,7 +590,7 @@ public partial class CreatePage : Page
                             Margin = new Thickness(0, 0, 8, 8),
                             Padding = new Thickness(10, 6, 10, 6),
                             HorizontalContentAlignment = HorizontalAlignment.Left,
-                            ToolTip = JsonView.String(item, "purpose") + "\n来源：" + JsonView.String(item, "source"),
+                            ToolTip = JsonView.String(item, "purpose") + "\n" + App.L("Ms_C_Source") + JsonView.String(item, "source"),
                             Tag = JsonView.String(item, "id"),
                         };
                         button.Click += (_, _) => ToggleCatalogItem(clone, button);
@@ -646,12 +646,14 @@ public partial class CreatePage : Page
     private static string BlueprintBlock(JsonElement item)
     {
         var products = item.TryGetProperty("work_products", out var arr) && arr.ValueKind == JsonValueKind.Array ? JsonView.Csv(arr) : "";
-        return "【蓝图 " + JsonView.String(item, "id") + "】" + JsonView.String(item, "title", JsonView.String(item, "label"))
-            + "\n目的：" + JsonView.String(item, "purpose", JsonView.String(item, "demand"))
-            + "\n交付物：" + products
-            + "\n语言：" + JsonView.String(item, "language") + "　框架：" + JsonView.String(item, "body")
-            + "\n仓库：" + JsonView.String(item, "repo", "single-package")
-            + "\n开工：工厂按此规格生成骨架，不写业务功能。\n";
+        return string.Format(App.L("Ms_C_BlueprintBlock"),
+            JsonView.String(item, "id"),
+            JsonView.String(item, "title", JsonView.String(item, "label")),
+            JsonView.String(item, "purpose", JsonView.String(item, "demand")),
+            products,
+            JsonView.String(item, "language"),
+            JsonView.String(item, "body"),
+            JsonView.String(item, "repo", "single-package"));
     }
 
     // F12: build a compact card (title + one-line blurb) so blueprint buttons no longer
@@ -709,18 +711,18 @@ public partial class CreatePage : Page
         if (languages.Count == 1) SelectOption(RequiredTechBox, languages[0]);
         var bodies = _selected.Values.Select(item => JsonView.String(item, "body")).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
         if (bodies.Count == 1) SelectOption(BodyBox, bodies[0]);
-        AnalyzeStatus.Text = "已选的蓝图会作为开工规格带到下一步，不会改写你写的文字。可继续多选，或点「整理需求」。";
+        AnalyzeStatus.Text = App.L("Ms_C_AxesSummary");
     }
 
     private void RefreshSelectedLabel()
     {
         if (_selected.Count == 0)
         {
-            SelectedModulesText.Text = "还没选蓝图。点上面的推荐蓝图，或自己写一句想法。";
+            SelectedModulesText.Text = App.L("Ms_C_NoBlueprint");
             RefreshSelectionMeta();
             return;
         }
-        SelectedModulesText.Text = "已选 " + _selected.Count + " 项：" + string.Join("、", _selected.Values.Select(item => JsonView.String(item, "label", JsonView.String(item, "title"))));
+        SelectedModulesText.Text = string.Format(App.L("Ms_C_SelectedCount"), _selected.Count) + string.Join("、", _selected.Values.Select(item => JsonView.String(item, "label", JsonView.String(item, "title"))));
         RefreshSelectionMeta();
     }
 
@@ -746,15 +748,16 @@ public partial class CreatePage : Page
             if (item.TryGetProperty("body", out var b) && !string.IsNullOrWhiteSpace(b.GetString())) bodies.Add(b.GetString()!);
             if (item.TryGetProperty("repo", out var r) && !string.IsNullOrWhiteSpace(r.GetString())) repos.Add(r.GetString()!);
         }
-        SelectedPreviewText.Text = "选了这个会得到 → 交付物：" + (products.Count == 0 ? "（未指定）" : string.Join("、", products))
-            + "；语言：" + (langs.Count == 0 ? "（未指定）" : string.Join("、", langs))
-            + "；框架：" + (bodies.Count == 0 ? "（未指定）" : string.Join("、", bodies))
-            + "；仓库：" + (repos.Count == 0 ? "（未指定）" : string.Join("、", repos));
+        SelectedPreviewText.Text = string.Format(App.L("Ms_C_PreviewSummary"),
+            products.Count == 0 ? App.L("Ms_C_NotSpecified") : string.Join("、", products),
+            langs.Count == 0 ? App.L("Ms_C_NotSpecified") : string.Join("、", langs),
+            bodies.Count == 0 ? App.L("Ms_C_NotSpecified") : string.Join("、", bodies),
+            repos.Count == 0 ? App.L("Ms_C_NotSpecified") : string.Join("、", repos));
         SelectedPreviewText.Visibility = Visibility.Visible;
 
         var conflicts = new List<string>();
-        if (langs.Count > 1) conflicts.Add("已选蓝图的语言不一致（" + string.Join("、", langs) + "），请手动选一项");
-        if (bodies.Count > 1) conflicts.Add("已选蓝图的框架不一致（" + string.Join("、", bodies) + "），请手动选一项");
+        if (langs.Count > 1) conflicts.Add(string.Format(App.L("Ms_C_ConflictLang"), string.Join("、", langs)));
+        if (bodies.Count > 1) conflicts.Add(string.Format(App.L("Ms_C_ConflictBody"), string.Join("、", bodies)));
         if (conflicts.Count > 0)
         {
             SelectionConflictText.Text = "• " + string.Join("\n• ", conflicts);
@@ -885,35 +888,35 @@ public partial class CreatePage : Page
 
     private async void ExportBlueprint_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new SaveFileDialog { Title = "导出蓝图", Filter = "JSON|*.json|YAML|*.yaml", FileName = "blueprint.json" };
+        var picker = new SaveFileDialog { Title = App.L("Ms_C_ExportBlueprintTitle"), Filter = "JSON|*.json|YAML|*.yaml", FileName = "blueprint.json" };
         if (picker.ShowDialog() != true) return;
         try
         {
             var spec = CurrentSpec();
             await _bridge.InvokeAsync("blueprint.export", new { spec, path = picker.FileName });
-            AnalyzeStatus.Text = "已导出：" + picker.FileName;
+            AnalyzeStatus.Text = App.L("Ms_C_Exported") + picker.FileName;
         }
         catch (Exception ex)
         {
-            AnalyzeStatus.Text = "导出失败：" + ex.Message;
+            AnalyzeStatus.Text = App.L("Ms_C_ExportFail") + ex.Message;
         }
     }
 
     private async void ImportBlueprint_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFileDialog { Title = "导入已填蓝图", Filter = "蓝图|*.json;*.yaml;*.yml|所有文件|*.*" };
+        var picker = new OpenFileDialog { Title = App.L("Ms_C_ImportBlueprintTitle"), Filter = App.L("Ms_C_ImportBlueprintFilter") };
         if (picker.ShowDialog() != true) return;
         try
         {
             var result = await _bridge.InvokeAsync("blueprint.import", new { path = picker.FileName });
             if (!result.TryGetProperty("spec", out var spec)) return;
             ApplyImportedSpec(spec);
-            AnalyzeStatus.Text = "已导入模板。请确认第二步字段后生成。";
+            AnalyzeStatus.Text = App.L("Ms_C_ImportedTemplate");
             SetStep(2);
         }
         catch (Exception ex)
         {
-            AnalyzeStatus.Text = "导入失败：" + ex.Message;
+            AnalyzeStatus.Text = App.L("Ms_C_ImportFail") + ex.Message;
         }
     }
 
@@ -939,7 +942,7 @@ public partial class CreatePage : Page
         }
         if (string.IsNullOrWhiteSpace(RequirementTextBox.Text))
             RequirementTextBox.Text = PurposeBox.Text;
-        QuestionsText.Text = "来自导入蓝图。下拉框可改，再确认生成。";
+        QuestionsText.Text = App.L("Ms_C_FromImported");
     }
 
     private static bool Bool(JsonElement obj, string name, bool fallback)
@@ -983,7 +986,7 @@ public partial class CreatePage : Page
         OptOverlay.IsChecked = false;
         OptHarness.IsChecked = false;
         OptReadme.IsChecked = false;
-        QuestionsText.Text = "空目录：确认后只创建文件夹。你写的描述和项目名会保留。";
+        QuestionsText.Text = App.L("Ms_C_BlankDir");
     }
 
     private async void Analyze_Click(object sender, RoutedEventArgs e) => await AnalyzeRequirement();
@@ -993,8 +996,8 @@ public partial class CreatePage : Page
         var requirement = RequirementTextBox.Text.Trim();
         if (requirement.Length < 4)
         {
-            AnalyzeStatus.Text = "先写一句你真正想做的事情，或从分类里点一个。";
-            ShowSnackbar("先写一句你真正想做的事情，或从分类里点一个。");
+            AnalyzeStatus.Text = App.L("Ms_C_NeedRealIdea");
+            ShowSnackbar(App.L("Ms_C_NeedRealIdea"));
             return;
         }
 
@@ -1002,7 +1005,7 @@ public partial class CreatePage : Page
         SkipAnalyzeButton.IsEnabled = false;
         AiOptimizeButton.IsEnabled = false;
         AnalyzeProgress.Visibility = Visibility.Visible;
-        AnalyzeStatus.Text = "正在用本机规则整理需求…";
+        AnalyzeStatus.Text = App.L("Ms_C_Analyzing");
         try
         {
             var result = await _bridge.InvokeAsync("analyze", new { requirement, ai = new { enabled = false } });
@@ -1012,7 +1015,7 @@ public partial class CreatePage : Page
         }
         catch (Exception ex)
         {
-            AnalyzeStatus.Text = "本机整理失败，已用当前选择进入确认：" + ex.Message;
+            AnalyzeStatus.Text = App.L("Ms_C_AnalyzeFail") + ex.Message;
             EnterReviewFromLocal();
         }
         finally
@@ -1033,7 +1036,7 @@ public partial class CreatePage : Page
             PurposeBox.Text = RequirementTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(ProjectNameBox.Text))
             ProjectNameBox.Text = SuggestProjectName(RequirementTextBox.Text, ProfileText.Text);
-        QuestionsText.Text = "未调用 AI。请确认左侧模块、语言和车身，再生成。";
+        QuestionsText.Text = App.L("Ms_C_NoAiReview");
         OutputDirText.Text = _settings.DefaultOutputDirectory;
         SetStep(2);
     }
@@ -1063,13 +1066,13 @@ public partial class CreatePage : Page
         SelectOption(LifecycleBox, JsonView.RowText(matrix, "lifecycle_stage"));
         SelectOption(ScaleBox, JsonView.RowText(matrix, "scope_scale_hint"));
         SelectOption(QualityBox, QualityCsv(matrix).Replace('，', ',').Split(',')[0].Trim());
-        QuestionsText.Text = string.IsNullOrWhiteSpace(JsonView.Questions(matrix)) ? "没有额外问题。你可以直接确认，也可以修改左侧字段。" : JsonView.Questions(matrix);
+        QuestionsText.Text = string.IsNullOrWhiteSpace(JsonView.Questions(matrix)) ? App.L("Ms_C_NoQuestions") : JsonView.Questions(matrix);
         OutputDirText.Text = _settings.DefaultOutputDirectory;
 
         if (matrix.TryGetProperty("profile", out var profile))
-            ProfileText.Text = JsonView.String(profile, "id", JsonView.String(profile, "status", "未匹配"));
+            ProfileText.Text = JsonView.String(profile, "id", JsonView.String(profile, "status", App.L("Ms_C_NoMatch")));
         else
-            ProfileText.Text = "未匹配";
+            ProfileText.Text = App.L("Ms_C_NoMatch");
 
         if (string.IsNullOrWhiteSpace(ProjectNameBox.Text))
             ProjectNameBox.Text = SuggestProjectName(requirement, ProfileText.Text);
@@ -1095,8 +1098,9 @@ public partial class CreatePage : Page
             "node-library" => "node-lib",
             _ => "my-project",
         };
-        // T41：放行中文等非 ASCII 名称；只保留文字与数字，其余替换为短横线。
-        var slug = Regex.Replace(requirement.Trim(), @"[^\p{L}\p{N}]+", "-").Trim('-');
+        // Robustness: the Core only accepts ASCII names ([A-Za-z0-9._-]), so the
+        // auto-suggestion must never produce Chinese/other-non-ASCII slugs.
+        var slug = Regex.Replace(requirement.Trim(), @"[^A-Za-z0-9]+", "-").Trim('-');
         if (slug.Length >= 3) return slug.Length > 30 ? slug[..30].Trim('-') : slug;
         return prefix;
     }
@@ -1105,7 +1109,7 @@ public partial class CreatePage : Page
 
     private void ChangeOutput_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFolderDialog { Title = "选择 Project Factory 默认输出目录", InitialDirectory = _settings.DefaultOutputDirectory };
+        var picker = new OpenFolderDialog { Title = App.L("Ms_C_OutputDirTitle"), InitialDirectory = _settings.DefaultOutputDirectory };
         if (picker.ShowDialog() == true)
         {
             _settings.DefaultOutputDirectory = picker.FolderName;
@@ -1118,15 +1122,15 @@ public partial class CreatePage : Page
     {
         if (_matrix is null && OptScaffold.IsChecked == true && string.IsNullOrWhiteSpace(WorkProductsBox.Text) && string.IsNullOrWhiteSpace(RequirementTextBox.Text))
         {
-            QuestionsText.Text = "先整理需求，或从分类点一项，或导入蓝图。";
-            ShowSnackbar("先整理需求，或从分类点一项，或导入蓝图。");
+            QuestionsText.Text = App.L("Ms_C_NeedAnalyzeFirst");
+            ShowSnackbar(App.L("Ms_C_NeedAnalyzeFirst"));
             return;
         }
         var projectName = ProjectNameBox.Text.Trim();
         if (!Regex.IsMatch(projectName, @"^[\p{L}\p{N}][\p{L}\p{N}._-]{0,79}$"))
         {
-            QuestionsText.Text = "项目名称可使用中文、字母、数字、点、下划线或短横线，且要以文字或数字开头（不能有空格或符号）。";
-            ShowSnackbar("项目名称可使用中文、字母、数字、点、下划线或短横线，且要以文字或数字开头。");
+            QuestionsText.Text = App.L("Ms_C_InvalidName");
+            ShowSnackbar(App.L("Ms_C_InvalidNameShort"));
             return;
         }
 
@@ -1136,8 +1140,8 @@ public partial class CreatePage : Page
         // which one is about to run (需求→生成 vs 蓝图/勾选直接组装).
         var useGenerateFlow = !string.IsNullOrWhiteSpace(RequirementTextBox.Text) && OptScaffold.IsChecked == true;
         QuestionsText.Text = useGenerateFlow
-            ? "正在用「需求 → 生成」流程创建项目并跑验证门（会调用本机规则整理，AI 可选）。"
-            : "正在用「当前蓝图/勾选直接组装」流程创建项目并跑验证门（不需要 AI 改写需求）。";
+            ? App.L("Ms_C_FlowGenerate")
+            : App.L("Ms_C_FlowAssemble");
         try
         {
             var overrides = BuildOverrides();
@@ -1170,10 +1174,10 @@ public partial class CreatePage : Page
             var status = JsonView.String(result, "status", "UNKNOWN");
             _resultRoot = JsonView.String(result, "project_root");
             _resultZip = JsonView.String(result, "project_zip");
-            ResultHeadline.Text = status is "PASS" or "VERIFIED" ? "项目已生成并通过验证" : $"项目已生成：{status}";
+            ResultHeadline.Text = status is "PASS" or "VERIFIED" ? App.L("Ms_C_ResultVerified") : string.Format(App.L("Ms_C_ResultWithStatus"), status);
             ResultSummary.Text = status is "PASS" or "VERIFIED"
-                ? "Factory 已完成脚手架生成和要求的机械验证。"
-                : "项目已经生成，但验证状态不是 VERIFIED；请从“工具”查看详细证据。";
+                ? App.L("Ms_C_ResultSummaryOk")
+                : App.L("Ms_C_ResultSummaryWarn");
             ResultProfile.Text = JsonView.String(result, "profile", ProfileText.Text);
             ResultRoot.Text = _resultRoot;
             ResultZip.Text = _resultZip;
@@ -1183,12 +1187,10 @@ public partial class CreatePage : Page
             if (result.TryGetProperty("ai_degraded", out var aiDeg) && aiDeg.ValueKind == JsonValueKind.Object
                 && aiDeg.TryGetProperty("skipped", out var skipped) && skipped.ValueKind == JsonValueKind.True)
             {
-                var reason = JsonView.String(aiDeg, "reason", "未知原因");
-                var endpoint = JsonView.String(aiDeg, "endpoint", "（未配置）");
-                var model = JsonView.String(aiDeg, "model", "（未配置）");
-                ResultSummary.Text = "提示：本次生成未使用 AI 增强（原因：" + reason
-                    + "），已改用本地确定性整理完成生成。配置：端点 " + endpoint + " / 模型 " + model
-                    + "。如需启用 AI，请在“设置”中检查端点、模型与凭据后重试。";
+                var reason = JsonView.String(aiDeg, "reason", App.L("Ms_C_UnknownReason"));
+                var endpoint = JsonView.String(aiDeg, "endpoint", App.L("Ms_C_NotConfigured"));
+                var model = JsonView.String(aiDeg, "model", App.L("Ms_C_NotConfigured"));
+                ResultSummary.Text = string.Format(App.L("Ms_C_AiDegraded"), reason, endpoint, model);
             }
 
             SetStep(3);
@@ -1196,7 +1198,7 @@ public partial class CreatePage : Page
             catch (Exception ex)
             {
                 var msg = ex.Message;
-                QuestionsText.Text = "生成失败：" + msg;
+                QuestionsText.Text = App.L("Ms_C_GenerateFail") + msg;
                 try
                 {
                     // T07：结构化、可复制的错误弹窗（机床门禁 / 无产线 / AI 凭据 均已分类为人话三段）
@@ -1248,7 +1250,7 @@ public partial class CreatePage : Page
     private static string FormatClaims(JsonElement result)
     {
         if (!result.TryGetProperty("verification", out var verification))
-            return "没有验证摘要。";
+            return App.L("Ms_C_NoClaims");
         var lines = new List<string>();
         if (verification.TryGetProperty("claims", out var claims) && claims.ValueKind == JsonValueKind.Array)
         {
@@ -1260,7 +1262,7 @@ public partial class CreatePage : Page
             }
         }
         if (lines.Count == 0)
-            lines.Add("状态：" + JsonView.String(verification, "status", JsonView.String(result, "status", "UNKNOWN")));
+            lines.Add(App.L("Ms_C_StatusLabel") + JsonView.String(verification, "status", JsonView.String(result, "status", "UNKNOWN")));
         return string.Join("\n", lines);
     }
 

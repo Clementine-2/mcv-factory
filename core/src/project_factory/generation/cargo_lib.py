@@ -27,8 +27,30 @@ def rust_ident(crate_name: str) -> str:
 
 
 def _render_lib(ident: str) -> str:
-    return f'''pub fn scaffold_status() -> &'static str {{
+    return f'''/// 返回脚手架就绪状态文本。
+pub fn scaffold_status() -> &'static str {{
     "{ident} scaffold ready"
+}}
+
+/// 示例函数：向指定名字打招呼。
+pub fn greet(name: &str) -> String {{
+    format!("你好，{{name}}！")
+}}
+
+/// 示例函数：判断字符串是否为回文（忽略空白与大小写，空串不算回文）。
+pub fn is_palindrome(value: &str) -> bool {{
+    let normalized: String = value
+        .chars()
+        .filter(|c| !c.is_whitespace())
+        .flat_map(char::to_lowercase)
+        .collect();
+    let reversed: String = normalized.chars().rev().collect();
+    !normalized.is_empty() && normalized == reversed
+}}
+
+/// 示例函数：统计按空白分隔的单词数量。
+pub fn word_count(value: &str) -> usize {{
+    value.split_whitespace().count()
 }}
 
 #[cfg(test)]
@@ -38,6 +60,25 @@ mod tests {{
     #[test]
     fn status_is_defined() {{
         assert_eq!(scaffold_status(), "{ident} scaffold ready");
+    }}
+
+    #[test]
+    fn greet_builds_hello_message() {{
+        assert_eq!(greet("世界"), "你好，世界！");
+    }}
+
+    #[test]
+    fn is_palindrome_detects_mirror_strings() {{
+        assert!(is_palindrome("abcba"));
+        assert!(is_palindrome("Racecar"));
+        assert!(!is_palindrome("hello"));
+        assert!(!is_palindrome(""));
+    }}
+
+    #[test]
+    fn word_count_counts_tokens() {{
+        assert_eq!(word_count(" one  two three "), 3);
+        assert_eq!(word_count(""), 0);
     }}
 }}
 '''

@@ -2,6 +2,10 @@
 
 Registered in generation/__init__.py:first_party_scaffolds as 'swift-cli' and
 'swift-lib'. Follows the same contract as cargo_cli / npm_commander_cli.
+
+Swift 使用完全确定性的 Package.swift + Sources/Tests 布局（不再依赖
+`swift package init` 的输出目录名），这样无论本机 Swift 版本如何，
+`swift build` / `swift test` 都能直接工作。
 """
 from __future__ import annotations
 
@@ -10,14 +14,128 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {}
-FILES_LIB = {}
-INIT_CLI = ['package', 'init', '--type', 'executable']
-INIT_LIB = ['package', 'init', '--type', 'library']
+FILES_CLI = {
+    'Package.swift': '''// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "__PKG__",
+    targets: [
+        .target(name: "__MOD__Core", path: "Sources/__MOD__Core"),
+        .executableTarget(name: "__MOD__", dependencies: ["__MOD__Core"], path: "Sources/__MOD__"),
+        .testTarget(name: "__MOD__Tests", dependencies: ["__MOD__Core"], path: "Tests/__MOD__Tests"),
+    ]
+)
+''',
+    'Sources/__MOD__Core/Core.swift': '''// PURPOSE: __PURPOSE__
+
+/// 拼接问候语，作为示例功能供 CLI 与测试共用。
+public func greet(_ name: String) -> String {
+    return "Hello, \\(name)!"
+}
+
+/// 返回两个整数的和，作为示例功能供 CLI 与测试共用。
+public func add(_ left: Int, _ right: Int) -> Int {
+    return left + right
+}
+''',
+    'Sources/__MOD__/main.swift': '''// PURPOSE: __PURPOSE__
+import __MOD__Core
+
+let args = CommandLine.arguments
+if args.count == 3, args[1] == "greet" {
+    print(greet(args[2]))
+} else if args.count == 4, args[1] == "add", let left = Int(args[2]), let right = Int(args[3]) {
+    print(add(left, right))
+} else {
+    print("Project scaffold ready. Implement domain behavior through the coding-agent workflow.")
+}
+''',
+    'Tests/__MOD__Tests/CoreTests.swift': '''// 针对示例功能编写 XCTest，直接断言行为。
+import XCTest
+@testable import __MOD__Core
+
+final class __MOD__CoreTests: XCTestCase {
+    func testGreetJoinsName() {
+        XCTAssertEqual(greet("world"), "Hello, world!")
+    }
+
+    func testGreetEmptyName() {
+        XCTAssertEqual(greet(""), "Hello, !")
+    }
+
+    func testAddPositive() {
+        XCTAssertEqual(add(2, 3), 5)
+    }
+
+    func testAddNegative() {
+        XCTAssertEqual(add(-1, 1), 0)
+    }
+}
+''',
+}
+FILES_LIB = {
+    'Package.swift': '''// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "__PKG__",
+    targets: [
+        .target(name: "__MOD__", path: "Sources/__MOD__"),
+        .testTarget(name: "__MOD__Tests", dependencies: ["__MOD__"], path: "Tests/__MOD__Tests"),
+    ]
+)
+''',
+    'Sources/__MOD__/Lib.swift': '''// PURPOSE: __PURPOSE__
+
+/// 报告库的引导状态。
+public func scaffoldStatus() -> String {
+    return "__PKG__ library scaffold ready"
+}
+
+/// 拼接问候语，作为示例功能供测试断言。
+public func greet(_ name: String) -> String {
+    return "Hello, \\(name)!"
+}
+
+/// 返回两个整数的和，作为示例功能供测试断言。
+public func add(_ left: Int, _ right: Int) -> Int {
+    return left + right
+}
+''',
+    'Tests/__MOD__Tests/LibTests.swift': '''// 针对示例功能编写 XCTest，直接断言行为。
+import XCTest
+@testable import __MOD__
+
+final class __MOD__Tests: XCTestCase {
+    func testScaffoldStatusIsReady() {
+        XCTAssertEqual(scaffoldStatus(), "__PKG__ library scaffold ready")
+    }
+
+    func testGreetJoinsName() {
+        XCTAssertEqual(greet("world"), "Hello, world!")
+    }
+
+    func testAddPositive() {
+        XCTAssertEqual(add(2, 3), 5)
+    }
+
+    func testAddNegative() {
+        XCTAssertEqual(add(-1, 1), 0)
+    }
+}
+''',
+}
+INIT_CLI = None
+INIT_LIB = None
 
 
-def _fill_content(content: str, pkg: str, purpose: str) -> str:
-    return content.replace("__PKG__", pkg).replace("__PURPOSE__", purpose)
+def _fill_content(content: str, pkg: str, purpose: str, mod: str) -> str:
+    return (
+        content.replace("__PKG__", pkg)
+        .replace("__MOD__", mod)
+        .replace("__PURPOSE__", purpose)
+    )
 
 
 def _write_harness_context(project_root: Path, pkg: str, purpose: str) -> None:
@@ -34,21 +152,31 @@ def _pkg(project_name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9]", "", project_name) or "Demo"
 
 
+def _module(project_name: str) -> str:
+    # Swift 模块名必须是合法标识符，统一转为首字母大写的驼峰形式。
+    value = re.sub(r"[^a-zA-Z0-9]", "", project_name) or "Demo"
+    return value[0].upper() + value[1:]
+
+
 def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose: str,
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
+    mod = _module(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。路径中的占位符同样替换。
+    for rel, content in files.items():
+        rel_filled = rel.replace("__PKG__", pkg).replace("__MOD__", mod)
+        p = project_root / rel_filled
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose, mod), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},
-        layout={"source": "src/" if files else ".", "packaging": "manifest"},
+        layout={"source": "Sources/" if files else ".", "packaging": "Package.swift"},
     )
 
 

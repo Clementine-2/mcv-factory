@@ -22,6 +22,7 @@ from ..recipes import (
 def _render_worker() -> str:
     return '''from __future__ import annotations
 
+import json
 from typing import Any
 
 
@@ -35,16 +36,21 @@ def handle(message: dict[str, Any]) -> dict[str, Any]:
 
 def drain(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [handle(item) for item in messages]
+
+
+def parse_event(raw: str) -> dict[str, Any]:
+    """真实示例：把 JSON 行解析为事件字典。"""
+    return json.loads(raw)
 '''
 
 
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.worker import drain, handle, scaffold_status
+from {package_name}.worker import drain, handle, parse_event, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["drain", "handle", "scaffold_status", "__version__"]
+__all__ = ["drain", "handle", "parse_event", "scaffold_status", "__version__"]
 '''
 
 
@@ -65,6 +71,26 @@ class SmokeTest(unittest.TestCase):
     def test_drain_preserves_order(self) -> None:
         out = drain([{{"id": "a"}}, {{"id": "b"}}])
         self.assertEqual([item["id"] for item in out], ["a", "b"])
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.worker import parse_event
+
+
+class DemoTest(unittest.TestCase):
+    def test_parse_event_returns_dict(self) -> None:
+        event = parse_event('{{"id": "m1", "payload": "hello"}}')
+        self.assertEqual(event["id"], "m1")
+        self.assertEqual(event["payload"], "hello")
 
 
 if __name__ == "__main__":
@@ -136,6 +162,7 @@ def scaffold_uv_event_driven(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     scripts = project_root / "scripts"
     scripts.mkdir(parents=True, exist_ok=True)
     (scripts / "verify_real_broker.py").write_text(_render_real_broker_script(package_name), encoding="utf-8")

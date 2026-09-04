@@ -60,7 +60,21 @@ def _render_fixture() -> str:
         "<!doctype html>\n"
         "<html lang=\"en\">\n"
         "<head><meta charset=\"utf-8\"><title>Playwright suite</title></head>\n"
-        "<body><main id=\"app\">test suite scaffold ready</main></body>\n"
+        "<body>\n"
+        "  <main id=\"app\">\n"
+        '    <p id="status">test suite scaffold ready</p>\n'
+        '    <button id="counter" type="button">Count: 0</button>\n'
+        "  </main>\n"
+        "  <script>\n"
+        "    // 示例交互：点击按钮让计数器 +1，供 e2e 测试断言。\n"
+        "    const button = document.getElementById('counter');\n"
+        "    let count = 0;\n"
+        "    button.addEventListener('click', () => {\n"
+        "      count += 1;\n"
+        "      button.textContent = `Count: ${count}`;\n"
+        "    });\n"
+        "  </script>\n"
+        "</body>\n"
         "</html>\n"
     )
 
@@ -71,7 +85,38 @@ def _render_e2e() -> str:
         "test('fixture page shows scaffold status in a real browser', async ({ page }) => {\n"
         "  await page.goto('/');\n"
         "  await expect(page.locator('#app')).toContainText('test suite scaffold ready');\n"
+        "});\n\n"
+        "// 示例 e2e：验证可交互的计数器在真实浏览器中工作。\n"
+        "test('counter increments on click in a real browser', async ({ page }) => {\n"
+        "  await page.goto('/');\n"
+        "  const button = page.locator('#counter');\n"
+        "  await expect(button).toHaveText('Count: 0');\n"
+        "  await button.click();\n"
+        "  await expect(button).toHaveText('Count: 1');\n"
+        "  await button.click();\n"
+        "  await button.click();\n"
+        "  await expect(button).toHaveText('Count: 3');\n"
         "});\n"
+    )
+
+
+def _render_readme() -> str:
+    return (
+        "# Playwright Test Suite\n\n"
+        "一个独立可运行的 Playwright 示例测试套件。\n\n"
+        "## 运行方式\n\n"
+        "```bash\n"
+        "npm install          # 安装 @playwright/test\n"
+        "npx playwright install --with-deps   # 可选：安装浏览器（已装则可跳过）\n"
+        "npm run test:e2e     # 启动本地静态服务器并运行浏览器 e2e 测试\n"
+        "```\n\n"
+        "## 结构说明\n\n"
+        "- `fixtures/index.html`：被测的示例页面，内含一个可交互计数器。\n"
+        "- `tests/e2e.spec.js`：示例 e2e 测试，断言页面状态与计数器点击行为。\n"
+        "- `scripts/serve.mjs`：启动本地静态服务器（127.0.0.1:4173）。\n"
+        "- `playwright.config.ts`：Playwright 配置，自动起停本地服务器。\n\n"
+        "浏览器下载由工厂显式跳过（`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`）；\n"
+        "本机跑 e2e 前请先安装浏览器：`npx playwright install`。\n"
     )
 
 
@@ -109,13 +154,14 @@ def scaffold_npm_playwright_suite(
         "private": True,
         "type": "module",
         "scripts": {
-            "test": "node --test tests/smoke.test.js",
+            "test": "node --test \"tests/*.test.js\"",
             "test:e2e": "playwright test",
         },
         "devDependencies": {"@playwright/test": PLAYWRIGHT_PIN},
     }
     _write_json(project_root / "package.json", package)
     (project_root / "playwright.config.ts").write_text(_render_config(), encoding="utf-8")
+    (project_root / "README.md").write_text(_render_readme(), encoding="utf-8")
     scripts = project_root / "scripts"
     scripts.mkdir(parents=True, exist_ok=True)
     (scripts / "serve.mjs").write_text(_render_serve(), encoding="utf-8")

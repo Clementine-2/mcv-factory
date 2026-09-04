@@ -141,7 +141,7 @@ def _align_cli_script_name(project_root: Path, project_name: str, package_name: 
 
 
 def _render_python_cli(project_name: str, purpose: str) -> str:
-    return f'''from __future__ import annotations\n\nimport argparse\n\n__version__ = "0.1.0"\nPURPOSE = {purpose!r}\n\n\ndef build_parser() -> argparse.ArgumentParser:\n    parser = argparse.ArgumentParser(prog={project_name!r}, description=PURPOSE)\n    parser.add_argument("--version", action="version", version=f"%(prog)s {{__version__}}")\n    return parser\n\n\ndef main(argv: list[str] | None = None) -> None:\n    build_parser().parse_args(argv)\n    print("Project scaffold ready. Implement domain behavior through the coding-agent workflow.")\n'''
+    return f'''from __future__ import annotations\n\nimport argparse\n\n__version__ = "0.1.0"\nPURPOSE = {purpose!r}\n\n\ndef greet(name: str) -> str:\n    """示例功能：拼接问候语，可被测试直接断言。"""\n    return f"Hello, {{name}}!"\n\n\ndef add_numbers(left: int, right: int) -> int:\n    """示例功能：整数加法，可被测试直接断言。"""\n    return left + right\n\n\ndef build_parser() -> argparse.ArgumentParser:\n    parser = argparse.ArgumentParser(prog={project_name!r}, description=PURPOSE)\n    parser.add_argument("--version", action="version", version=f"%(prog)s {{__version__}}")\n    parser.add_argument("--name", default=None, help="Name to greet (demo).")\n    parser.add_argument("--add", nargs=2, type=int, metavar=("LEFT", "RIGHT"), help="Add two integers (demo).")\n    return parser\n\n\ndef main(argv: list[str] | None = None) -> None:\n    args = build_parser().parse_args(argv)\n    if args.add is not None:\n        print(add_numbers(args.add[0], args.add[1]))\n        return\n    if args.name is not None:\n        print(greet(args.name))\n        return\n    print("Project scaffold ready. Implement domain behavior through the coding-agent workflow.")\n'''
 
 
 def _render_python_cli_test(package_name: str) -> str:
@@ -149,7 +149,15 @@ def _render_python_cli_test(package_name: str) -> str:
 
 
 def _render_python_library(package_name: str) -> str:
-    return f'''from __future__ import annotations\n\n__version__ = "0.1.0"\n\n\ndef scaffold_status() -> str:\n    return "{package_name} scaffold ready"\n'''
+    return f'''from __future__ import annotations\n\n__version__ = "0.1.0"\n\n\ndef scaffold_status() -> str:\n    return "{package_name} scaffold ready"\n\n\ndef greet(name: str) -> str:\n    """示例功能：拼接问候语，可被测试直接断言。"""\n    return f"Hello, {{name}}!"\n\n\ndef add_numbers(left: int, right: int) -> int:\n    """示例功能：整数加法，可被测试直接断言。"""\n    return left + right\n'''
+
+
+def _render_python_cli_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations\n\nimport io\nimport unittest\nfrom contextlib import redirect_stdout\n\nfrom {package_name} import add_numbers, greet, main\n\n\nclass DemoTest(unittest.TestCase):\n    def test_greet_function(self) -> None:\n        self.assertEqual(greet("world"), "Hello, world!")\n\n    def test_add_numbers_function(self) -> None:\n        self.assertEqual(add_numbers(2, 3), 5)\n\n    def test_main_greets_with_name(self) -> None:\n        stream = io.StringIO()\n        with redirect_stdout(stream):\n            main(["--name", "world"])\n        self.assertIn("Hello, world!", stream.getvalue())\n\n    def test_main_adds_numbers(self) -> None:\n        stream = io.StringIO()\n        with redirect_stdout(stream):\n            main(["--add", "2", "3"])\n        self.assertIn("5", stream.getvalue())\n\n\nif __name__ == "__main__":\n    unittest.main()\n'''
+
+
+def _render_python_library_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations\n\nimport unittest\n\nfrom {package_name} import add_numbers, greet, scaffold_status\n\n\nclass DemoTest(unittest.TestCase):\n    def test_greet_function(self) -> None:\n        self.assertEqual(greet("world"), "Hello, world!")\n\n    def test_add_numbers_function(self) -> None:\n        self.assertEqual(add_numbers(2, 3), 5)\n\n    def test_scaffold_status(self) -> None:\n        self.assertEqual(scaffold_status(), "{package_name} scaffold ready")\n\n\nif __name__ == "__main__":\n    unittest.main()\n'''
 
 
 def _render_python_pytest_smoke(package_name: str) -> str:
@@ -221,12 +229,14 @@ def _scaffold_uv(
             _render_python_cli(project_name, purpose), encoding="utf-8"
         )
         (tests / "test_smoke.py").write_text(_render_python_cli_test(package_name), encoding="utf-8")
+        (tests / "test_demo.py").write_text(_render_python_cli_demo_test(package_name), encoding="utf-8")
         _align_cli_script_name(project_root, project_name, package_name)
     elif recipe == "uv-lib":
         (project_root / "src" / package_name / "__init__.py").write_text(
             _render_python_library(package_name), encoding="utf-8"
         )
         (tests / "test_smoke.py").write_text(_render_python_library_test(package_name), encoding="utf-8")
+        (tests / "test_demo.py").write_text(_render_python_library_demo_test(package_name), encoding="utf-8")
     else:
         raise RecipeError(f"Unknown uv scaffold recipe: {recipe}")
     add_pinned_pytest(provider, project_root, package_name)
@@ -272,11 +282,15 @@ def _scaffold_npm(
             }
         )
         (source / "index.js").write_text(
-            'export const VERSION = "0.1.0";\n\nexport function scaffoldStatus() {\n  return "node library scaffold ready";\n}\n',
+            'export const VERSION = "0.1.0";\n\nexport function scaffoldStatus() {\n  return "node library scaffold ready";\n}\n\nexport function capitalize(input) {\n  if (input.length === 0) return input;\n  return input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();\n}\n\nexport function slugify(input) {\n  return input.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");\n}\n',
             encoding="utf-8",
         )
         (tests / "smoke.test.js").write_text(
             'import test from "node:test";\nimport assert from "node:assert/strict";\nimport { VERSION, scaffoldStatus } from "../src/index.js";\n\ntest("library imports", () => {\n  assert.equal(VERSION, "0.1.0");\n  assert.equal(scaffoldStatus(), "node library scaffold ready");\n});\n',
+            encoding="utf-8",
+        )
+        (tests / "features.test.js").write_text(
+            'import test from "node:test";\nimport assert from "node:assert/strict";\nimport { capitalize, slugify } from "../src/index.js";\n\ntest("capitalize uppercases the first letter", () => {\n  assert.equal(capitalize("hello"), "Hello");\n  assert.equal(capitalize("hELLO"), "Hello");\n  assert.equal(capitalize(""), "");\n});\n\ntest("slugify turns text into a url-safe slug", () => {\n  assert.equal(slugify("Hello, World! 2026"), "hello-world-2026");\n  assert.equal(slugify("   spaces   "), "spaces");\n});\n',
             encoding="utf-8",
         )
         layout = {"source": "src/", "tests": "tests/", "packaging": "package.json"}
@@ -309,7 +323,8 @@ def _scaffold_npm(
             encoding="utf-8",
         )
         (source / "popup.js").write_text(
-            'export function scaffoldStatus() { return "browser extension scaffold ready"; }\n', encoding="utf-8"
+            'export function scaffoldStatus() { return "browser extension scaffold ready"; }\n\nexport function buildMessage(text) {\n  return `Extension ready — ${text}`;\n}\n\nexport function summarizeText(text, maxLength) {\n  const trimmed = text.trim();\n  if (trimmed.length <= maxLength) return trimmed;\n  return `${trimmed.slice(0, maxLength).trimEnd()}...`;\n}\n',
+            encoding="utf-8",
         )
         (scripts / "check-manifest.js").write_text(
             'import fs from "node:fs";\nconst manifest = JSON.parse(fs.readFileSync(new URL("../manifest.json", import.meta.url), "utf8"));\nif (manifest.manifest_version !== 3 || !manifest.action?.default_popup) process.exit(2);\nconsole.log("manifest ok");\n',
@@ -319,11 +334,188 @@ def _scaffold_npm(
             'import test from "node:test";\nimport assert from "node:assert/strict";\nimport fs from "node:fs";\nimport { scaffoldStatus } from "../src/popup.js";\n\ntest("manifest and module are usable", () => {\n  const manifest = JSON.parse(fs.readFileSync(new URL("../manifest.json", import.meta.url), "utf8"));\n  assert.equal(manifest.manifest_version, 3);\n  assert.equal(manifest.action.default_popup, "popup.html");\n  assert.equal(scaffoldStatus(), "browser extension scaffold ready");\n});\n',
             encoding="utf-8",
         )
+        (tests / "features.test.js").write_text(
+            'import test from "node:test";\nimport assert from "node:assert/strict";\nimport { buildMessage, summarizeText } from "../src/popup.js";\n\ntest("buildMessage prefixes popup content", () => {\n  assert.equal(buildMessage("popup ready"), "Extension ready — popup ready");\n});\n\ntest("summarizeText truncates long text with an ellipsis", () => {\n  assert.equal(summarizeText("hello world", 5), "hello...");\n  assert.equal(summarizeText("short", 20), "short");\n});\n',
+            encoding="utf-8",
+        )
         layout = {"source": "src/", "tests": "tests/", "manifest": "manifest.json", "packaging": "package.json"}
     else:
         raise RecipeError(f"Unknown npm scaffold recipe: {recipe}")
     _write_json(project_root / "package.json", package)
     return ScaffoldResult(command_result=scaffold, layout=layout)
+
+
+def _recipe_language(recipe: str) -> str:
+    """Map a scaffold recipe id to the language family used for CI/.gitignore."""
+    if recipe.startswith(("uv-", "maturin-")):
+        return "python"
+    if recipe.startswith("npm-"):
+        return "node"
+    if recipe.startswith("dotnet-"):
+        return "dotnet"
+    if recipe.startswith(("cargo-", "game-bevy")):
+        return "rust"
+    if recipe.startswith("go-"):
+        return "go"
+    if recipe.startswith("java-"):
+        return "java"
+    if recipe.startswith(("kotlin-", "mobile-kotlin")):
+        return "kotlin"
+    if recipe.startswith(("dart-", "mobile-flutter")):
+        return "dart"
+    if recipe.startswith(("swift-", "mobile-swift")):
+        return "swift"
+    if recipe.startswith("cpp-"):
+        return "cpp"
+    if recipe.startswith("c-"):
+        return "c"
+    if recipe.startswith("php-"):
+        return "php"
+    if recipe.startswith("r-"):
+        return "r"
+    if recipe.startswith("opentofu-"):
+        return "opentofu"
+    if recipe.startswith("game-godot"):
+        return "godot"
+    if recipe.startswith("userscript-"):
+        return "node"
+    return "generic"
+
+
+def _gitignore_for(language: str) -> str:
+    rules = {
+        "python": "# Python\n__pycache__/\n*.py[cod]\n.venv/\nvenv/\n.env\n*.egg-info/\nbuild/\ndist/\n.pytest_cache/\n.mypy_cache/\n.ruff_cache/\ncoverage/\n",
+        "node": "# Node\nnode_modules/\ndist/\ncoverage/\n*.log\n.env\n.env.*\n.eslintcache\n.next/\nout/\n",
+        "dotnet": "# .NET\nbin/\nobj/\n*.user\n.vs/\nTestResults/\n",
+        "rust": "# Rust\n/target\nCargo.lock\n",
+        "go": "# Go\n/bin/\n*.exe\n*.test\n*.out\n",
+        "java": "# Java\ntarget/\n*.class\n*.jar\n!.mvn/wrapper/*.jar\n.idea/\n*.iml\n",
+        "kotlin": "# Kotlin\nbuild/\n.idea/\n*.iml\n",
+        "dart": "# Dart/Flutter\n.dart_tool/\nbuild/\n.flutter-plugins\n.packages\n",
+        "swift": "# Swift\n.build/\nDerivedData/\n*.xcodeproj/xcuserdata/\n",
+        "cpp": "# C/C++\nbuild/\n*.o\n*.obj\n*.exe\n*.out\n",
+        "c": "# C\nbuild/\n*.o\n*.obj\n*.exe\n*.out\n",
+        "php": "# PHP\n/vendor/\ncomposer.lock\n",
+        "r": "# R\n.Rproj.user\n.Rhistory\n.RData\n",
+        "opentofu": "# OpenTofu\n.terraform/\n*.tfstate\n*.tfstate.*\n.terraform.lock.hcl\n",
+        "godot": "# Godot\n.godot/\n*.tmp\n",
+        "generic": "# Build output\nbuild/\ndist/\n*.log\n.env\n",
+    }
+    return rules.get(language, rules["generic"])
+
+
+def _ci_for(language: str, project_name: str) -> str:
+    name = project_name.lower().replace(" ", "-")
+    workflow = {
+        "python": ("3.11", "pip install . && python -m pytest"),
+        "node": ("node", "npm ci && npm test"),
+        "dotnet": ("dotnet", "dotnet build --nologo && dotnet test --nologo"),
+        "rust": ("rust", "cargo build --locked && cargo test"),
+        "go": ("go", "go build ./... && go test ./..."),
+        "java": ("java", "mvn -B verify"),
+        "kotlin": ("kotlin", "gradle build"),
+        "dart": ("dart", "dart pub get && dart analyze && dart test"),
+        "swift": ("swift", "swift build && swift test"),
+        "cpp": ("cpp", "cmake -S . -B build && cmake --build build"),
+        "c": ("c", "cmake -S . -B build && cmake --build build"),
+        "php": ("php", "composer install && composer test"),
+        "r": ("r", "Rscript -e 'devtools::test()'"),
+        "opentofu": ("opentofu", "tofu init -backend=false && tofu validate"),
+        "godot": ("godot", "godot --headless --import && godot --headless -s tests/test.gd"),
+        "generic": ("ubuntu", "echo 'add a build step'"),
+    }
+    (tool, cmd) = workflow.get(language, workflow["generic"])
+    return f"""name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-{tool}@v4
+      - name: Install dependencies
+        run: {cmd.split(" && ")[0]}
+      - name: Build & test
+        run: {cmd.split(" && ")[-1]}
+"""
+
+
+def _emit_project_meta(
+    project_root: Path,
+    recipe: str,
+    project_name: str,
+    purpose: str,
+) -> None:
+    """Add cross-cutting engineering files every scaffold should ship.
+
+    One common place for every recipe (80+ blueprints) so each generated project
+    is a complete, professional repository — not just loose skeleton files.
+    Files already produced by the recipe itself are never overwritten.
+    """
+    language = _recipe_language(recipe)
+
+    gitignore = project_root / ".gitignore"
+    if not gitignore.exists():
+        gitignore.write_text(_gitignore_for(language), encoding="utf-8")
+
+    license_path = project_root / "LICENSE"
+    if not license_path.exists():
+        license_path.write_text(
+            "MIT License\n\n"
+            "Copyright (c) 2026 Project Factory contributors\n\n"
+            "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+            "of this software and associated documentation files (the \"Software\"), to deal\n"
+            "in the Software without restriction, including without limitation the rights\n"
+            "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+            "copies of the Software, and to permit persons to whom the Software is\n"
+            "furnished to do so, subject to the following conditions:\n\n"
+            "The above copyright notice and this permission notice shall be included in all\n"
+            "copies or substantial portions of the Software.\n\n"
+            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
+            "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+            "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+            "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+            "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+            "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
+            "SOFTWARE.\n",
+            encoding="utf-8",
+        )
+
+    changelog = project_root / "CHANGELOG.md"
+    if not changelog.exists():
+        changelog.write_text(
+            f"# Changelog\n\nAll notable changes to `{project_name}` are documented in this file.\n\n"
+            f"## [0.1.0] - {_today()}\n\n### Added\n\n- Initial Factory-generated scaffold for `{recipe}`.\n"
+            "- CI, tests and documentation are ready to extend.\n",
+            encoding="utf-8",
+        )
+
+    contributing = project_root / "CONTRIBUTING.md"
+    if not contributing.exists():
+        contributing.write_text(
+            f"# Contributing to {project_name}\n\n"
+            "Thanks for helping out. Please keep changes small, add tests, and document\n"
+            "user-visible behavior. This project was scaffolded by Project Factory;\n"
+            "verification evidence lives under `.project/evidence/`.\n",
+            encoding="utf-8",
+        )
+
+    ci_dir = project_root / ".github" / "workflows"
+    ci = ci_dir / "ci.yml"
+    if not ci.exists():
+        ci_dir.mkdir(parents=True, exist_ok=True)
+        ci.write_text(_ci_for(language, project_name), encoding="utf-8")
+
+
+def _today() -> str:
+    from datetime import date
+
+    return date.today().isoformat()
 
 
 def scaffold_project(
@@ -350,7 +542,11 @@ def scaffold_project(
         handler = getattr(extension_runtime, "scaffold_recipes", {}).get(recipe)
     if handler is None:
         raise RecipeError(f"Unknown scaffold recipe: {recipe}")
-    return handler(recipe, provider, project_name, project_root, staging_root, purpose)
+    result = handler(recipe, provider, project_name, project_root, staging_root, purpose)
+    # Robustness: every blueprint, whatever its recipe, ships the shared
+    # engineering files (gitignore, license, changelog, contributing, CI).
+    _emit_project_meta(project_root, recipe, project_name, purpose)
+    return result
 
 
 

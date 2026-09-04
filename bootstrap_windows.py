@@ -176,10 +176,6 @@ def ready(wheel_hash: str) -> bool:
     return not runtime_mismatches(installed_state(py))
 
 
-def _factory_installed(py: Path) -> bool:
-    return dict(installed_state(py).get("versions") or {}).get("project-factory-blueprint-kernel") == FACTORY_VERSION
-
-
 def _install_with_failover(py: Path, *, source_name: str, connection_name: str, custom_proxy: str, on_line) -> str:
     mode = {"强制直连（忽略代理）": "direct", "当前系统/代理配置": "current", "自定义代理": "custom"}.get(connection_name, "direct")
     sources = source_failover_order(source_name)
@@ -212,12 +208,13 @@ def ensure_runtime(on_line=log, *, source_name: str = AUTO_SOURCE_NAME, connecti
         on_line("[SETUP 1/3] Creating isolated Python core runtime (.pf_runtime).")
         venv.EnvBuilder(with_pip=True, clear=False).create(RUNTIME)
         py = runtime_python()
-    if _factory_installed(py):
-        on_line("[SETUP 2/3] Bundled Factory 0.14.30 wheel already installed; skipping reinstall.")
-    else:
-        on_line("[SETUP 2/3] Installing bundled Factory 0.14.30 wheel locally (no network).")
-        _stream([str(py), "-m", "pip", "install", "--disable-pip-version-check", "--no-input", "--no-deps", "--force-reinstall", str(WHEEL)],
-                env=clean_env(), on_line=on_line, timeout=120)
+    # Robustness: ready() is False whenever the bundled wheel's hash differs from
+    # the installed marker (content may have changed without a version bump).
+    # Reinstall the local wheel unconditionally in that case — never trust the
+    # version number alone, or upgrades would keep running the previous Core.
+    on_line("[SETUP 2/3] Installing bundled Factory wheel locally (no network).")
+    _stream([str(py), "-m", "pip", "install", "--disable-pip-version-check", "--no-input", "--no-deps", "--force-reinstall", str(WHEEL)],
+            env=clean_env(), on_line=on_line, timeout=120)
     on_line(f"[SETUP 3/3] Preparing pinned Python Core dependencies via {source_name} / {connection_name}.")
     on_line("[POLICY] WPF/.NET owns the GUI. Python runtime contains Core dependencies only; system Python is not modified.")
     successful_source = _install_with_failover(py, source_name=source_name, connection_name=connection_name, custom_proxy=custom_proxy, on_line=on_line)

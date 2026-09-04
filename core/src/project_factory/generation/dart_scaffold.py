@@ -10,8 +10,117 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'bin/__PKG__.dart': '// PURPOSE: __PURPOSE__\nvoid main(List<String> args) {\n  print("Project scaffold ready. Implement domain behavior through the coding-agent workflow.");\n}\n', 'lib/__PKG__.dart': '// PURPOSE: __PURPOSE__\nString scaffoldStatus() => "__PKG__ scaffold ready";\n', 'pubspec.yaml': 'name: __PKG__\ndescription: __PURPOSE__\nversion: 0.1.0\nenvironment:\n  sdk: ">=3.0.0 <4.0.0"\ndev_dependencies:\n  test: ^1.24.0\n'}
-FILES_LIB = {'lib/__PKG__.dart': '// PURPOSE: __PURPOSE__\nString scaffoldStatus() => "__PKG__ library scaffold ready";\n', 'pubspec.yaml': 'name: __PKG__\ndescription: __PURPOSE__\nversion: 0.1.0\nenvironment:\n  sdk: ">=3.0.0 <4.0.0"\ndev_dependencies:\n  test: ^1.24.0\n'}
+FILES_CLI = {
+    'bin/__PKG__.dart': '''// PURPOSE: __PURPOSE__
+import 'package:__PKG__/__PKG__.dart';
+
+void main(List<String> args) {
+  if (args.length == 2 && args[0] == 'greet') {
+    print(greet(args[1]));
+    return;
+  }
+  if (args.length == 3 && args[0] == 'add') {
+    final left = int.tryParse(args[1]);
+    final right = int.tryParse(args[2]);
+    if (left == null || right == null) {
+      print('add 需要两个整数参数');
+      return;
+    }
+    print(add(left, right));
+    return;
+  }
+  print('Project scaffold ready. Implement domain behavior through the coding-agent workflow.');
+}
+''',
+    'lib/__PKG__.dart': '''// PURPOSE: __PURPOSE__
+
+/// 报告库的引导状态。
+String scaffoldStatus() => "__PKG__ scaffold ready";
+
+/// 拼接问候语，作为示例功能供 CLI 与测试共用。
+String greet(String name) => 'Hello, $name!';
+
+/// 返回两个整数的和，作为示例功能供 CLI 与测试共用。
+int add(int left, int right) => left + right;
+''',
+    'test/__PKG___test.dart': '''// 针对示例功能编写测试，直接断言行为。
+import 'package:__PKG__/__PKG__.dart';
+import 'package:test/test.dart';
+
+void main() {
+  test('scaffoldStatus is ready', () {
+    expect(scaffoldStatus(), '__PKG__ scaffold ready');
+  });
+
+  test('greet joins name', () {
+    expect(greet('world'), 'Hello, world!');
+  });
+
+  test('greet empty name', () {
+    expect(greet(''), 'Hello, !');
+  });
+
+  test('add positive numbers', () {
+    expect(add(2, 3), 5);
+  });
+
+  test('add negative numbers', () {
+    expect(add(-1, 1), 0);
+  });
+}
+''',
+    'pubspec.yaml': '''name: __PKG__
+description: __PURPOSE__
+version: 0.1.0
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+dev_dependencies:
+  test: ^1.24.0
+''',
+}
+FILES_LIB = {
+    'lib/__PKG__.dart': '''// PURPOSE: __PURPOSE__
+
+/// 报告库的引导状态。
+String scaffoldStatus() => "__PKG__ library scaffold ready";
+
+/// 拼接问候语，作为示例功能供测试断言。
+String greet(String name) => 'Hello, $name!';
+
+/// 返回两个整数的和，作为示例功能供测试断言。
+int add(int left, int right) => left + right;
+''',
+    'test/__PKG___test.dart': '''// 针对示例功能编写测试，直接断言行为。
+import 'package:__PKG__/__PKG__.dart';
+import 'package:test/test.dart';
+
+void main() {
+  test('scaffoldStatus is ready', () {
+    expect(scaffoldStatus(), '__PKG__ library scaffold ready');
+  });
+
+  test('greet joins name', () {
+    expect(greet('world'), 'Hello, world!');
+  });
+
+  test('add positive numbers', () {
+    expect(add(2, 3), 5);
+  });
+
+  test('add negative numbers', () {
+    expect(add(-1, 1), 0);
+  });
+}
+''',
+    'pubspec.yaml': '''name: __PKG__
+description: __PURPOSE__
+version: 0.1.0
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+dev_dependencies:
+  test: ^1.24.0
+''',
+}
 INIT_CLI = None
 INIT_LIB = None
 
@@ -38,13 +147,16 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。路径中的 __PKG__ 占位符同样替换。
+    for rel, content in files.items():
+        rel_filled = rel.replace("__PKG__", pkg)
+        p = project_root / rel_filled
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},

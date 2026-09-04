@@ -25,8 +25,17 @@ def _render_app() -> str:
     return (
         "import { Hono } from 'hono';\n\n"
         "export const STATUS = 'http service scaffold ready';\n\n"
+        "export function buildGreeting(name: string): string {\n"
+        "  const who = name.trim() || 'world';\n"
+        "  return `Hello, ${who}!`;\n"
+        "}\n\n"
         "export const app = new Hono();\n"
         "app.get('/health', (context) => context.json({ status: 'ok', service: STATUS }));\n"
+        "// 示例 endpoint：GET /greet?name=X 返回 JSON 问候语。\n"
+        "app.get('/greet', (context) => {\n"
+        "  const name = context.req.query('name') ?? 'world';\n"
+        "  return context.json({ message: buildGreeting(name) });\n"
+        "});\n"
     )
 
 
@@ -45,6 +54,29 @@ def _render_tsconfig() -> str:
   "include": ["src"]
 }
 """
+
+
+def _render_greet_test() -> str:
+    return (
+        'import test from "node:test";\n'
+        'import assert from "node:assert/strict";\n'
+        'import { app, buildGreeting } from "../dist/app.js";\n\n'
+        'test("greet endpoint returns a personalized message", async () => {\n'
+        "  const response = await app.request('/greet?name=Ada');\n"
+        "  assert.equal(response.status, 200);\n"
+        "  const body = await response.json();\n"
+        '  assert.equal(body.message, "Hello, Ada!");\n'
+        "});\n\n"
+        'test("greet endpoint defaults to world", async () => {\n'
+        "  const response = await app.request('/greet');\n"
+        "  const body = await response.json();\n"
+        '  assert.equal(body.message, "Hello, world!");\n'
+        "});\n\n"
+        'test("buildGreeting trims whitespace around the name", () => {\n'
+        '  assert.equal(buildGreeting("  Ada  "), "Hello, Ada!");\n'
+        '  assert.equal(buildGreeting(""), "Hello, world!");\n'
+        "});\n"
+    )
 
 
 def _render_smoke_test() -> str:
@@ -80,7 +112,7 @@ def scaffold_npm_hono(
         "description": purpose,
         "private": True,
         "type": "module",
-        "scripts": {"build": "tsc", "test": "tsc && node --test tests/smoke.test.js"},
+        "scripts": {"build": "tsc", "test": "tsc && node --test \"tests/*.test.js\""},
         "dependencies": {"hono": HONO_PIN},
         "devDependencies": {"@types/node": TYPES_NODE_PIN, "typescript": TYPESCRIPT_PIN},
     }
@@ -92,6 +124,7 @@ def scaffold_npm_hono(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "greet.test.js").write_text(_render_greet_test(), encoding="utf-8")
     run_command([provider.executable, "install", "--no-fund", "--no-audit"], project_root, timeout=600)
     return ScaffoldResult(
         command_result=scaffold,

@@ -40,7 +40,7 @@ $PhysicalBundleRoot = Split-Path -Parent $PhysicalInstallerRoot
 $PhysicalLogDir = Join-Path $PhysicalInstallerRoot 'logs'
 $Log = Join-Path $PhysicalLogDir 'build.log'
 
-$DotnetVersion = '10.0.400'
+$DotnetVersion = '9.0.315'
 $DotnetFile = "dotnet-sdk-$DotnetVersion-win-x64.zip"
 $ExpectedDotnetSha512 = '9b8b88590e4da131bfd0da7aa089d0fc04d5418d5f8607ec13d55dc5a17b4399afd54d496c12657fa05c6c6546dc5eab930f26ac6c50f2d3a7712c0fb378c366'
 $DotnetUrls = @(
@@ -290,39 +290,11 @@ function Get-Dotnet {
         }
     }
 
-    $zipPath = $DotnetSdkZip
-    if ([string]::IsNullOrWhiteSpace($zipPath)) { $zipPath = Join-Path $Tooling $DotnetFile }
-    if (-not (Test-Path -LiteralPath $zipPath)) {
-        if ($NoDownload) { throw ".NET SDK ZIP not found: $zipPath" }
-        Download-WithFailover -Urls $DotnetUrls -Destination $zipPath -Label ".NET SDK $DotnetVersion x64"
-    }
-    $actual = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA512).Hash.ToLowerInvariant()
-    if ($actual -ne $ExpectedDotnetSha512) {
-        throw ".NET SDK SHA512 mismatch. Expected $ExpectedDotnetSha512, got $actual"
-    }
-    Write-Step '[OK] .NET SDK SHA512 verified.'
-
-    $extractRoot = Join-Path $Tooling "dotnet-$DotnetVersion"
-    $dotnet = Join-Path $extractRoot 'dotnet.exe'
-    if (-not (Test-Path -LiteralPath $dotnet)) {
-        $extractor = Expand-ZipReliable -ZipPath $zipPath -Destination $extractRoot -Label ".NET SDK $DotnetVersion x64"
-        if (-not (Test-Path -LiteralPath $dotnet)) {
-            throw ".NET SDK extraction completed via $extractor but dotnet.exe is missing: $dotnet"
-        }
-    }
-
-    Write-Step "[DOTNET-PROBE] Executable path length=$($dotnet.Length); running --info and --version."
-    $infoResult = Invoke-NativeCapture -FilePath $dotnet -ArgumentList @('--info')
-    $dotnetInfo = (@($infoResult.Lines | ForEach-Object { $_ | Out-String }) -join '').TrimEnd()
-    if ($infoResult.ExitCode -ne 0) { throw "Portable dotnet --info failed with exit=$($infoResult.ExitCode)`n$dotnetInfo" }
-    if (-not [string]::IsNullOrWhiteSpace($dotnetInfo)) { Add-Content -LiteralPath $Log -Value $dotnetInfo -Encoding UTF8 }
-
-    $versionResult = Invoke-NativeCapture -FilePath $dotnet -ArgumentList @('--version')
-    $version = (@($versionResult.Lines | ForEach-Object { ($_ | Out-String).Trim() }) -join '').Trim()
-    if ($versionResult.ExitCode -ne 0) { throw "Portable dotnet --version failed with exit=$($versionResult.ExitCode)" }
-    if ($version -ne $DotnetVersion) { throw "Unexpected dotnet version: $version" }
-    Write-Step "[OK] Portable .NET SDK ready: $dotnet"
-    return $dotnet
+    # The installer source targets net9.0-windows and the pinned toolchain is
+    # the Windows SDK build used by the open-source repo. If a matching SDK is
+    # not installed we do NOT auto-download (the archive hash above is a
+    # different-major placeholder): the message tells the user exactly what to install.
+    throw "A .NET SDK matching '$DotnetVersion' is required to build the WPF shell (found: $(($versions -join '; '))). Install .NET SDK $DotnetVersion from https://dotnet.microsoft.com/download/dotnet/ and re-run."
 }
 
 function Restore-Shell([string]$Dotnet) {
@@ -388,7 +360,7 @@ try {
     Write-Step "[BUILD-MODEL] physical-path + bounded Project Factory NuGet cache (no SUBST; dotnet \\?\ writes fail on SUBST)"
 
     $InstallerRoot = Join-Path $BundleRoot 'installer'
-    $ShellProject = Join-Path $BundleRoot 'shell\ProjectFactory.Workbench\ProjectFactory.Workbench.csproj'
+    $ShellProject = Join-Path $BundleRoot 'shell\ProjectFactory.Workbench.csproj'
     $Build = Join-Path $InstallerRoot 'build'
     $Dist = Join-Path $InstallerRoot 'dist'
     $Publish = Join-Path $InstallerRoot 'publish'
@@ -399,7 +371,7 @@ try {
     New-Item -ItemType Directory -Force -Path $NugetCache | Out-Null
     $env:NUGET_PACKAGES = $NugetCache
 
-    $runtimeProbe = Join-Path $Tooling 'dotnet-10.0.400\shared\Microsoft.NETCore.App\10.0.11\Microsoft.NETCore.App.deps.json'
+    $runtimeProbe = Join-Path $Tooling "dotnet-$DotnetVersion\shared\Microsoft.NETCore.App\*\Microsoft.NETCore.App.deps.json"
     Write-Step "[PATH-BUDGET] physical bundle=$BundleRoot; runtime probe length=$($runtimeProbe.Length); nuget cache length=$($NugetCache.Length)"
     if ($runtimeProbe.Length -ge 240) {
         throw "Physical build root is too deep for MAX_PATH headroom. Extract the bundle closer to a drive root. Probe length=$($runtimeProbe.Length)"
@@ -418,6 +390,9 @@ try {
     $exe = Join-Path $Publish 'ProjectFactory.exe'
     $dll = Join-Path $Publish 'ProjectFactory.dll'
     if (-not (Test-Path -LiteralPath $exe) -or -not (Test-Path -LiteralPath $dll)) { throw 'Published WPF shell is incomplete.' }
+    # Ship an equivalent `factory.exe` entry point alongside ProjectFactory.exe
+    # so the installer provides both launch names.
+    Copy-Item -LiteralPath $exe -Destination (Join-Path $Publish 'factory.exe') -Force
     Write-Step "[OK] WPF shell published; NuGet route=$nugetSource"
 
     $makensis = Get-Nsis

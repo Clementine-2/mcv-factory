@@ -24,11 +24,18 @@ def _render_experiment() -> str:
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 
 def scaffold_status() -> str:
     return "experiment scaffold ready"
+
+
+def mean(values: Sequence[float]) -> float:
+    """真实可运行的实验指标示例：计算均值。"""
+    if not values:
+        return 0.0
+    return sum(values) / len(values)
 
 
 def run_experiment(params_path: Path, results_path: Path) -> dict[str, Any]:
@@ -48,10 +55,10 @@ def run_experiment(params_path: Path, results_path: Path) -> dict[str, Any]:
 def _render_init(package_name: str) -> str:
     return f'''from __future__ import annotations
 
-from {package_name}.experiment import run_experiment, scaffold_status
+from {package_name}.experiment import mean, run_experiment, scaffold_status
 
 __version__ = "0.1.0"
-__all__ = ["run_experiment", "scaffold_status", "__version__"]
+__all__ = ["mean", "run_experiment", "scaffold_status", "__version__"]
 '''
 
 
@@ -74,6 +81,27 @@ class SmokeTest(unittest.TestCase):
         self.assertEqual(payload["status"], "experiment scaffold ready")
         self.assertEqual(saved["seed"], 1)
         self.assertEqual(scaffold_status(), "experiment scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.experiment import mean
+
+
+class DemoTest(unittest.TestCase):
+    def test_mean(self) -> None:
+        self.assertEqual(mean([1.0, 2.0, 3.0]), 2.0)
+
+    def test_mean_empty(self) -> None:
+        self.assertEqual(mean([]), 0.0)
 
 
 if __name__ == "__main__":
@@ -118,6 +146,7 @@ def scaffold_uv_experiment(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

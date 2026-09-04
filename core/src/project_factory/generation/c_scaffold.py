@@ -10,8 +10,145 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'Makefile': 'all:\n\tgcc -o build/app src/main.c\n', 'src/main.c': '/* PURPOSE: __PURPOSE__ */\n#include <stdio.h>\n\nint main(void) {\n  printf("Project scaffold ready. Implement domain behavior through the coding-agent workflow.\\n");\n  return 0;\n}\n'}
-FILES_LIB = {'Makefile': 'all:\n\tgcc -c -o build/lib.o src/lib.c\n', 'src/lib.c': '/* PURPOSE: __PURPOSE__ */\n#include "__PKG__.h"\n\nconst char* scaffoldStatus(void) { return "__PKG__ scaffold ready"; }\n', 'src/__PKG__.h': '#ifndef __PKG___H\n#define __PKG___H\nconst char* scaffoldStatus(void);\n#endif\n'}
+FILES_CLI = {
+    'Makefile': '''all:
+\tmkdir -p build
+\tgcc -o build/app src/main.c
+
+test:
+\tgcc -o build/test_main tests/test_main.c
+\t./build/test_main
+
+.PHONY: all test
+''',
+    'src/main.c': '''/* PURPOSE: __PURPOSE__ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* greet 将问候语写入 out 缓冲区，作为示例功能供 CLI 与测试共用。 */
+void greet(const char* name, char* out, size_t size) {
+    snprintf(out, size, "Hello, %s!", name);
+}
+
+/* add 返回两个整数的和，作为示例功能供 CLI 与测试共用。 */
+int add(int left, int right) {
+    return left + right;
+}
+
+#ifndef TEST_BUILD
+int main(int argc, char** argv) {
+    if (argc == 3 && strcmp(argv[1], "greet") == 0) {
+        char buffer[256];
+        greet(argv[2], buffer, sizeof(buffer));
+        printf("%s\\n", buffer);
+        return 0;
+    }
+    if (argc == 4 && strcmp(argv[1], "add") == 0) {
+        printf("%d\\n", add(atoi(argv[2]), atoi(argv[3])));
+        return 0;
+    }
+    printf("Project scaffold ready. Implement domain behavior through the coding-agent workflow.\\n");
+    return 0;
+}
+#endif
+''',
+    'tests/test_main.c': '''/* 针对示例功能编写简单断言测试：任一断言失败即返回非零退出码。
+ * 通过 TEST_BUILD 复用 src/main.c 里的示例函数，而不重复定义 main。 */
+#define TEST_BUILD
+#include "../src/main.c"
+
+#include <string.h>
+
+int main(void) {
+    int failures = 0;
+    char buffer[256];
+
+    greet("world", buffer, sizeof(buffer));
+    if (strcmp(buffer, "Hello, world!") != 0) { failures++; }
+
+    greet("", buffer, sizeof(buffer));
+    if (strcmp(buffer, "Hello, !") != 0) { failures++; }
+
+    if (add(2, 3) != 5) { failures++; }
+    if (add(-1, 1) != 0) { failures++; }
+
+    if (failures == 0) {
+        printf("ALL TESTS PASSED\\n");
+        return 0;
+    }
+    printf("%d test(s) failed\\n", failures);
+    return 1;
+}
+''',
+}
+FILES_LIB = {
+    'Makefile': '''all:
+\tmkdir -p build
+\tgcc -c -o build/lib.o src/lib.c
+
+test:
+\tgcc -I src -o build/test_lib tests/test_lib.c src/lib.c
+\t./build/test_lib
+
+.PHONY: all test
+''',
+    'src/__PKG__.h': '''#ifndef __PKG___H
+#define __PKG___H
+
+#include <stddef.h>
+
+const char* scaffoldStatus(void);
+void greet(const char* name, char* out, size_t size);
+int add(int left, int right);
+
+#endif
+''',
+    'src/lib.c': '''/* PURPOSE: __PURPOSE__ */
+#include "__PKG__.h"
+
+#include <stdio.h>
+
+const char* scaffoldStatus(void) { return "__PKG__ scaffold ready"; }
+
+void greet(const char* name, char* out, size_t size) {
+    snprintf(out, size, "Hello, %s!", name);
+}
+
+int add(int left, int right) {
+    return left + right;
+}
+''',
+    'tests/test_lib.c': '''/* 针对示例功能编写简单断言测试：任一断言失败即返回非零退出码。 */
+#include "__PKG__.h"
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    int failures = 0;
+    char buffer[256];
+
+    if (strcmp(scaffoldStatus(), "__PKG__ scaffold ready") != 0) { failures++; }
+
+    greet("world", buffer, sizeof(buffer));
+    if (strcmp(buffer, "Hello, world!") != 0) { failures++; }
+
+    greet("", buffer, sizeof(buffer));
+    if (strcmp(buffer, "Hello, !") != 0) { failures++; }
+
+    if (add(2, 3) != 5) { failures++; }
+    if (add(-1, 1) != 0) { failures++; }
+
+    if (failures == 0) {
+        printf("ALL TESTS PASSED\\n");
+        return 0;
+    }
+    printf("%d test(s) failed\\n", failures);
+    return 1;
+}
+''',
+}
 INIT_CLI = None
 INIT_LIB = None
 
@@ -38,17 +175,22 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。路径中的 __PKG__ 占位符同样替换。
+    for rel, content in files.items():
+        rel_filled = rel.replace("__PKG__", pkg)
+        p = project_root / rel_filled
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
+    # 预创建 build/ 目录，避免 gcc -o build/... 在全新目录下失败。
+    (project_root / "build").mkdir(exist_ok=True)
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},
-        layout={"source": "src/" if files else ".", "packaging": "manifest"},
+        layout={"source": "src/" if files else ".", "packaging": "Makefile"},
     )
 
 

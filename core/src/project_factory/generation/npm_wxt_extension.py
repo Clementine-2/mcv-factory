@@ -33,10 +33,39 @@ def _render_wxt_config(project_name: str, purpose: str) -> str:
     )
 
 
+def _render_greeting() -> str:
+    return """// 示例纯逻辑：background 与 content 共用，可在 Node 中直接测试。
+export function buildGreeting(name: string): string {
+  const who = name.trim() || 'friend';
+  return `Hello, ${who}!`;
+}
+
+export function stripTags(html: string): string {
+  return html.replace(/<[^>]*>/g, '');
+}
+"""
+
+
 def _render_background() -> str:
     return (
+        "import { buildGreeting } from '../lib/greeting';\n\n"
         "export default defineBackground(() => {\n"
         "  console.log('wxt extension scaffold ready');\n"
+        "  console.log(buildGreeting('background'));\n"
+        "});\n"
+    )
+
+
+def _render_content() -> str:
+    return (
+        "import { stripTags } from '../lib/greeting';\n\n"
+        "export default defineContentScript({\n"
+        "  matches: ['<all_urls>'],\n"
+        "  main() {\n"
+        "    const source = document.body ? (document.body.textContent ?? '') : '';\n"
+        "    const cleaned = stripTags(source);\n"
+        "    console.log(`wxt content script cleaned ${cleaned.length} chars`);\n"
+        "  },\n"
         "});\n"
     )
 
@@ -58,6 +87,22 @@ def _render_popup_html() -> str:
 
 def _render_tsconfig() -> str:
     return '{\n  "extends": "./.wxt/tsconfig.json"\n}\n'
+
+
+def _render_greeting_test() -> str:
+    return (
+        'import test from "node:test";\n'
+        'import assert from "node:assert/strict";\n'
+        'import { buildGreeting, stripTags } from "../lib/greeting.ts";\n\n'
+        'test("buildGreeting greets a named person", () => {\n'
+        '  assert.equal(buildGreeting("Ada"), "Hello, Ada!");\n'
+        '  assert.equal(buildGreeting("  "), "Hello, friend!");\n'
+        "});\n\n"
+        'test("stripTags removes html tags", () => {\n'
+        '  assert.equal(stripTags("<p>Hello <b>world</b></p>"), "Hello world");\n'
+        '  assert.equal(stripTags("plain text"), "plain text");\n'
+        "});\n"
+    )
 
 
 def _render_smoke_test() -> str:
@@ -96,7 +141,7 @@ def scaffold_npm_wxt_extension(
             "build": "wxt build",
             "zip": "wxt zip",
             "postinstall": "wxt prepare",
-            "test": "node --test tests/smoke.test.js",
+            "test": "node --test \"tests/*.test.js\"",
         },
         "devDependencies": {"wxt": WXT_PIN},
     }
@@ -106,10 +151,15 @@ def scaffold_npm_wxt_extension(
     entrypoints = project_root / "entrypoints"
     entrypoints.mkdir(parents=True, exist_ok=True)
     (entrypoints / "background.ts").write_text(_render_background(), encoding="utf-8")
+    (entrypoints / "content.ts").write_text(_render_content(), encoding="utf-8")
     (entrypoints / "popup.html").write_text(_render_popup_html(), encoding="utf-8")
+    lib = project_root / "lib"
+    lib.mkdir(parents=True, exist_ok=True)
+    (lib / "greeting.ts").write_text(_render_greeting(), encoding="utf-8")
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "smoke.test.js").write_text(_render_smoke_test(), encoding="utf-8")
+    (tests / "greeting.test.js").write_text(_render_greeting_test(), encoding="utf-8")
     run_command(
         [provider.executable, "install", "--no-fund", "--no-audit"],
         project_root,

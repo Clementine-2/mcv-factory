@@ -9,6 +9,8 @@
       <ResourceDictionary.MergedDictionaries>
         <ui:ThemesDictionary Theme="Unknown" />
         <ui:ControlsDictionary />
+        <!-- Locale strings; swapped at runtime by App.SetLanguage(). -->
+        <ResourceDictionary Source="pack://application:,,,/Resources/Strings.zh-CN.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
       <!-- CJK-first stack. Segoe UI Variable is Latin-first and font-links to Japanese
@@ -83,6 +85,14 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Padding" Value="4" />
+      </Style>
+
+      <!-- Scroll fix: WPF-UI's NavigationViewContentPresenter forces
+           ScrollViewer.CanContentScroll=True on every Page, which breaks the
+           vertical scrollbar (issue lepoco/wpfui#1281). Page height is pinned to
+           the content frame at runtime in MainWindow.xaml.cs. -->
+      <Style TargetType="Page">
+        <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
       </Style>
     </ResourceDictionary>
   </Application.Resources>

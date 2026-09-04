@@ -143,11 +143,31 @@ def run_migrations_offline() -> None:
 def _render_init() -> str:
     return '''from __future__ import annotations
 
+from .migrations import next_revision
+
 __version__ = "0.1.0"
 
 
 def scaffold_status() -> str:
     return "schema migration scaffold ready"
+'''
+
+
+def _render_migrations() -> str:
+    return '''from __future__ import annotations
+
+
+def next_revision(revisions: list[str], current: str | None = None) -> str | None:
+    """真实可运行的迁移示例：从已应用修订前进到下一个修订。"""
+    if current is None:
+        return revisions[0] if revisions else None
+    try:
+        index = revisions.index(current)
+    except ValueError:
+        return None
+    if index + 1 < len(revisions):
+        return revisions[index + 1]
+    return None
 '''
 
 
@@ -179,6 +199,33 @@ class SmokeTest(unittest.TestCase):
             value = connection.execute(text("select status from scaffold_status")).scalar_one()
         self.assertEqual(value, "schema migration scaffold ready")
         self.assertEqual(scaffold_status(), "schema migration scaffold ready")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.migrations import next_revision
+
+
+class DemoTest(unittest.TestCase):
+    def test_next_revision_from_start(self) -> None:
+        self.assertEqual(next_revision(["0001", "0002"]), "0001")
+
+    def test_next_revision_advances(self) -> None:
+        self.assertEqual(next_revision(["0001", "0002"], "0001"), "0002")
+
+    def test_next_revision_at_head_returns_none(self) -> None:
+        self.assertIsNone(next_revision(["0001", "0002"], "0002"))
+
+    def test_next_revision_unknown_current(self) -> None:
+        self.assertIsNone(next_revision(["0001"], "zzz"))
 
 
 if __name__ == "__main__":
@@ -222,6 +269,7 @@ def scaffold_uv_alembic(
     package_dir = project_root / "src" / package_name
     package_dir.mkdir(parents=True, exist_ok=True)
     (package_dir / "__init__.py").write_text(_render_init(), encoding="utf-8")
+    (package_dir / "migrations.py").write_text(_render_migrations(), encoding="utf-8")
     (project_root / "alembic.ini").write_text(_render_alembic_ini(), encoding="utf-8")
     migrations = project_root / "migrations"
     versions = migrations / "versions"
@@ -236,6 +284,7 @@ def scaffold_uv_alembic(
     tests = project_root / "tests"
     tests.mkdir(parents=True, exist_ok=True)
     (tests / "test_smoke.py").write_text(_render_test(package_name), encoding="utf-8")
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     add_pinned_pytest(provider, project_root, package_name)
     return ScaffoldResult(
         command_result=scaffold,

@@ -10,14 +10,137 @@ from pathlib import Path
 
 from ..recipes import ProviderView, RecipeError, ScaffoldResult, run_command
 
-FILES_CLI = {'main.go': 'package main\n\nimport "fmt"\n\n// PURPOSE: __PURPOSE__\nfunc main() {\n\tfmt.Println("Project scaffold ready. Implement domain behavior through the coding-agent workflow.")\n}\n'}
-FILES_LIB = {'lib.go': 'package __PKG__\n\n// PURPOSE: __PURPOSE__\n\n// ScaffoldStatus reports the library bootstrap status.\nfunc ScaffoldStatus() string {\n\treturn "__PKG__ scaffold ready"\n}\n'}
+FILES_CLI = {
+    'main.go': '''package main
+
+import (
+	"fmt"
+	"os"
+)
+
+// PURPOSE: __PURPOSE__
+
+// greet 拼接问候语，作为示例功能供 CLI 与测试共用。
+func greet(name string) string {
+	return "Hello, " + name + "!"
+}
+
+// add 返回两个整数的和，作为示例功能供 CLI 与测试共用。
+func add(left, right int) int {
+	return left + right
+}
+
+func main() {
+	args := os.Args[1:]
+	// 子命令示例：go run . greet <name>
+	if len(args) == 2 && args[0] == "greet" {
+		fmt.Println(greet(args[1]))
+		return
+	}
+	// 子命令示例：go run . add <left> <right>
+	if len(args) == 3 && args[0] == "add" {
+		var left, right int
+		if _, err := fmt.Sscanf(args[1]+" "+args[2], "%d %d", &left, &right); err != nil {
+			fmt.Fprintln(os.Stderr, "add 需要两个整数参数")
+			os.Exit(1)
+		}
+		fmt.Println(add(left, right))
+		return
+	}
+	fmt.Println("Project scaffold ready. Implement domain behavior through the coding-agent workflow.")
+}
+''',
+    'main_test.go': '''package main
+
+import "testing"
+
+// 针对示例功能编写单元测试，直接断言行为。
+
+func TestGreet(t *testing.T) {
+	if got := greet("world"); got != "Hello, world!" {
+		t.Fatalf("greet result = %q, want %q", got, "Hello, world!")
+	}
+}
+
+func TestGreetEmptyName(t *testing.T) {
+	if got := greet(""); got != "Hello, !" {
+		t.Fatalf("greet result = %q, want %q", got, "Hello, !")
+	}
+}
+
+func TestAdd(t *testing.T) {
+	if got := add(2, 3); got != 5 {
+		t.Fatalf("add result = %d, want 5", got)
+	}
+}
+
+func TestAddNegative(t *testing.T) {
+	if got := add(-1, 1); got != 0 {
+		t.Fatalf("add result = %d, want 0", got)
+	}
+}
+''',
+}
+FILES_LIB = {
+    'lib.go': '''package __PKGC__
+
+// PURPOSE: __PURPOSE__
+
+// ScaffoldStatus reports the library bootstrap status.
+func ScaffoldStatus() string {
+	return "__PKG__ scaffold ready"
+}
+
+// Greet 拼接问候语，作为示例功能供测试断言。
+func Greet(name string) string {
+	return "Hello, " + name + "!"
+}
+
+// Add 返回两个整数的和，作为示例功能供测试断言。
+func Add(left, right int) int {
+	return left + right
+}
+''',
+    'lib_test.go': '''package __PKGC__
+
+import "testing"
+
+// 针对示例功能编写单元测试，直接断言行为。
+
+func TestScaffoldStatus(t *testing.T) {
+	if got := ScaffoldStatus(); got != "__PKG__ scaffold ready" {
+		t.Fatalf("ScaffoldStatus() = %q, want %q", got, "__PKG__ scaffold ready")
+	}
+}
+
+func TestGreet(t *testing.T) {
+	if got := Greet("world"); got != "Hello, world!" {
+		t.Fatalf("Greet result = %q, want %q", got, "Hello, world!")
+	}
+}
+
+func TestAdd(t *testing.T) {
+	if got := Add(2, 3); got != 5 {
+		t.Fatalf("Add result = %d, want 5", got)
+	}
+	if got := Add(-1, 1); got != 0 {
+		t.Fatalf("Add result = %d, want 0", got)
+	}
+}
+''',
+}
 INIT_CLI = ['mod', 'init', '__PKG__']
 INIT_LIB = ['mod', 'init', '__PKG__']
 
 
 def _fill_content(content: str, pkg: str, purpose: str) -> str:
-    return content.replace("__PKG__", pkg).replace("__PURPOSE__", purpose)
+    # Go 的 package 子句必须是合法标识符（不能含连字符），模块路径则可含连字符。
+    pkgc = pkg.replace("-", "_") or "demo"
+    return (
+        content.replace("__PKG__", pkg)
+        .replace("__PKGC__", pkgc)
+        .replace("__PURPOSE__", purpose)
+    )
 
 
 def _write_harness_context(project_root: Path, pkg: str, purpose: str) -> None:
@@ -38,13 +161,15 @@ def _scaffold(project_root: Path, staging_root: Path, project_name: str, purpose
               files: dict, init_cmd, provider: ProviderView, recipe: str) -> ScaffoldResult:
     pkg = _pkg(project_name)
     project_root.mkdir(parents=True, exist_ok=False)
+    # 先落地全部源文件/测试，再执行工具链初始化命令（如 go mod init、cmake 配置），
+    # 保证即使初始化命令缺省，项目文件也总是被写出。
+    for rel, content in files.items():
+        p = project_root / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     if init_cmd is not None:
         filled = [pkg if a == "__PKG__" else a for a in init_cmd]
         run_command([provider.executable, *filled], project_root, timeout=600)
-        for rel, content in files.items():
-            p = project_root / rel
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(_fill_content(content, pkg, purpose), encoding="utf-8")
     _write_harness_context(project_root, pkg, purpose)
     return ScaffoldResult(
         command_result={"recipe": recipe, "provider": provider.executable},

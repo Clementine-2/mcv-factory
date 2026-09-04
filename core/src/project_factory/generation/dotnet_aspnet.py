@@ -41,8 +41,57 @@ using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
+
+// 内存中的示例数据存储（真实 API 示例，不依赖外部数据库，方便单元测试）。
+var items = new List<Item>
+{{
+    new(1, "示例项 A"),
+    new(2, "示例项 B"),
+}};
+
 app.MapGet("/health", () => Results.Json(new {{ status = "ok", service = "{ident}" }}));
+
+// 列出全部数据项
+app.MapGet("/api/items", () => Results.Json(items));
+
+// 按 id 查询单个数据项
+app.MapGet("/api/items/{{id:int}}", (int id) =>
+{{
+    var item = items.FirstOrDefault(i => i.Id == id);
+    return item is null
+        ? Results.NotFound(new {{ error = $"item {{id}} not found" }})
+        : Results.Json(item);
+}});
+
+// 新增数据项
+app.MapPost("/api/items", (CreateItemRequest request) =>
+{{
+    if (string.IsNullOrWhiteSpace(request.Name))
+    {{
+        return Results.BadRequest(new {{ error = "name is required" }});
+    }}
+    var nextId = items.Max(i => i.Id) + 1;
+    var item = new Item(nextId, request.Name.Trim());
+    items.Add(item);
+    return Results.Created($"/api/items/{{item.Id}}", item);
+}});
+
+// 删除数据项
+app.MapDelete("/api/items/{{id:int}}", (int id) =>
+{{
+    var removed = items.RemoveAll(i => i.Id == id);
+    return removed == 0
+        ? Results.NotFound(new {{ error = $"item {{id}} not found" }})
+        : Results.NoContent();
+}});
+
 app.Run();
+
+/// <summary>示例数据项。</summary>
+public record Item(int Id, string Name);
+
+/// <summary>创建数据项的请求体。</summary>
+public record CreateItemRequest(string Name);
 
 public partial class Program {{ }}
 """
@@ -100,6 +149,91 @@ public class HealthTests : IClassFixture<WebApplicationFactory<Program>>
 """
 
 
+def _render_items_api_test() -> str:
+    return """using System.Net;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Xunit;
+
+public class ItemsApiTests
+{
+    [Fact]
+    public async Task GetItemsReturnsSeededList()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/items");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var items = await response.Content.ReadFromJsonAsync<Item[]>();
+        Assert.NotNull(items);
+        Assert.Equal(2, items!.Length);
+        Assert.Equal("示例项 A", items[0].Name);
+        Assert.Equal("示例项 B", items[1].Name);
+    }
+
+    [Fact]
+    public async Task GetItemReturnsNotFoundForMissingId()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/items/999");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task PostItemAddsToCollection()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/items", new CreateItemRequest("示例项 C"));
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var listResponse = await client.GetAsync("/api/items");
+        var items = await listResponse.Content.ReadFromJsonAsync<Item[]>();
+        Assert.NotNull(items);
+        Assert.Equal(3, items!.Length);
+        Assert.Contains(items, item => item.Name == "示例项 C");
+    }
+
+    [Fact]
+    public async Task PostItemRejectsEmptyName()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/items", new CreateItemRequest("   "));
+        Assert.Equal(HttpStatusCode.BadRequest, createResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteItemRemovesFromCollection()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var deleteResponse = await client.DeleteAsync("/api/items/1");
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        var getResponse = await client.GetAsync("/api/items/1");
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteMissingItemReturnsNotFound()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var deleteResponse = await client.DeleteAsync("/api/items/999");
+        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+    }
+}
+"""
+
+
 def scaffold_dotnet_aspnet(
     recipe: str,
     provider: ProviderView,
@@ -118,6 +252,7 @@ def scaffold_dotnet_aspnet(
     tests.mkdir(parents=True, exist_ok=True)
     (tests / f"{ident}.Tests.csproj").write_text(_render_test_csproj(ident), encoding="utf-8")
     (tests / "HealthTests.cs").write_text(_render_health_test(), encoding="utf-8")
+    (tests / "ItemsApiTests.cs").write_text(_render_items_api_test(), encoding="utf-8")
     restore = run_command(
         [provider.executable, "restore", str(tests / f"{ident}.Tests.csproj"), "--disable-build-servers"],
         project_root,

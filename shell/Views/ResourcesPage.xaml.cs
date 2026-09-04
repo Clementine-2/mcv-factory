@@ -69,9 +69,9 @@ public partial class ResourcesPage : Page
         {
             var ov = await _bridge.InvokeAsync("overview");
             if (ov.TryGetProperty("factory_version", out var fv))
-                ActiveVersionText.Text = "当前核心组件：" + JsonView.String(fv, "version", "?");
+                ActiveVersionText.Text = App.L("Ms_R_CurrentCore") + JsonView.String(fv, "version", "?");
             else if (ov.TryGetProperty("version", out var v))
-                ActiveVersionText.Text = "当前核心组件：" + JsonView.String(v, "version", "?");
+                ActiveVersionText.Text = App.L("Ms_R_CurrentCore") + JsonView.String(v, "version", "?");
 
             // wheels from overview
             _wheels.Clear();
@@ -85,10 +85,10 @@ public partial class ResourcesPage : Page
                     if (store.TryGetProperty("items", out var items) && items.ValueKind == JsonValueKind.Array)
                     {
                         foreach (var item in items.EnumerateArray())
-                            _wheels.Add(new ResourceRow { Label = "仓库 · " + JsonView.String(item, "name"), Path = JsonView.String(item, "path") });
+                            _wheels.Add(new ResourceRow { Label = App.L("Ms_R_Store") + JsonView.String(item, "name"), Path = JsonView.String(item, "path") });
                     }
                 }
-                WheelStatus.Text = _wheels.Count == 0 ? "还没有核心组件包。" : $"共 {_wheels.Count} 颗核心组件包。选中后点热更新。";
+                WheelStatus.Text = _wheels.Count == 0 ? App.L("Ms_R_NoWheels") : string.Format(App.L("Ms_R_WheelCount"), _wheels.Count);
             }
 
             // resources
@@ -107,7 +107,7 @@ public partial class ResourcesPage : Page
                 foreach (var item in titems.EnumerateArray())
                 {
                     var owned = item.TryGetProperty("owned", out var flag) && flag.ValueKind == JsonValueKind.True;
-                    _tools.Add(new ResourceRow { Label = (owned ? "本厂 · " : "PATH · ") + JsonView.String(item, "id") + "  钉 " + JsonView.String(item, "pinned") + "  现 " + JsonView.String(item, "version"), Path = JsonView.String(item, "path") });
+                    _tools.Add(new ResourceRow { Label = (owned ? App.L("Ms_R_Owned") : App.L("Ms_R_Path")) + JsonView.String(item, "id") + App.L("Ms_R_Pinned") + JsonView.String(item, "pinned") + App.L("Ms_R_Version") + JsonView.String(item, "version"), Path = JsonView.String(item, "path") });
                 }
                 ToolStatus.Text = JsonView.String(tools, "dirs");
             }
@@ -118,13 +118,13 @@ public partial class ResourcesPage : Page
             {
                 foreach (var item in flines.EnumerateArray())
                     _lines.Add(new ResourceRow { Id = JsonView.String(item, "id"), Label = JsonView.String(item, "group") + " · " + JsonView.String(item, "label") + "  " + JsonView.String(item, "purpose"), Path = JsonView.String(item, "source") });
-                FactoryLineStatus.Text = "共 " + _lines.Count + " 条产线。";
+                FactoryLineStatus.Text = string.Format(App.L("Ms_R_LineCount"), _lines.Count);
             }
             else if (ov.TryGetProperty("catalog", out var cat) && cat.TryGetProperty("factory_lines", out var fl2) && fl2.ValueKind == JsonValueKind.Array)
             {
                 foreach (var item in fl2.EnumerateArray())
                     _lines.Add(new ResourceRow { Id = JsonView.String(item, "id"), Label = JsonView.String(item, "group") + " · " + JsonView.String(item, "label") + "  " + JsonView.String(item, "purpose"), Path = JsonView.String(item, "source") });
-                FactoryLineStatus.Text = "共 " + _lines.Count + " 条产线。";
+                FactoryLineStatus.Text = string.Format(App.L("Ms_R_LineCount"), _lines.Count);
             }
 
             // modules
@@ -139,7 +139,7 @@ public partial class ResourcesPage : Page
                             bucket.Versions.Add(new ResourceRow { Id = JsonView.String(item, "id"), Family = JsonView.String(item, "family", JsonView.String(group, "id")), Version = JsonView.String(item, "version", "catalog"), Purpose = SanitizePurpose(JsonView.String(item, "purpose")), Status = JsonView.String(item, "status", "catalog"), Path = JsonView.String(item, "url", JsonView.String(item, "path")), Label = JsonView.String(item, "version", "catalog") + "  [" + JsonView.String(item, "status", "catalog") + "]" });
                     _groups.Add(bucket);
                 }
-                ModuleStatus.Text = JsonView.String(modules, "directory") + "  ·  " + _groups.Count + " 组";
+                ModuleStatus.Text = JsonView.String(modules, "directory") + "  ·  " + _groups.Count + App.L("Ms_R_Groups");
             }
             return;
         }
@@ -149,9 +149,9 @@ public partial class ResourcesPage : Page
         try
         {
             var ver = await _bridge.InvokeAsync("factory.version");
-            ActiveVersionText.Text = "当前核心组件：" + JsonView.String(ver, "version", "?");
+            ActiveVersionText.Text = App.L("Ms_R_CurrentCore") + JsonView.String(ver, "version", "?");
         }
-        catch (Exception ex) { ActiveVersionText.Text = "内核版本读取失败：" + ex.Message; }
+        catch (Exception ex) { ActiveVersionText.Text = App.L("Ms_R_VersionReadFail") + ex.Message; }
 
         // wheels
         try
@@ -168,14 +168,14 @@ public partial class ResourcesPage : Page
                     foreach (var item in items.EnumerateArray())
                         _wheels.Add(new ResourceRow
                         {
-                            Label = "仓库 · " + JsonView.String(item, "name"),
+                            Label = App.L("Ms_R_Store") + JsonView.String(item, "name"),
                             Path = JsonView.String(item, "path"),
                         });
                 }
             }
-            WheelStatus.Text = _wheels.Count == 0 ? "还没有核心组件包。" : $"共 {_wheels.Count} 颗核心组件包。选中后点热更新。";
+            WheelStatus.Text = _wheels.Count == 0 ? App.L("Ms_R_NoWheels") : string.Format(App.L("Ms_R_WheelCount"), _wheels.Count);
         }
-        catch (Exception ex) { WheelStatus.Text = "核心组件加载失败：" + ex.Message; }
+        catch (Exception ex) { WheelStatus.Text = App.L("Ms_R_WheelsLoadFail") + ex.Message; }
 
         // resources
         try
@@ -193,7 +193,7 @@ public partial class ResourcesPage : Page
             }
             ResourceStatus.Text = JsonView.String(resources, "directory");
         }
-        catch (Exception ex) { ResourceStatus.Text = "资源加载失败：" + ex.Message; }
+        catch (Exception ex) { ResourceStatus.Text = App.L("Ms_R_ResourcesLoadFail") + ex.Message; }
 
         // tools
         try
@@ -207,14 +207,14 @@ public partial class ResourcesPage : Page
                     var owned = item.TryGetProperty("owned", out var flag) && flag.ValueKind == JsonValueKind.True;
                     _tools.Add(new ResourceRow
                     {
-                        Label = (owned ? "本厂 · " : "PATH · ") + JsonView.String(item, "id") + "  钉 " + JsonView.String(item, "pinned") + "  现 " + JsonView.String(item, "version"),
+                        Label = (owned ? App.L("Ms_R_Owned") : App.L("Ms_R_Path")) + JsonView.String(item, "id") + App.L("Ms_R_Pinned") + JsonView.String(item, "pinned") + App.L("Ms_R_Version") + JsonView.String(item, "version"),
                         Path = JsonView.String(item, "path"),
                     });
                 }
             }
             ToolStatus.Text = JsonView.String(tools, "dirs");
         }
-        catch (Exception ex) { ToolStatus.Text = "工具加载失败：" + ex.Message; }
+        catch (Exception ex) { ToolStatus.Text = App.L("Ms_R_ToolsLoadFail") + ex.Message; }
 
         // factory lines (catalog.gui) — was “No module named 'gui_catalog'” before fix
         try
@@ -231,9 +231,9 @@ public partial class ResourcesPage : Page
                         Path = JsonView.String(item, "source"),
                     });
             }
-            FactoryLineStatus.Text = "共 " + _lines.Count + " 条产线。";
+            FactoryLineStatus.Text = string.Format(App.L("Ms_R_LineCount"), _lines.Count);
         }
-        catch (Exception ex) { FactoryLineStatus.Text = "项目类型加载失败：" + ex.Message; _lines.Clear(); }
+        catch (Exception ex) { FactoryLineStatus.Text = App.L("Ms_R_LinesLoadFail") + ex.Message; _lines.Clear(); }
 
         // modules
         try
@@ -266,9 +266,9 @@ public partial class ResourcesPage : Page
                     _groups.Add(bucket);
                 }
             }
-            ModuleStatus.Text = JsonView.String(modules, "directory") + "  ·  " + _groups.Count + " 组";
+            ModuleStatus.Text = JsonView.String(modules, "directory") + "  ·  " + _groups.Count + App.L("Ms_R_Groups");
         }
-        catch (Exception ex) { ModuleStatus.Text = "模块加载失败：" + ex.Message; _groups.Clear(); }
+        catch (Exception ex) { ModuleStatus.Text = App.L("Ms_R_ModulesLoadFail") + ex.Message; _groups.Clear(); }
     }
 
     private static string SanitizePurpose(string purpose)
@@ -285,7 +285,7 @@ public partial class ResourcesPage : Page
         foreach (var item in arr.EnumerateArray())
             _wheels.Add(new ResourceRow
             {
-                Label = "本机 · " + JsonView.String(item, "name"),
+                Label = App.L("Ms_R_Local") + JsonView.String(item, "name"),
                 Path = JsonView.String(item, "path"),
             });
     }
@@ -307,13 +307,13 @@ public partial class ResourcesPage : Page
     {
         if (WheelList.SelectedItem is not ResourceRow row || string.IsNullOrWhiteSpace(row.Path))
         {
-            WheelStatus.Text = "先在列表里选一颗 wheel。";
+            WheelStatus.Text = App.L("Ms_R_SelectWheelFirst");
             return false;
         }
-        WheelStatus.Text = "正在热更新内核…";
+        WheelStatus.Text = App.L("Ms_R_HotUpdating");
         var result = await _bridge.InvokeAsync("wheels.apply", new { path = row.Path });
-        WheelStatus.Text = "已热更新到 " + JsonView.String(result, "version") + "。可用「启动工厂」或桌面入口重新打开窗口。";
-        ActiveVersionText.Text = "当前核心组件：" + JsonView.String(result, "version");
+        WheelStatus.Text = string.Format(App.L("Ms_R_HotUpdated"), JsonView.String(result, "version"));
+        ActiveVersionText.Text = App.L("Ms_R_CurrentCore") + JsonView.String(result, "version");
         return true;
     }
 
@@ -334,7 +334,7 @@ public partial class ResourcesPage : Page
         try
         {
             if (!await ApplySelectedWheelAsync()) return;
-            WheelStatus.Text = "内核已更新，正在重启窗口…";
+            WheelStatus.Text = App.L("Ms_R_Restarting");
             ShellActions.RelaunchFactory();
         }
         catch (Exception ex)
@@ -348,7 +348,7 @@ public partial class ResourcesPage : Page
         try
         {
             ShellActions.LaunchFactory();
-            WheelStatus.Text = "已调用启动入口。如果窗口已打开，会再开一个；热更新后请用「热更新并重启窗口」。";
+            WheelStatus.Text = App.L("Ms_R_LaunchCalled");
         }
         catch (Exception ex)
         {
@@ -358,7 +358,7 @@ public partial class ResourcesPage : Page
 
     private async void ImportWheel_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFileDialog { Title = "导入 wheel", Filter = "Wheel|*.whl|所有文件|*.*" };
+        var picker = new OpenFileDialog { Title = App.L("Ms_R_ImportWheelTitle"), Filter = App.L("Ms_R_ImportWheelFilter") };
         if (picker.ShowDialog() != true) return;
         try
         {
@@ -386,7 +386,7 @@ public partial class ResourcesPage : Page
 
     private async void ImportResource_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFileDialog { Title = "导入用户资源", Filter = "YAML/JSON/Python|*.yaml;*.yml;*.json;*.py|所有文件|*.*" };
+        var picker = new OpenFileDialog { Title = App.L("Ms_R_ImportResourceTitle"), Filter = App.L("Ms_R_ImportResourceFilter") };
         if (picker.ShowDialog() != true) return;
         try
         {
@@ -397,7 +397,7 @@ public partial class ResourcesPage : Page
                 System.IO.Directory.CreateDirectory(plugins);
                 var copied = System.IO.Path.Combine(plugins, System.IO.Path.GetFileName(picker.FileName));
                 System.IO.File.Copy(picker.FileName, copied, true);
-                ResourceStatus.Text = "插件已放到 " + copied + "。需要符合模块格式（含标识与构建入口）。";
+                ResourceStatus.Text = string.Format(App.L("Ms_R_PluginPlaced"), copied);
             }
             else
             {
@@ -427,11 +427,11 @@ public partial class ResourcesPage : Page
         if (row is null)
         {
             SetModuleFormEnabled(false);
-            ModuleSelectedTitle.Text = "当前未选中任何模块版本；下面的表单在选中后才可编辑。";
+            ModuleSelectedTitle.Text = App.L("Ms_R_NoModuleSelected");
             return;
         }
         SetModuleFormEnabled(true);
-        ModuleSelectedTitle.Text = "当前选中：" + (string.IsNullOrWhiteSpace(row.Family) ? row.Id : row.Family) + " " + row.Version;
+        ModuleSelectedTitle.Text = string.Format(App.L("Ms_R_CurrentSelected"), string.IsNullOrWhiteSpace(row.Family) ? row.Id : row.Family, row.Version);
         ModuleNameBox.Text = string.IsNullOrWhiteSpace(row.Family) ? row.Id : row.Family;
         ModuleVersionBox.Text = row.Version;
         ModulePurposeBox.Text = row.Purpose;
@@ -455,13 +455,13 @@ public partial class ResourcesPage : Page
         var row = SelectedModuleVersion();
         if (row is null || string.IsNullOrWhiteSpace(row.Path))
         {
-            ModuleStatus.Text = "先在树里选一个模块版本。";
+            ModuleStatus.Text = App.L("Ms_R_SelectModuleFirst");
             return;
         }
         try
         {
             await _bridge.InvokeAsync("modules.download", new { id = string.IsNullOrWhiteSpace(row.Family) ? row.Id : row.Family, url = row.Path });
-            ModuleStatus.Text = "已预载到仓库。";
+            ModuleStatus.Text = App.L("Ms_R_Preloaded");
             await RefreshAsync();
         }
         catch (Exception ex)
@@ -475,7 +475,7 @@ public partial class ResourcesPage : Page
         var row = SelectedModuleVersion();
         if (row is null)
         {
-            ModuleStatus.Text = "先选一个已预载的版本再改。";
+            ModuleStatus.Text = App.L("Ms_R_SelectPreloaded");
             return;
         }
         try
@@ -486,7 +486,7 @@ public partial class ResourcesPage : Page
                 version = row.Version,
                 fields = new { label = ModuleNameBox.Text.Trim(), purpose = ModulePurposeBox.Text.Trim(), url = ModuleUrlBox.Text.Trim() },
             });
-            ModuleStatus.Text = "已保存。目录内置项不能改。";
+            ModuleStatus.Text = App.L("Ms_R_Saved");
             await RefreshAsync();
         }
         catch (Exception ex)
@@ -507,15 +507,15 @@ public partial class ResourcesPage : Page
         var row = SelectedModuleVersion();
         if (row is null)
         {
-            ModuleStatus.Text = "先选要删的版本。";
+            ModuleStatus.Text = App.L("Ms_R_SelectDeleteVersion");
             return;
         }
-        if (!ConfirmDelete("删除模块版本", $"确定删除模块版本：\n{row.Family} {row.Version}\n\n此操作不可撤销。"))
+        if (!ConfirmDelete(App.L("Ms_R_DeleteModuleTitle"), string.Format(App.L("Ms_R_DeleteModuleDetail"), row.Family, row.Version)))
             return;
         try
         {
             await _bridge.InvokeAsync("modules.delete", new { family = row.Family, version = row.Version });
-            ModuleStatus.Text = "已删除该版本。";
+            ModuleStatus.Text = App.L("Ms_R_Deleted");
             await RefreshAsync();
         }
         catch (Exception ex)
@@ -528,15 +528,15 @@ public partial class ResourcesPage : Page
     {
         if (WheelList.SelectedItem is not ResourceRow row || string.IsNullOrWhiteSpace(row.Path))
         {
-            WheelStatus.Text = "先选仓库里的一颗 wheel。";
+            WheelStatus.Text = App.L("Ms_R_SelectStoreWheel");
             return;
         }
-        if (row.Label.StartsWith("本机", StringComparison.Ordinal))
+        if (row.Label.StartsWith(App.L("Ms_R_Local"), StringComparison.Ordinal))
         {
-            WheelStatus.Text = "不能删除本机运行时内核；只能删「仓库 ·」里的项。";
+            WheelStatus.Text = App.L("Ms_R_CannotDeleteLocal");
             return;
         }
-        if (!ConfirmDelete("删除核心组件包", $"确定删除 wheel：\n{row.Path}\n\n此操作不可撤销。"))
+        if (!ConfirmDelete(App.L("Ms_R_DeleteWheelTitle"), string.Format(App.L("Ms_R_DeleteWheelDetail"), row.Path)))
             return;
         try
         {
@@ -553,10 +553,10 @@ public partial class ResourcesPage : Page
     {
         if (ResourceList.SelectedItem is not ResourceRow row || string.IsNullOrWhiteSpace(row.Path))
         {
-            ResourceStatus.Text = "先选要删的文件。";
+            ResourceStatus.Text = App.L("Ms_R_SelectFileFirst");
             return;
         }
-        if (!ConfirmDelete("删除用户资源", $"确定删除资源文件：\n{row.Path}\n\n此操作不可撤销。"))
+        if (!ConfirmDelete(App.L("Ms_R_DeleteResourceTitle"), string.Format(App.L("Ms_R_DeleteResourceDetail"), row.Path)))
             return;
         try
         {
@@ -584,7 +584,7 @@ public partial class ResourcesPage : Page
 
     private async void ImportModule_Click(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFileDialog { Title = "导入开源模块文件", Filter = "所有文件|*.*" };
+        var picker = new OpenFileDialog { Title = App.L("Ms_R_ImportModuleTitle"), Filter = App.L("Ms_R_ImportModuleFilter") };
         if (picker.ShowDialog() != true) return;
         try
         {

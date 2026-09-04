@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import tempfile
 import unittest
 import zipfile
@@ -324,7 +325,47 @@ class P3DecisionTests(unittest.TestCase):
             derive_execution_decision(blueprint)
 
 
+# Integration smoke tests that drive a real external toolchain while the
+# blueprint is generated (npm install / cargo test / dotnet build, etc.).
+# CI only guarantees Python + uv, so these are skipped there instead of
+# failing; the local dev matrix (uv, npm, cargo, dotnet, maturin) still
+# exercises every blueprint end to end.
+SMOKE_TOOLCHAIN: dict[str, str] = {
+    "test_wxt_extension_generate_verify_and_restore_smoke": "npm",
+    "test_vite_web_ui_generate_verify_and_restore_smoke": "npm",
+    "test_vite_react_body_generate_verify_and_restore_smoke": "npm",
+    "test_next_ssr_generate_verify_and_restore_smoke": "npm",
+    "test_typescript_library_generate_verify_and_restore_smoke": "npm",
+    "test_vue_web_body_generate_verify_and_restore_smoke": "npm",
+    "test_vscode_extension_generate_verify_and_restore_smoke": "npm",
+    "test_github_action_generate_verify_and_restore_smoke": "npm",
+    "test_astro_static_site_generate_verify_and_restore_smoke": "npm",
+    "test_svelte_body_generate_verify_and_restore_smoke": "npm",
+    "test_cloudflare_worker_generate_verify_and_restore_smoke": "npm",
+    "test_playwright_suite_generate_verify_and_restore_smoke": "npm",
+    "test_commander_cli_generate_verify_and_restore_smoke": "npm",
+    "test_typescript_mcp_generate_verify_and_restore_smoke": "npm",
+    "test_openapi_sdk_generate_verify_and_restore_smoke": "npm",
+    "test_hono_service_generate_verify_and_restore_smoke": "npm",
+    "test_graphql_generate_verify_and_restore_smoke": "npm",
+    "test_design_system_generate_verify_and_restore_smoke": "npm",
+    "test_nest_service_generate_verify_and_restore_smoke": "npm",
+    "test_rust_library_generate_verify_and_restore_smoke": "cargo",
+    "test_rust_cli_generate_verify_and_restore_smoke": "cargo",
+    "test_axum_service_generate_verify_and_restore_smoke": "cargo",
+    "test_wpf_desktop_generate_verify_and_restore_smoke": "dotnet",
+    "test_avalonia_desktop_generate_verify_and_restore_smoke": "dotnet",
+    "test_aspnet_service_generate_verify_and_restore_smoke": "dotnet",
+    "test_csharp_library_generate_verify_and_restore_smoke": "dotnet",
+}
+
+
 class P3GenerationIntegrationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        tool = SMOKE_TOOLCHAIN.get(self._testMethodName)
+        if tool is not None and shutil.which(tool) is None:
+            self.skipTest(f"{tool} toolchain is required to build this blueprint")
+
     def test_python_cli_generate_verify_and_restore_smoke(self) -> None:
         expected_profile = "python-cli"
         project_name, requirement, provider_id = CASES[expected_profile]
@@ -667,6 +708,7 @@ class P3GenerationIntegrationTests(unittest.TestCase):
             self.assertEqual(restored["profile"], expected_profile)
             self.assertEqual(restored["status"], "PARTIALLY_VERIFIED")
 
+    @unittest.skipIf(shutil.which("maturin") is None, "maturin toolchain is required to build a Python native extension")
     def test_maturin_extension_generate_verify_and_restore_smoke(self) -> None:
         expected_profile = "python-native-extension"
         project_name, requirement, provider_id = CASES[expected_profile]

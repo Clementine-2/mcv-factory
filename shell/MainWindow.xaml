@@ -4,7 +4,7 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:views="clr-namespace:ProjectFactory.Workbench.Views"
     xml:lang="zh-CN"
-    Title="Project Factory"
+    Title="{DynamicResource Nav_t0}"
     Icon="pack://application:,,,/Assets/app.ico"
     Width="1380" Height="900" MinWidth="960" MinHeight="640"
     WindowStartupLocation="CenterScreen"
@@ -33,18 +33,18 @@
             Transition="None"
             TitleBar="{Binding ElementName=AppTitleBar}">
           <ui:NavigationView.MenuItems>
-            <ui:NavigationViewItem Content="首页" TargetPageType="{x:Type views:HomePage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Home24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="新建项目" TargetPageType="{x:Type views:CreatePage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="WindowApps24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="项目" TargetPageType="{x:Type views:ProjectsPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Table24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="工具" TargetPageType="{x:Type views:ToolsPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Navigation24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="资源" TargetPageType="{x:Type views:ResourcesPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Archive24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="设置" TargetPageType="{x:Type views:SettingsPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Settings24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="{DynamicResource Nav_t1}" TargetPageType="{x:Type views:HomePage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Home24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="{DynamicResource Nav_t2}" TargetPageType="{x:Type views:CreatePage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="WindowApps24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="{DynamicResource Nav_t3}" TargetPageType="{x:Type views:ProjectsPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Table24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="{DynamicResource Nav_t4}" TargetPageType="{x:Type views:ToolsPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Navigation24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="{DynamicResource Nav_t5}" TargetPageType="{x:Type views:ResourcesPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Archive24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="{DynamicResource Nav_t6}" TargetPageType="{x:Type views:SettingsPage}"><ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Settings24" /></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
           </ui:NavigationView.MenuItems>
           <ui:NavigationView.ContentOverlay>
             <ui:SnackbarPresenter x:Name="SnackbarPresenter" />
           </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>
-        <ui:TitleBar x:Name="AppTitleBar" Title="Project Factory" Icon="{ui:ImageIcon 'pack://application:,,,/Assets/app.png'}" />
+        <ui:TitleBar x:Name="AppTitleBar" Title="{DynamicResource Nav_t0}" Icon="{ui:ImageIcon 'pack://application:,,,/Assets/app.png'}" />
       </Grid>
   </Grid>
 </ui:FluentWindow>

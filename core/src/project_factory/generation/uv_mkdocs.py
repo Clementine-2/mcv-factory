@@ -12,6 +12,7 @@ from ..recipes import (
     RecipeError,
     ScaffoldResult,
     _patch_python_pyproject,
+    _python_package_name,
     run_command,
 )
 
@@ -35,6 +36,39 @@ def _render_index(purpose: str) -> str:
         f"{purpose}\n\n"
         "docs site scaffold ready\n"
     )
+
+
+def _render_docgen() -> str:
+    return '''from __future__ import annotations
+
+
+def render_index(title: str, body: str) -> str:
+    """真实可运行的文档示例：渲染一个 Markdown 首页。"""
+    return f"# {title}\\n\\n{body}\\n"
+'''
+
+
+def _render_demo_test(package_name: str) -> str:
+    return f'''from __future__ import annotations
+
+import unittest
+
+from {package_name}.docgen import render_index
+
+
+class DemoTest(unittest.TestCase):
+    def test_render_index_has_title(self) -> None:
+        text = render_index("Docs scaffold", "hello")
+        self.assertIn("# Docs scaffold", text)
+        self.assertIn("hello", text)
+
+    def test_render_index_ends_with_newline(self) -> None:
+        self.assertTrue(render_index("T", "B").endswith("\\n"))
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
 
 
 def scaffold_uv_mkdocs(
@@ -73,7 +107,20 @@ def scaffold_uv_mkdocs(
     docs = project_root / "docs"
     docs.mkdir(parents=True, exist_ok=True)
     (docs / "index.md").write_text(_render_index(purpose), encoding="utf-8")
+    package_name = _python_package_name(project_name)
+    package_dir = project_root / "src" / package_name
+    package_dir.mkdir(parents=True, exist_ok=True)
+    (package_dir / "docgen.py").write_text(_render_docgen(), encoding="utf-8")
+    tests = project_root / "tests"
+    tests.mkdir(parents=True, exist_ok=True)
+    (tests / "test_demo.py").write_text(_render_demo_test(package_name), encoding="utf-8")
     return ScaffoldResult(
         command_result=scaffold,
-        layout={"docs": "docs/", "config": "mkdocs.yml", "packaging": "pyproject.toml"},
+        layout={
+            "docs": "docs/",
+            "source": f"src/{package_name}/",
+            "tests": "tests/",
+            "config": "mkdocs.yml",
+            "packaging": "pyproject.toml",
+        },
     )

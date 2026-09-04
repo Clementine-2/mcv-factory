@@ -56,6 +56,10 @@ class ProfileSpec:
     # before the 14 profiles were folded into `family: data`). Advisor-agnostic;
     # purely documentation/branching metadata for the GUI and scaffolder.
     intent: str = ""
+    # C04: declarative flag enabling the optional Postgres compose overlay for
+    # http-service style profiles. Keeps per-profile behavior in registry data
+    # so the Factory Core never embeds profile recipe ids in its control flow.
+    compose_overlay: bool = False
 
 
 @dataclass(frozen=True)
@@ -221,6 +225,7 @@ def load_registry(registry_dir: Path | None = None, extension_runtime: Any | Non
                 materialization=str(item.get("materialization", "minimal")),
                 family=str(item.get("family", "")),
                 intent=str(item.get("intent", "")),
+                compose_overlay=bool(item.get("compose_overlay", False)),
             )
             for item in profile_doc.get("profiles", [])
         ),
