@@ -1,13 +1,15 @@
-# 基地车生产厂 (Base Vehicle Factory)
+# MCV Factory (基地车工厂)
 
 > A Windows desktop "project factory" that turns a high-level requirement into a
 > verified, evidence-backed software project. It pairs a Fluent/WPF front end
 > with an isolated Python "Factory Core" that generates, verifies and recovers
 > project scaffolding.
 
-Base Vehicle Factory (codename: Project Factory) is a **human-first** tool: the CLI / UI
-collect intent, the Core kernel produces a project drawing, and every claim about the
-generated project is backed by an evidence artifact rather than asserted.
+MCV Factory (基地车工厂) — named after the base vehicle MCV from
+Command & Conquer: Red Alert, code "Project Factory" in the codebase — is a
+**human-first** tool: the CLI / UI collect intent, the Core kernel produces a
+project drawing, and every claim about the generated project is backed by an
+evidence artifact rather than asserted.
 
 - **Factory Core version:** `0.14.30`
 - **Shell:** UX5.1 — Windows 11 Fluent (WPF / .NET, WPF-UI 4.3.0)
@@ -31,7 +33,7 @@ generated project is backed by an evidence artifact rather than asserted.
 
 ## What it is
 
-Base Vehicle Factory takes a requirement (free text or a guided form), reasons about
+MCV Factory takes a requirement (free text or a guided form), reasons about
 it, and emits a project scaffold plus a set of **verification claims**. Each
 claim is checked against real artifacts, and anything that looks like a secret
 is redacted before it is ever persisted or sent to an external service.
@@ -180,7 +182,7 @@ Example request (one line):
   Python packages.
 - Generated project templates use development-only defaults (e.g. a sample
   `POSTGRES_PASSWORD: app` inside a scaffolded `docker-compose` drawing) — these
-  are illustrative and not credentials for Base Vehicle Factory itself.
+  are illustrative and not credentials for MCV Factory itself.
 
 Please report vulnerabilities per [SECURITY.md](./SECURITY.md).
 

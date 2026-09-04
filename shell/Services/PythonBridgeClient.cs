@@ -54,12 +54,12 @@ public sealed class PythonBridgeClient : IAsyncDisposable, IDisposable
     public async Task<JsonElement> InvokeAsync(string action, object? payload = null, CancellationToken cancellationToken = default)
     {
         if (_disposed || _shutdownCts.IsCancellationRequested)
-            throw new ObjectDisposedException(nameof(PythonBridgeClient), "基地车生产厂 正在退出。");
+            throw new ObjectDisposedException(nameof(PythonBridgeClient), "基地车工厂 正在退出。");
 
         if (!File.Exists(_pythonExe))
-            throw new FileNotFoundException("基地车生产厂 私有 Python Core 运行时缺失。请运行安装器 Repair/重新安装。", _pythonExe);
+            throw new FileNotFoundException("基地车工厂 私有 Python Core 运行时缺失。请运行安装器 Repair/重新安装。", _pythonExe);
         if (!File.Exists(_bridgeScript))
-            throw new FileNotFoundException("基地车生产厂 backend bridge 缺失。", _bridgeScript);
+            throw new FileNotFoundException("基地车工厂 backend bridge 缺失。", _bridgeScript);
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(6));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _shutdownCts.Token, timeoutCts.Token);
@@ -88,7 +88,7 @@ public sealed class PythonBridgeClient : IAsyncDisposable, IDisposable
                 catch (OperationCanceledException) when (_shutdownCts.IsCancellationRequested)
                 {
                     Log($"SHUTDOWN id={id} action={action}");
-                    throw new OperationCanceledException("基地车生产厂 正在退出，后台进程已终止。");
+                    throw new OperationCanceledException("基地车工厂 正在退出，后台进程已终止。");
                 }
                 catch (OperationCanceledException)
                 {
@@ -315,7 +315,7 @@ public sealed class PythonBridgeClient : IAsyncDisposable, IDisposable
             var process = new Process { StartInfo = psi };
             Log("RESIDENT START");
             if (!process.Start())
-                throw new InvalidOperationException("无法启动 基地车生产厂 backend。");
+                throw new InvalidOperationException("无法启动 基地车工厂 backend。");
 
             _residentProcess = process;
             _activeProcesses[process.Id] = process;

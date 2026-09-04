@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
-  <sys:String x:Key="Nav_t0">基地车生产厂</sys:String>
+  <sys:String x:Key="Nav_t0">基地车工厂</sys:String>
   <sys:String x:Key="Nav_t1">首页</sys:String>
   <sys:String x:Key="Nav_t2">新建项目</sys:String>
   <sys:String x:Key="Nav_t3">项目</sys:String>
@@ -216,7 +216,7 @@
   <sys:String x:Key="Settings_BackgroundOpacityBox212">选择…</sys:String>
   <sys:String x:Key="Settings_BackgroundOpacityBox213">清除</sys:String>
   <sys:String x:Key="Settings_t214">默认项目目录</sys:String>
-  <sys:String x:Key="Settings_OutputDirectoryText215">项目资产与程序安装目录分离；卸载 基地车生产厂 不会碰这里。</sys:String>
+  <sys:String x:Key="Settings_OutputDirectoryText215">项目资产与程序安装目录分离；卸载 基地车工厂 不会碰这里。</sys:String>
   <sys:String x:Key="Settings_OutputDirectoryText216">更改…</sys:String>
   <sys:String x:Key="Settings_t217">AI 需求助手</sys:String>
   <sys:String x:Key="Settings_t218">可选。AI 只辅助理解自然语言，不直接拥有生成权；关闭后 Factory 仍能完整工作。</sys:String>
@@ -263,7 +263,7 @@
   <sys:String x:Key="Ms_ProbeOk">能连上。密钥和模型还要在本机环境变量里。</sys:String>
   <sys:String x:Key="Ms_PickBg">选择背景图</sys:String>
   <sys:String x:Key="Ms_BgFilter">图片|*.png;*.jpg;*.jpeg;*.bmp;*.webp|所有文件|*.*</sys:String>
-  <sys:String x:Key="Ms_PickOutDir">选择 基地车生产厂 默认项目目录</sys:String>
+  <sys:String x:Key="Ms_PickOutDir">选择 基地车工厂 默认项目目录</sys:String>
   <sys:String x:Key="Ms_LoadingHistory">正在读取项目历史…</sys:String>
   <sys:String x:Key="Ms_NoProjects">还没有项目。去“新建项目”说一句你想做什么。</sys:String>
   <sys:String x:Key="Ms_RecentN">最近 {0} 个项目</sys:String>
@@ -277,8 +277,8 @@
   <sys:String x:Key="Ms_ReadyWarnSt">就绪（有提示）</sys:String>
   <sys:String x:Key="Ms_BlockedSt">已阻断</sys:String>
   <sys:String x:Key="Ms_UnknownSt">未知</sys:String>
-  <sys:String x:Key="Ms_PickProject">选择要检查的 基地车生产厂 项目</sys:String>
-  <sys:String x:Key="Ms_PickZip">选择要恢复验证的 基地车生产厂 ZIP</sys:String>
+  <sys:String x:Key="Ms_PickProject">选择要检查的 基地车工厂 项目</sys:String>
+  <sys:String x:Key="Ms_PickZip">选择要恢复验证的 基地车工厂 ZIP</sys:String>
   <sys:String x:Key="Ms_Running">正在运行…</sys:String>
   <sys:String x:Key="Ms_OpenProject">打开项目</sys:String>
   <sys:String x:Key="Ms_C_AnalyzeStatus">分析只会整理需求；不会在这一步生成文件。</sys:String>
@@ -328,7 +328,7 @@
   <sys:String x:Key="Ms_C_NoAiReview">未调用 AI。请确认左侧模块、语言和车身，再生成。</sys:String>
   <sys:String x:Key="Ms_C_NoQuestions">没有额外问题。你可以直接确认，也可以修改左侧字段。</sys:String>
   <sys:String x:Key="Ms_C_NoMatch">未匹配</sys:String>
-  <sys:String x:Key="Ms_C_OutputDirTitle">选择 基地车生产厂 默认输出目录</sys:String>
+  <sys:String x:Key="Ms_C_OutputDirTitle">选择 基地车工厂 默认输出目录</sys:String>
   <sys:String x:Key="Ms_C_NeedAnalyzeFirst">先整理需求，或从分类点一项，或导入蓝图。</sys:String>
   <sys:String x:Key="Ms_C_InvalidName">项目名称只能用英文字母、数字、点、下划线或短横线，且必须以字母或数字开头和结尾（1–128 个字符；不能用中文、空格或符号）。</sys:String>
   <sys:String x:Key="Ms_C_InvalidNameShort">项目名称仅限英文字母、数字、点、下划线、短横线，并以字母或数字开头和结尾。</sys:String>

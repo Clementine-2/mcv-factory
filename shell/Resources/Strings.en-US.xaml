@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
-  <sys:String x:Key="Nav_t0">Base Vehicle Factory</sys:String>
+  <sys:String x:Key="Nav_t0">MCV Factory</sys:String>
   <sys:String x:Key="Nav_t1">Home</sys:String>
   <sys:String x:Key="Nav_t2">New Project</sys:String>
   <sys:String x:Key="Nav_t3">Projects</sys:String>
@@ -216,7 +216,7 @@
   <sys:String x:Key="Settings_BackgroundOpacityBox212">Choose…</sys:String>
   <sys:String x:Key="Settings_BackgroundOpacityBox213">Clear</sys:String>
   <sys:String x:Key="Settings_t214">Default project directory</sys:String>
-  <sys:String x:Key="Settings_OutputDirectoryText215">Project assets are separate from the install dir; uninstalling Base Vehicle Factory never touches them.</sys:String>
+  <sys:String x:Key="Settings_OutputDirectoryText215">Project assets are separate from the install dir; uninstalling MCV Factory never touches them.</sys:String>
   <sys:String x:Key="Settings_OutputDirectoryText216">Change…</sys:String>
   <sys:String x:Key="Settings_t217">AI requirement assistant</sys:String>
   <sys:String x:Key="Settings_t218">Optional. AI only helps understand natural language, never owns generation; Factory works fully with it off.</sys:String>
@@ -263,7 +263,7 @@
   <sys:String x:Key="Ms_ProbeOk">Connected. The key and model come from your local environment variables.</sys:String>
   <sys:String x:Key="Ms_PickBg">Choose background image</sys:String>
   <sys:String x:Key="Ms_BgFilter">Images|*.png;*.jpg;*.jpeg;*.bmp;*.webp|All files|*.*</sys:String>
-  <sys:String x:Key="Ms_PickOutDir">Choose the default Base Vehicle Factory project directory</sys:String>
+  <sys:String x:Key="Ms_PickOutDir">Choose the default MCV Factory project directory</sys:String>
   <sys:String x:Key="Ms_LoadingHistory">Loading project history…</sys:String>
   <sys:String x:Key="Ms_NoProjects">No projects yet. Go to New Project and say what you want to build.</sys:String>
   <sys:String x:Key="Ms_RecentN">{0} recent projects</sys:String>
@@ -277,8 +277,8 @@
   <sys:String x:Key="Ms_ReadyWarnSt">Ready (with notes)</sys:String>
   <sys:String x:Key="Ms_BlockedSt">Blocked</sys:String>
   <sys:String x:Key="Ms_UnknownSt">Unknown</sys:String>
-  <sys:String x:Key="Ms_PickProject">Choose a Base Vehicle Factory project to check</sys:String>
-  <sys:String x:Key="Ms_PickZip">Choose a Base Vehicle Factory ZIP to restore-verify</sys:String>
+  <sys:String x:Key="Ms_PickProject">Choose a MCV Factory project to check</sys:String>
+  <sys:String x:Key="Ms_PickZip">Choose a MCV Factory ZIP to restore-verify</sys:String>
   <sys:String x:Key="Ms_Running">Running…</sys:String>
   <sys:String x:Key="Ms_OpenProject">Open project</sys:String>
   <sys:String x:Key="Ms_C_AnalyzeStatus">Analysis only organizes your requirement; it won't generate files in this step.</sys:String>
@@ -328,7 +328,7 @@
   <sys:String x:Key="Ms_C_NoAiReview">AI was not used. Review the modules, language and body on the left, then generate.</sys:String>
   <sys:String x:Key="Ms_C_NoQuestions">No further questions. You can confirm directly or adjust the fields on the left.</sys:String>
   <sys:String x:Key="Ms_C_NoMatch">No match</sys:String>
-  <sys:String x:Key="Ms_C_OutputDirTitle">Choose the default Base Vehicle Factory output directory</sys:String>
+  <sys:String x:Key="Ms_C_OutputDirTitle">Choose the default MCV Factory output directory</sys:String>
   <sys:String x:Key="Ms_C_NeedAnalyzeFirst">Clean the requirement first, or pick one from the categories, or import a blueprint.</sys:String>
   <sys:String x:Key="Ms_C_InvalidName">Project names may only use English letters, digits, dots, underscores or hyphens, must start and end with a letter or digit (1–128 characters; no Chinese, spaces or symbols).</sys:String>
   <sys:String x:Key="Ms_C_InvalidNameShort">Project names: English letters, digits, dots, underscores or hyphens only; must start and end with a letter or digit.</sys:String>
