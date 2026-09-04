@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import tempfile
 import unittest
@@ -363,7 +364,15 @@ SMOKE_TOOLCHAIN: dict[str, str] = {
 class P3GenerationIntegrationTests(unittest.TestCase):
     def setUp(self) -> None:
         tool = SMOKE_TOOLCHAIN.get(self._testMethodName)
-        if tool is not None and shutil.which(tool) is None:
+        if tool is None:
+            return
+        if os.environ.get("MCV_FACTORY_CI") == "1":
+            # CI guarantees only Python + uv; Windows runners happen to ship
+            # node/cargo/dotnet too, but those system toolchains are not the
+            # pinned versions this harness validates against. The full local
+            # dev matrix exercises every blueprint end to end.
+            self.skipTest("external-toolchain smoke suites run on the local dev matrix, not CI")
+        if shutil.which(tool) is None:
             self.skipTest(f"{tool} toolchain is required to build this blueprint")
 
     def test_python_cli_generate_verify_and_restore_smoke(self) -> None:

@@ -2,6 +2,16 @@ from __future__ import annotations
 
 import sys
 
+# CI / fresh Windows consoles may default to cp1252, which cannot encode
+# characters such as ``∞`` in FACTORY_STAGE. Force UTF-8 output with a
+# lossless fallback so the CLI never crashes on *printable* output.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="backslashreplace")
+        except (OSError, ValueError):
+            pass
+
 from .factory import main as factory_main
 from .decision import main as decision_main
 from .semantic import main as semantic_main

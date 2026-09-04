@@ -45,6 +45,11 @@ installer/.tooling/
 CHECKSUMS.sha256
 MANIFEST.sha256
 
+# Golden-project manifests ARE evidence inputs and must ship with the repo
+# (they back the read-only golden checks). Re-include them explicitly.
+!**/PROJECT_MANIFEST.sha256
+!**/FACTORY_OVERLAY_MANIFEST.sha256
+
 # ---- Agent / tooling working dirs (excluded by policy) ----
 .workbuddy/
 .aionrs/

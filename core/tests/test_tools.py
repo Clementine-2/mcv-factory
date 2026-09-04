@@ -2,10 +2,17 @@ from __future__ import annotations
 
 import unittest
 
-from project_factory.tools import resolve_executable
+from project_factory.tools import owned_provider_dirs, resolve_executable
 
 
 class OwnedToolsTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # The owned toolchain (core/.tools: npm1092, uv010, …) is produced by
+        # the installer build, not by a fresh clone. On CI / sparse checkouts
+        # it is absent, so these installer-scenario tests skip themselves.
+        if not owned_provider_dirs():
+            self.skipTest("factory-owned toolchain (core/.tools) not present in this checkout")
+
     def test_owned_uv_is_preferred_over_path(self) -> None:
         found = resolve_executable("uv")
         self.assertIsNotNone(found)

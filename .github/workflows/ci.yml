@@ -29,6 +29,8 @@ jobs:
       - name: Install test runner
         run: pip install pytest
       - name: Run Core tests
+        env:
+          MCV_FACTORY_CI: "1"
         run: pytest core/tests -q
 
   shell:
